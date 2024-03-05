@@ -1,0 +1,7 @@
+{
+  "name": "mapfont",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">mapfont</string>
+    <string name="title_activity_main">mapfont</string>
+    <string name="package_name">ionic.mapfont</string>
+    <string name="custom_url_scheme">ionic.mapfont</string>
+</resources>
