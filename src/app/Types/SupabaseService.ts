@@ -1,4 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { environment } from 'src/environments/environment';
 
 
 export interface User {
@@ -51,15 +52,15 @@ export interface UserType {
     user_role : boolean
 }
 
-class DatabaseService {
+export default class DatabaseService {
     private supabase: SupabaseClient;
     
-    private SUPABASE_URL= 'https://gkkbzksbxpaxhqvzswrp.supabase.co'
-    private SUPABASE_KEY= 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjcGVyemt1anltZHp2aGZ1cWdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTA1MjEyNzMsImV4cCI6MjAyNjA5NzI3M30.ex2sMtJwYjE44ZqlZURnqFyOjpK5rXsgmHeNBs7sSG4'
+    private SUPABASE_URL= environment.SUPABASE_URL
+    private SUPABASE_KEY= environment.SUPABASE_KEY
 
-
+   
     
-    constructor(_supabase: SupabaseClient) {
+    constructor() {
 
         const supabaseUrl = this.SUPABASE_URL;
         const supabaseKey = this.SUPABASE_KEY;
@@ -144,7 +145,7 @@ class DatabaseService {
     async insertWaterSource(newSource: WaterSources): Promise<any> {
         try {
             const { data: insertedSource, error: sourceError } = await this.supabase
-                .from('water_sources')
+                .from('watersources')
                 .insert(newSource)
                 .select();
 
@@ -162,7 +163,7 @@ class DatabaseService {
     async updateWaterSource(sourceId: number, updatedSource: WaterSources): Promise<any> {
         try {
             const { data: updatedSourceData, error: updateError } = await this.supabase
-                .from('water_sources')
+                .from('watersources')
                 .update(updatedSource)
                 .eq('id', sourceId)
                 .select();
@@ -181,7 +182,7 @@ class DatabaseService {
     async deleteWaterSource(sourceId: number): Promise<any> {
         try {
             const { data: deletedSourceData, error: deleteError } = await this.supabase
-                .from('water_sources')
+                .from('watersources')
                 .delete()
                 .eq('id', sourceId)
                 .select();
@@ -307,6 +308,72 @@ class DatabaseService {
         } catch (error) {
             console.error('Error deleting user type:', error);
         }
+    }
+
+
+    async getUsers() {
+        const { data: users, error } = await this.supabase
+          .from('users')
+          .select('*');
+      
+        if (error) {
+          throw error;
+        }
+      
+        console.log('Users retrieved:', users);
+        return users; // Trust Supabase types
+    }
+ 
+    async getWaterSources() {
+      try {
+        const { data: waterSources, error } = await this.supabase
+          .from('watersources')
+          .select('*');
+    
+        if (error) {
+          throw error;
+        }
+        return waterSources;
+      } catch (error) {
+        console.error('Error retrieving water sources:', error);
+        return error;
+      }
+    }
+    
+    async getForms() {
+      try {
+        const { data: forms, error } = await this.supabase
+          .from('forms')
+          .select('*');
+    
+        if (error) {
+          throw error;
+        }
+    
+        console.log('Forms retrieved:', forms);
+        return forms;
+      } catch (error) {
+        console.error('Error retrieving forms:', error);
+        return error;
+      }
+    }
+    
+    async getUserTypes() {
+      try {
+        const { data: userTypes, error } = await this.supabase
+          .from('user_type')
+          .select('*');
+    
+        if (error) {
+          throw error;
+        }
+    
+        console.log('User types retrieved:', userTypes);
+        return userTypes;
+      } catch (error) {
+        console.error('Error retrieving user types:', error);
+        return error;
+      }
     }
 }
 

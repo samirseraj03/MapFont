@@ -2,9 +2,6 @@
 	"folders": [
 		{
 			"path": "."
-		},
-		{
-			"path": "../GiroGo_V1/giro-go"
 		}
 	],
 	"settings": {}

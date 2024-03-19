@@ -5,7 +5,11 @@
 
 export const environment = {
   production: false,
-  accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjcGVyemt1anltZHp2aGZ1cWdpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTA1MjEyNzMsImV4cCI6MjAyNjA5NzI3M30.ex2sMtJwYjE44ZqlZURnqFyOjpK5rXsgmHeNBs7sSG4'
+  accessToken: 'pk.eyJ1Ijoic2FtaXJzZXJhaiIsImEiOiJjbHQxbW12YzAxNDZzMmpwMjZ1ampwY2d5In0.9mdf_NFaObRYnB1yQSYwWA', // Optional, can also be set per map (accessToken input of mgl-map)
+
+  SUPABASE_URL: 'https://xcperzkujymdzvhfuqgi.supabase.co',
+  SUPABASE_KEY : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhjcGVyemt1anltZHp2aGZ1cWdpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcxMDUyMTI3MywiZXhwIjoyMDI2MDk3MjczfQ.2RdxCx7m604TuYVDoCkhfIk24WnUYNDPwovBXkHXyVA'
+
 
 };
 

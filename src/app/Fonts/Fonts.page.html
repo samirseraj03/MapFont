@@ -1,17 +1,40 @@
 <ion-header [translucent]="true">
+
+  <!-- mapbox import -->
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.1/mapbox-gl.js"></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.css' rel='stylesheet'/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <ion-toolbar>
     <ion-title>
       fonts
     </ion-title>
   </ion-toolbar>
+
+  <style>
+    #marker {
+        background-size: cover;
+        width: 50px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    </style>
+
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="false">
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">fonts</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <app-explore-container name="fonts"></app-explore-container>
+
+
+    <div id="Mapa-de-box" class="w-100 , h-100 m-0 position-relative z-index-dropdown" ></div>
+
+
+
 </ion-content>
