@@ -134,7 +134,7 @@ export class fontsPage {
     // create style
     el.style.cssText = `background-image: url(${photo});
     width: 50px;
-    height: 30px;
+    height: 50px;
     border-radius: 50%;
     background-size: cover;`;
     // create the marker
@@ -145,7 +145,7 @@ export class fontsPage {
 
     popup.on('open', () => {
       const popupContent = popup.getElement(); // Obtener el elemento del contenido del popup
-      popup.getElement().style.color = '#000000'; // Set text color to black
+      popup.getElement().style.color = '#000000'; // Set text color to black for text popoup
 
       const closeButton = popupContent.querySelector(
         '.mapboxgl-popup-close-button'

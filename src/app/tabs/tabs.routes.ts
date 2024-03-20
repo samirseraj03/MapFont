@@ -12,9 +12,9 @@ export const routes: Routes = [
           import('../Fonts/Fonts.page').then((m) => m.fontsPage),
       },
       {
-        path: 'tab2',
+        path: 'form',
         loadComponent: () =>
-          import('../tab2/tab2.page').then((m) => m.Tab2Page),
+          import('../Form/form.page').then((m) => m.FormPage),
       },
       {
         path: 'tab3',
