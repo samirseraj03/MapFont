@@ -14,7 +14,7 @@ export const routes: Routes = [
       {
         path: 'form',
         loadComponent: () =>
-          import('../Form/form.page').then((m) => m.FormPage),
+          import('../Form/FormUploadImage/form.page').then((m) => m.FormPage),
       },
       {
         path: 'tab3',

@@ -1,0 +1,83 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="GeolocationService.GoBack(NavCtrl)">
+        <ion-icon slot="icon-only" name="arrow-back" color="Success">
+        </ion-icon>
+        <!-- Icono del botón -->
+      </ion-button>
+    </ion-buttons>
+    <ion-title> Form </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Form</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-card class="">
+    <ion-card-header class="text-start">
+      <ion-card-title class="d-flex">
+        has visto una fuente y quieres aportar a Mapfont ?
+        <span class="ps-3 material-symbols-outlined"> humidity_high </span>
+      </ion-card-title>
+      <ion-card-subtitle>Puja la Foto del Font</ion-card-subtitle>
+    </ion-card-header>
+
+    <img
+      *ngIf="!img_ref"
+      class="ms-3 d-block w-50 h-50"
+      alt="Silhouette of mountains"
+      src="https://ionicframework.com/docs/img/demos/card-media.png"
+    />
+
+    <img
+      *ngIf="img_ref"
+      class="ms-3 d-block w-50"
+      alt="Silhouette of mountains"
+      [src]="img_ref"
+      style="max-height: 345px"
+    />
+    <input
+      id="fileItem"
+      type="file"
+      style="display: none"
+      (change)="handleFileInput($event)"
+    />
+
+    <div class="row w-50">
+    <!-- upload -->
+      <div class="col">
+        <ion-button
+          class="btn btn-secondary mt-4 ms-3 mb-0 w-100"
+          fill="clear"
+          (click)="SelectInput()"
+        >
+          Pujar Foto
+        </ion-button>
+      </div>
+      <!-- delete -->
+      <div class="col w-100">
+        <ion-button
+          class="btn btn-danger mt-4 ms-3 mb-0 w-100"
+          fill="clear"
+          (click)="Delete()"
+        >
+          eliminar Foto
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- siguente -->
+    <ion-button
+      class="btn btn-success mt-3 ms-3 mb-3 w-50"
+      fill="clear"
+      (click)="ImageSuccess()"
+    >
+      siguente
+    </ion-button>
+  </ion-card>
+</ion-content>

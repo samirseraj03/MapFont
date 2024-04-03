@@ -1,6 +1,13 @@
+
+import { LoadingController, AlertController, NavController } from "@ionic/angular";
+
+
 export default class GeolocationService {
 
-    constructor() {} 
+
+
+    constructor() {}
+
       
     latitude : number = 0 ;
     longitude : number = 0;   
@@ -23,10 +30,13 @@ export default class GeolocationService {
         reject("Geolocation not supported");
       }
     });
+
   }
 
-
-
+  // para volver atras
+  GoBack(navCtrl: NavController) {
+    navCtrl.back();
+  }
 
 
 

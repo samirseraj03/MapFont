@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FormPage } from './form.page';
+import { FormPage } from '../FormUploadImage/form.page';
 
 describe('FormPage', () => {
   let component: FormPage;

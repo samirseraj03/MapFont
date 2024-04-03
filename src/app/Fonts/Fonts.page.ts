@@ -10,6 +10,8 @@ import * as mapboxgl from 'mapbox-gl';
 import { environment } from 'src/environments/environment';
 import GeolocationService from '../Globals/Geolocation';
 import DatabaseService from '../Types/SupabaseService';
+import { LoadingController, AlertController, NavController } from "@ionic/angular";
+
 
 @Component({
   selector: 'app-fonts',
@@ -25,8 +27,14 @@ import DatabaseService from '../Types/SupabaseService';
   ],
 })
 export class fontsPage {
-  constructor() {}
+ 
+  constructor(private navCtrl: NavController) {
 
+    // if (this.navCtrl.get()?.extras.state) {
+    //   this.image = this.navCtrl.getCurrentNavigation()?.extras.state.image;
+    // }
+
+  }
   map: any;
   GeolocationService = new GeolocationService();
   Supabase = new DatabaseService();
@@ -143,6 +151,8 @@ export class fontsPage {
       .setPopup(popup)
       .addTo(this.map); // sets a popup on this marker
 
+    // esperamos que se crea el doom para cambiar los estilos ,
+    // no lo cambiamos antes porque queremos cambiar el cierre y el color.
     popup.on('open', () => {
       const popupContent = popup.getElement(); // Obtener el elemento del contenido del popup
       popup.getElement().style.color = '#000000'; // Set text color to black for text popoup
