@@ -1,0 +1,19 @@
+
+
+
+
+#MapaLocation {
+    position: absolute;
+    bottom: 5%;
+    left: 13%;
+    right: 1%;
+}
+
+.z-index-sticky {
+    z-index: 1; /* Establece un valor alto para asegurarse de que esté por encima de otros elementos */
+}
+
+.z-index-dropdown {
+    z-index: 9999; /* Establece un valor menor para que esté detrás del elemento .z-index-sticky */
+}
+

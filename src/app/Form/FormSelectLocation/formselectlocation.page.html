@@ -4,6 +4,10 @@
     href="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.css"
     rel="stylesheet"
   />
+
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js'></script>  
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css' type='text/css' />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <ion-toolbar>
@@ -19,14 +23,32 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <ion-card class="z-index-dropdown">
+    <ion-card-header class="text-start">
+      <ion-card-title class="d-flex">
+        Confirma el sitio de la fuente , es Correcto ?
+      </ion-card-title>
 
-  <ion-searchbar class=" " color="light" show-clear-button="always" clear-icon="trash-bin" value="Custom Clear Icon"></ion-searchbar>
 
+      <ion-searchbar
+        class="mt-5"
+        color="light"
+        show-clear-button="always"
+        value="Custom Clear Icon"
+        [debounce]="400"
+        (ionInput)="handleInput($event)"
+      ></ion-searchbar>
 
-  <div
-    class="mx-auto my-auto w-50 h-50"  >
+      <ion-list>
+        <ion-item *ngFor="let result of results">
+          <ion-label>{{ result }}</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-header>
+  </ion-card>
 
-    <div id="MapaLocation" class="w-100 h-100"></div>
+  <div class="maplocation mx-auto my-auto w-50 h-50 z-index-sticky">
+    <div id="MapaLocation" class="me-5 w-75 h-50"></div>
   </div>
 
   <ion-header collapse="condense">

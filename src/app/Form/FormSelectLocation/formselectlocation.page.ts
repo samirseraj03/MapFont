@@ -35,7 +35,7 @@ export class FormSelectLocationPage implements OnInit {
 
     this.getMap();
   }
-
+  // obtenemos el mapa
   getMap() {
     // desplegar el map
     this.map_location = new mapboxgl.Map({
@@ -54,8 +54,38 @@ export class FormSelectLocationPage implements OnInit {
       this.GeolocationService.latitude,
     ])
     .addTo(this.map_location);
-
-         
+        
   }
+
+  //obtenmos lo que hay dentro del bar para buscar
+  SerachBar(){
+    const searchbar = document.querySelector('ion-searchbar');
+    const list = document.querySelector('ion-list');
+
+
+  }
+
+  public data = [
+    'Amsterdam',
+    'Buenos Aires',
+    'Cairo',
+    'Geneva',
+    'Hong Kong',
+    // 'Istanbul',
+    // 'London',
+    // 'Madrid',
+    // 'New York',
+    // 'Panama City',
+  ];
+  public results = [...this.data];
+
+  // filtramos por input
+  handleInput(event : any) {
+    const query = event.target.value.toLowerCase();
+    this.results = this.data.filter((d) => d.toLowerCase().indexOf(query) > -1);
+  }
+
+
+
 
 }
