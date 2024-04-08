@@ -5,8 +5,12 @@
     rel="stylesheet"
   />
 
-  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js'></script>  
-  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css' type='text/css' />
+  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
+  <link
+    rel="stylesheet"
+    href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css"
+    type="text/css"
+  />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -25,23 +29,47 @@
 <ion-content [fullscreen]="true">
   <ion-card class="z-index-dropdown">
     <ion-card-header class="text-start">
-      <ion-card-title class="d-flex">
-        Confirma el sitio de la fuente , es Correcto ?
-      </ion-card-title>
+      <div class="row">
+        <div class="col">
+          <ion-card-title class="d-flex">
+            Confirma el sitio de la fuente , es Correcto ?
+          </ion-card-title>
+        </div>
+        <div class="col d-flex justify-content-end ">
+          <ion-button (click)="LocationSuccess()" [disabled]="LocationNotIsSelected" 
+          class="btn btn-success" fill="Clear">
+          Siguente
+        </ion-button>
+        </div>
+      </div>
 
 
-      <ion-searchbar
-        class="mt-5"
-        color="light"
-        show-clear-button="always"
-        value="Custom Clear Icon"
-        [debounce]="400"
-        (ionInput)="handleInput($event)"
-      ></ion-searchbar>
-
+      <div class="row">
+        <div class="col">
+          <ion-searchbar
+            class="mt-5"
+            color="light"
+            show-clear-button="always"
+            animated="true"
+            placeholder="SerachPlace"
+            value="Custom Clear Icon"
+            [debounce]="400"
+            [value]="ToSearch()"
+            (ionInput)="SerachPlace($event)"
+          ></ion-searchbar>
+        </div>
+        <div class="d-flex align-items-end justify-content-center me-2 col-1">
+          <ion-button (click)="SerachWithGps()" 
+          class="btn btn-danger " fill="clear">
+          <span class="material-symbols-outlined">
+          my_location
+          </span>
+        </ion-button>
+        </div>
+      </div>
       <ion-list>
-        <ion-item *ngFor="let result of results">
-          <ion-label>{{ result }}</ion-label>
+        <ion-item *ngFor="let result of data" (click)="OnSelect(result)">
+          <ion-label>{{ result['place_name'] }}</ion-label>
         </ion-item>
       </ion-list>
     </ion-card-header>

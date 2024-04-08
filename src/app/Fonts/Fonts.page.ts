@@ -7,7 +7,7 @@ import {
 } from '@ionic/angular/standalone';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 import * as mapboxgl from 'mapbox-gl';
-import { environment } from 'src/environments/environment';
+import { environment } from './../../environments/environment';
 import GeolocationService from '../Globals/Geolocation';
 import DatabaseService from '../Types/SupabaseService';
 import { LoadingController, AlertController, NavController } from "@ionic/angular";

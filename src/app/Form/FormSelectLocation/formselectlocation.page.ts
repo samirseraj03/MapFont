@@ -2,23 +2,31 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, NavController } from '@ionic/angular';
-import GeolocationService from 'src/app/Globals/Geolocation';
+import GeolocationService from '../../Globals/Geolocation';
 import { addIcons } from 'ionicons';
 import { arrowBack } from 'ionicons/icons';
-import { environment } from 'src/environments/environment';
+import { environment } from './../../../environments/environment';
 import * as mapboxgl from 'mapbox-gl';
 import { ExploreContainerComponent } from '../../explore-container/explore-container.component';
-
+import { AxiosResponse } from 'axios';
+import axios from 'axios';
 
 @Component({
   selector: 'app-form-select-location',
   templateUrl: './formselectlocation.page.html',
   styleUrls: ['./formselectlocation.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule , ExploreContainerComponent],
+  imports: [IonicModule, CommonModule, FormsModule, ExploreContainerComponent],
 })
 export class FormSelectLocationPage implements OnInit {
   map_location: any;
+  public data = [];
+  public results = [...this.data];
+  public query: any;
+  LastMarker: any;
+  LocationNotIsSelected : boolean = true;
+  lnglat : any = []
+
   constructor(public NavCtrl: NavController) {
     addIcons({ arrowBack });
   }
@@ -29,10 +37,6 @@ export class FormSelectLocationPage implements OnInit {
     // cogemos las primeras localizacion para poder desplegar el mapa y obtener posicion
     await this.GeolocationService.getGeolocation();
     // desplegamos el mapa de mapBox
-
-    console.log(    this.GeolocationService.longitude,    this.GeolocationService.latitude,
-      )
-
     this.getMap();
   }
   // obtenemos el mapa
@@ -48,41 +52,104 @@ export class FormSelectLocationPage implements OnInit {
       zoom: 15.15,
     });
     // añadir el marcador del usuario
-    new mapboxgl.Marker()
-    .setLngLat([
-      this.GeolocationService.longitude,
-      this.GeolocationService.latitude,
-    ])
-    .addTo(this.map_location);
-        
+    // this.LastMarker = new mapboxgl.Marker()
+    //   .setLngLat([
+    //     this.GeolocationService.longitude,
+    //     this.GeolocationService.latitude,
+    //   ])
+    //   .addTo(this.map_location);
+  }
+  // serach place with result
+  async SerachPlace(event: any) {
+    // Sugerir resultados
+    const suggestions: any = await this.suggestPlaces(this.handleInput(event));
+    this.data = suggestions;
+  }
+  // filtramos por input y lo convertimos a lowercase
+  handleInput(event: any) {
+    this.LocationNotIsSelected = true
+    this.query = event.target.value.toLowerCase();
+    return this.query;
+  }
+  ToSearch() {
+    return this.query;
+  }
+  // Función para sugerir resultados
+  async suggestPlaces(query: string): Promise<string[]> {
+    const response: AxiosResponse = await axios.get(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?access_token=${environment.accessToken}`
+    );
+    return response.data.features.map(
+      (feature: { place_name: any; id: any; center: any }) => ({
+        place_name: feature.place_name,
+        id: feature.id,
+        center: feature.center,
+      })
+    );
+  }
+  async OnSelect(event: any) {
+    this.query = event.place_name;
+    this.map_location.setCenter([event.center[0], event.center[1]]);
+
+    //Guardamos lnglat
+    this.lnglat = [event.center[0], event.center[1]]
+
+    // elimnamos el marcador anterior:
+    if (this.LastMarker) {
+      this.LastMarker.remove();
+    }
+    // añadir el marcador del usuario
+    this.LastMarker = new mapboxgl.Marker()
+      .setLngLat([event.center[0], event.center[1]])
+      .addTo(this.map_location);
+    // habiltamos el boton que esta confiramado la dirrecion
+    this.LocationNotIsSelected = false
+    this.data = [];
   }
 
-  //obtenmos lo que hay dentro del bar para buscar
-  SerachBar(){
-    const searchbar = document.querySelector('ion-searchbar');
-    const list = document.querySelector('ion-list');
+  // busacar por Gps La dirrecion
+  async SerachWithGps() {
+    this.data = [];
+    await this.GeolocationService.getGeolocation();
+    try {
+      const response: AxiosResponse = await axios.get(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${this.GeolocationService.longitude},${this.GeolocationService.latitude}.json?access_token=${environment.accessToken}`
+      );
+      // para manejar los datos
+      // para ponerlo en el buscador y el mapa
+      this.query = response.data.features[0].place_name;
+      this.map_location.setCenter([
+        this.GeolocationService.longitude,
+        this.GeolocationService.latitude,
+      ]);
 
+      //Guardamos lnglat
+      this.lnglat = [this.GeolocationService.longitude, this.GeolocationService.latitude]
 
+      // elimnamos el marcador anterior:
+      if (this.LastMarker) {
+        this.LastMarker.remove();
+      }
+      this.LastMarker = new mapboxgl.Marker()
+        .setLngLat([
+          this.GeolocationService.longitude,
+          this.GeolocationService.latitude,
+        ])
+        .addTo(this.map_location);
+    // habiltamos el boton que esta confiramado la dirrecion
+    this.LocationNotIsSelected = false
+    } catch (error) {
+      alert("ha sucedido un error , intentalo manualmente o mas tarde !")
+    }
   }
-
-  public data = [
-    'Amsterdam',
-    'Buenos Aires',
-    'Cairo',
-    'Geneva',
-    'Hong Kong',
-    // 'Istanbul',
-    // 'London',
-    // 'Madrid',
-    // 'New York',
-    // 'Panama City',
-  ];
-  public results = [...this.data];
-
-  // filtramos por input
-  handleInput(event : any) {
-    const query = event.target.value.toLowerCase();
-    this.results = this.data.filter((d) => d.toLowerCase().indexOf(query) > -1);
+  // pasamos a la siguente para completar el forumulario
+  LocationSuccess() {
+      this.NavCtrl.navigateForward( '/FormInformation', {
+        state: {
+          Adress: this.query,
+          lnglat : this.lnglat,
+        },
+    });
   }
 
 
