@@ -5,6 +5,48 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+
+  <div class=" d-flex justify-content-center" >
+
+      <span class="material-symbols-outlined icon position-absolute text-success">
+        verified
+        </span>
+
+        <ion-text color="Success" class="position-absolute textBottom">
+          <h4 class="text-success">Se ha enviado el Formulario Correctamente!</h4>
+        </ion-text>
+
+      <div class="row buttons position-absolute ">
+        <div class="col w-25">
+    
+          <ion-button (click)="GoToMap()" 
+              class="btn btn-success w-100" fill="clear">
+              Ir A la mapa de fuentes
+            </ion-button>
+    
+        </div>
+    
+        <div class="col ">
+
+          <ion-button (click)="GoToMap()" 
+          class="btn btn-success w-100 " fill="clear">
+          Ver El Formulario
+        </ion-button>
+
+        </div>
+    
+    
+    
+      </div>
+  </div>
+
+ 
+
+
+
+
+
+
   <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">PageSuccess</ion-title>

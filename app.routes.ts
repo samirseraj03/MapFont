@@ -14,7 +14,7 @@ export const routes: Routes = [
     loadComponent: () => import('./src/app/Form/FormInsertInformation/form-insert-infromation.page').then( m => m.FormInsertInfromationPage)
   },
   {
-    path: 'page-success',
-    loadComponent: () => import('./src/app/page-success/page-success.page').then( m => m.PageSuccessPage)
+    path: 'Success',
+    loadComponent: () => import('./src/app/Globals/page-success/page-success.page').then( m => m.PageSuccessPage)
   },
 ];

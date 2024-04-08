@@ -5,11 +5,12 @@ describe('FormInsertInfromationPage', () => {
   let component: FormInsertInfromationPage;
   let fixture: ComponentFixture<FormInsertInfromationPage>;
 
-  beforeEach(async(() => {
+  beforeEach(async () => {
     fixture = TestBed.createComponent(FormInsertInfromationPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
+
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -1,0 +1,30 @@
+.icon{
+    bottom: 50%;
+    font-size: 185px;
+
+}
+
+.buttons {
+    bottom: 35%;
+}
+
+.textBottom {
+    bottom: 42%;
+}
+
+
+@keyframes bounce {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  .icon {
+    animation: bounce 1s infinite; /* Aplica la animación */
+  }

@@ -33,6 +33,7 @@ export class FormInsertInfromationPage  {
       this.formData = this.myForm.value;
       console.log(this.formData); // Aquí puedes hacer lo que quieras con los datos recolectados
       this.ToDataBase();
+      this.GoSuccess();
     }
     else {
       alert("completa los ultimos datos para continuar")
@@ -41,6 +42,14 @@ export class FormInsertInfromationPage  {
 
   ToDataBase(){
     
+  }
+  // para mostarar al usuario pagina completada y ir al inicio
+  GoSuccess(){
+    this.NavCtrl.navigateForward( '/Success', {
+      state: {
+        Success: true,
+      },
+    });
   }
 
 

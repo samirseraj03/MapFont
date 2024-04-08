@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule , NavController} from '@ionic/angular';
 
 @Component({
   selector: 'app-page-success',
@@ -12,9 +12,19 @@ import { IonicModule } from '@ionic/angular';
 })
 export class PageSuccessPage implements OnInit {
 
-  constructor() { }
+  constructor( public NavCtrl : NavController) { }
 
   ngOnInit() {
+  }
+
+  GoToMap(){
+
+    this.NavCtrl.navigateRoot( '/', {
+      state: {
+        Success: true,
+      },
+    });
+
   }
 
 }
