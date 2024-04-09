@@ -17,4 +17,9 @@ export const routes: Routes = [
     path: 'Success',
     loadComponent: () => import('./src/app/Globals/page-success/page-success.page').then( m => m.PageSuccessPage)
   },
+  {
+    path: 'configuration-tab',
+    loadComponent: () => import('./src/app/ConfigurationPage/configuration-tab/configuration-tab.page').then( m => m.ConfigurationTabPage)
+  },
+
 ];
