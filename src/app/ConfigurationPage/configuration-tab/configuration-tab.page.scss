@@ -7,3 +7,9 @@ ion-menu::part(backdrop) {
   
     box-shadow: 4px 0px 16px rgba(255, 0, 255, 0.18);
   }
+
+
+  .ion-item {
+    --inner-padding-top: 10px;
+    --inner-padding-bottom: 10px;
+  }

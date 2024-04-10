@@ -1,0 +1,21 @@
+ver estados de los forumularios
+	filtramos por nombre/fecha/aprobado
+
+Configuracion usuario
+	Photo
+	nombre
+	lenguaje
+	username
+	email
+	
+
+Seguridad
+	contrasenya
+
+Donaciones
+	paypal
+
+fuentes Guardados
+	mostar ubicaciones de fuentes 	guardados
+	
+

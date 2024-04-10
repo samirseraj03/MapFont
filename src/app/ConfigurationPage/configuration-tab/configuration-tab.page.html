@@ -1,8 +1,27 @@
-<ion-app>
-  <ion-menu contentId="main-content">
-      <ion-toolbar>
+  <ion-menu contentId="main-content" side="start" menuId="custom-menu">
+    <ion-header>
+      <ion-toolbar color="tertiary">
         <ion-title>Menu Content</ion-title>
       </ion-toolbar>
-    <ion-content class="ion-padding">This is the menu content.</ion-content>
+    </ion-header>
+    <ion-content>
+      <ion-list lines="none" class="ion-margin ion-padding ion-justify-content-between">
+        <ion-item (click)="navigateTo('formularios')" class="ion-no-margin">
+          <ion-button expand="full" fill="clear">Formularios</ion-button>
+        </ion-item>
+        <ion-item (click)="navigateTo('configuration')" class="ion-no-margin">
+          <ion-button expand="full" fill="clear">Configuración</ion-button>
+        </ion-item>
+        <ion-item (click)="navigateTo('seguridad')" class="ion-no-margin">
+          <ion-button expand="full" fill="clear">Seguridad</ion-button>
+        </ion-item>
+        <ion-item (click)="navigateTo('donaciones')" class="ion-no-margin">
+          <ion-button expand="full" fill="clear">Donaciones</ion-button>
+        </ion-item>
+        <ion-item (click)="navigateTo('guardados')" class="ion-no-margin">
+          <ion-button expand="full" fill="clear">Guardados</ion-button>
+        </ion-item>
+      </ion-list>
+    </ion-content>
   </ion-menu>
-</ion-app>
+
