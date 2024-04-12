@@ -1,0 +1,108 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title> Menu </ion-title>
+    <div class="ion-page" id="main-content">
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-menu-button></ion-menu-button>
+          </ion-buttons>
+          <ion-title>Seguridad</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        Tap the button in the toolbar to open the menu.
+      </ion-content>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Contenido de la página -->
+  <ion-card class="z-index-dropdown">
+    <ion-card-header class="text-start">
+      <div class="row">
+        <div class="col">
+          <ion-card-title class="d-flex">
+            Seguridad
+          </ion-card-title>
+          <ion-card-subtitle>
+
+          Cambia Tu contrasenya para mayor proteccion a tu cuenta de MapFont
+
+
+          </ion-card-subtitle>
+        </div>
+        <div class="col d-flex justify-content-end">
+          <ion-button (click)="Update($event)" class="btn btn-success" fill="Clear">
+            Guardar
+          </ion-button>
+        </div>
+      </div>
+
+      <form #myForm="ngForm">
+        <!-- div row col Grande  -->
+        <div class="row">
+          <div class="col d-flex justify-content-center align-items-center">
+            <div class="row">
+              <div
+                class="col-12 justify-content-center align-items-end"
+                style="height: 200px"
+              >
+
+                <span class="material-symbols-outlined "style=" font-size: 200px;">
+                  lock
+                </span>
+                
+              </div>
+              <!-- cerrar col grande  -->
+            </div>
+          </div>
+
+          <div class="col">
+            <ion-list>
+              <div class="mb-3">
+                <ion-label>Escribe tu antigua contrasenya</ion-label>
+                <ion-input
+                  placeholder="contrasenya"
+                  name="OldPassword"
+                  [(ngModel)]="formData.OldPassword"
+                  required
+                ></ion-input>
+              </div>
+
+              <div class="mb-3">
+                <ion-label>Escribe tu nueva contrasenya</ion-label>
+                <ion-input
+                  placeholder="contrasenya"
+                  name="NewPassword"
+                  [(ngModel)]="formData.NewPassword"
+                  required
+                ></ion-input>
+              </div>
+
+              <div class="mb-2">
+                <ion-label>Confirma nueva contrasenya</ion-label>
+                <ion-input
+                  placeholder="contrasenya"
+                  name="NewConfirmPassword"
+                  [(ngModel)]="formData.NewConfirmPassword"
+                  required
+                ></ion-input>
+              </div>
+
+            </ion-list>
+          </div>
+        </div>
+      </form>
+    </ion-card-header>
+  </ion-card>
+
+  <app-configuration-tab></app-configuration-tab>
+
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Tab 3</ion-title>
+    </ion-toolbar>
+  </ion-header>
+</ion-content>

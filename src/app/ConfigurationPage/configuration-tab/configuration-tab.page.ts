@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule , NavController } from '@ionic/angular';
@@ -6,14 +6,17 @@ import { arrowBack } from 'ionicons/icons';
 import GeolocationService from 'src/app/Globals/Geolocation';
 import { addIcons } from 'ionicons';
 
+
+
 @Component({
   selector: 'app-configuration-tab',
   templateUrl: './configuration-tab.page.html',
   styleUrls: ['./configuration-tab.page.scss'],
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule]
+  
 })
-export class ConfigurationTabPage implements OnInit {
+export class ConfigurationTabPage {
 
   
   constructor(public NavCtrl: NavController) {
@@ -21,30 +24,34 @@ export class ConfigurationTabPage implements OnInit {
   }
   GeolocationService = new GeolocationService();
 
-  ngOnInit() {
-  }
-
-
   // para mostarar al usuario pagina completada y ir al inicio
   navigateTo(event: any){
     switch (event){
       case 'formularios':
-        this.NavCtrl.navigateForward( '/formularios');
+        this.NavCtrl.navigateRoot( '/lookforms');
         break;
       case 'configuracion':
-        this.NavCtrl.navigateForward( '/configuration');
+        this.NavCtrl.navigateRoot( '/tabs/configuration');
+
+
         break;
       case 'seguridad':
-        this.NavCtrl.navigateForward( '/seguridad');
+        this.NavCtrl.navigateRoot( '/security');
+
+
         break;
       case 'donaciones':
-        this.NavCtrl.navigateForward( '/donaciones');
+        this.NavCtrl.navigateRoot( '/donation');
+
+
         break;
       case 'guardados':
-        this.NavCtrl.navigateForward( '/guardados');
+        this.NavCtrl.navigateRoot( '/guardados');
+
         break
       default:
-        this.NavCtrl.navigateForward( '/configuracion');
+        this.NavCtrl.navigateRoot( '/configuration');
+
         break;
     }
   }

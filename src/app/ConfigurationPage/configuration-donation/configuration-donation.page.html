@@ -1,0 +1,90 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title> Menu </ion-title>
+    <div class="ion-page" id="main-content">
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-menu-button></ion-menu-button>
+          </ion-buttons>
+          <ion-title>Menu</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        Tap the button in the toolbar to open the menu.
+      </ion-content>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Contenido de la página -->
+  <ion-card class="z-index-dropdown">
+    <ion-card-header class="text-start">
+      <div class="row">
+        <div class="col">
+          <ion-card-title class="d-flex">
+            Seguridad
+          </ion-card-title>
+        </div>
+        <div class="col d-flex justify-content-end">
+          <ion-button (click)="Update($event)" class="btn btn-success" fill="Clear">
+            Siguente
+          </ion-button>
+        </div>
+      </div>
+
+      <form #myForm="ngForm">
+        <!-- div row col Grande  -->
+        <div class="row">
+          <div class="col d-flex justify-content-center align-items-center">
+            <div class="row">
+              <div
+                class="col-12 justify-content-center align-items-end"
+                style="height: 200px"
+              >
+                <img
+                  *ngIf="!img_ref_config"
+                  class="mt-3 w-100 h-50"
+                  alt="Silhouette of mountains"
+                  src="https://freepngimg.com/thumb/paypal/2-2-paypal-logo-transparent-png.png"
+                  style="
+                    border-radius: 50%;
+                    max-width: 200px;
+                    max-height: 200px;
+                  "
+                />
+                
+              </div>
+              <!-- cerrar col grande  -->
+            </div>
+          </div>
+
+          <div class="col-7">
+              <div class="mb-3 mt-5 d-flex flex-column  align-items-center">
+                <ion-title>Ayudanos a mantener nuestros servidors !</ion-title>
+                <img
+                *ngIf="!img_ref_config"
+                class="mt-3 w-100 h-50 "
+                alt="qrPaypal"
+                src="assets/icon/qrcode.png"
+                style="
+                  max-width: 300px;
+                  max-height: 300px;
+                "
+              />
+              </div>
+          </div>
+        </div>
+      </form>
+    </ion-card-header>
+  </ion-card>
+
+  <app-configuration-tab></app-configuration-tab>
+
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Tab 3</ion-title>
+    </ion-toolbar>
+  </ion-header>
+</ion-content>

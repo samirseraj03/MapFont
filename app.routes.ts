@@ -21,5 +21,20 @@ export const routes: Routes = [
     path: 'configuration-tab',
     loadComponent: () => import('./src/app/ConfigurationPage/configuration-tab/configuration-tab.page').then( m => m.ConfigurationTabPage)
   },
+  {
+    path: 'security',
+    loadComponent: () => import('./src/app/ConfigurationPage/ConfigurationSecurity/configuration-security.page').then( m => m.ConfigurationSecurityPage)
+  },
+  {
+    path: 'donation',
+    loadComponent: () => import('./src/app/ConfigurationPage/configuration-donation/configuration-donation.page').then( m => m.ConfigurationDonationPage)
+  },
+  {
+    path: 'lookforms',
+    loadComponent: () => import('./src/app/ConfigurationPage/configuration-look-forms/configuration-look-forms.page').then( m => m.ConfigurationLookFormsPage)
+  },
+
+
+
 
 ];
