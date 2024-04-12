@@ -5,11 +5,11 @@ describe('ConfigurationSecurityPage', () => {
   let component: ConfigurationSecurityPage;
   let fixture: ComponentFixture<ConfigurationSecurityPage>;
 
-  beforeEach(async(() => {
+  beforeEach(async() => {
     fixture = TestBed.createComponent(ConfigurationSecurityPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  }));
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

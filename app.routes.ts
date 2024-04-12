@@ -33,6 +33,11 @@ export const routes: Routes = [
     path: 'lookforms',
     loadComponent: () => import('./src/app/ConfigurationPage/configuration-look-forms/configuration-look-forms.page').then( m => m.ConfigurationLookFormsPage)
   },
+  {
+    path: 'favorites',
+    loadComponent: () => import('./src/app/ConfigurationPage/configuration-fonts-saved/configuration-fonts-saved.page').then( m => m.ConfigurationFontsSavedPage)
+  },
+
 
 
 

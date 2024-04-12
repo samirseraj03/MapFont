@@ -28,35 +28,37 @@
     <ion-card-header class="text-start">
   
   <ion-card-title class="d-flex mb-5">
-    Tus formularios aportados a MapFont:
+    Tus Fuentes Favoritos:
   </ion-card-title>
 
    <!--body de la lista  -->
   <ion-list>
     <ion-item>
-          <ion-label>id:</ion-label>
           <ion-label>Nombre:</ion-label>
-          <ion-label >Estado:</ion-label>
+          <ion-label>dirección</ion-label>
+          <ion-label>Ultima Visita:</ion-label>
           <ion-label></ion-label>
+
     </ion-item>
   </ion-list>
 <!-- elementos de la lista -->
     <ion-list>
       <ion-item *ngFor="let result of data" (click)="OnSelect(result)">
         <ion-label>{{ result['id'] }}</ion-label>
-        <ion-label>{{ result['nombre'] }}</ion-label>
-        
-        <ion-label *ngIf="result.aprobacion == true" class="text-success">Aprobado</ion-label>
-        <ion-label *ngIf="result.aprobacion == false" class="text-danger">Rechazado</ion-label>
-
-        <ion-label> 
-          <ion-buttons class="d-flex justify-content-end">
-            <ion-button>
-              <ion-icon name="arrow-forward">
-            </ion-icon>
+        <ion-label>{{ result['nombre'] }}</ion-label>   
+        <ion-label >{{ result['nombre'] }}</ion-label>
+      <ion-label> 
+        <ion-buttons class="d-flex justify-content-end">
+          <ion-button>
+            <ion-icon name="navigate"></ion-icon>
           </ion-button>
-        </ion-buttons>
-      </ion-label>
+
+          <ion-button>
+            <ion-icon name="heart-dislike"></ion-icon>
+          </ion-button>
+      </ion-buttons>
+    </ion-label>
+
       </ion-item>
     </ion-list>
 </ion-card-header>

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule , NavController } from '@ionic/angular';
-import { arrowBack } from 'ionicons/icons';
+import { arrowBack, arrowForward } from 'ionicons/icons';
 import GeolocationService from 'src/app/Globals/Geolocation';
 import { addIcons } from 'ionicons';
 
@@ -20,7 +20,7 @@ export class ConfigurationTabPage {
 
   
   constructor(public NavCtrl: NavController) {
-    addIcons({ arrowBack });
+    addIcons({ arrowBack , arrowForward });
   }
   GeolocationService = new GeolocationService();
 
@@ -46,7 +46,7 @@ export class ConfigurationTabPage {
 
         break;
       case 'guardados':
-        this.NavCtrl.navigateRoot( '/guardados');
+        this.NavCtrl.navigateRoot( '/favorites');
 
         break
       default:
