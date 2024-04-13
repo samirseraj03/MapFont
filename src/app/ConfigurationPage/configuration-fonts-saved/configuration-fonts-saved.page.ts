@@ -89,6 +89,9 @@ export class ConfigurationFontsSavedPage implements OnInit {
     }
   ];
 
+  public results = [...this.data];
+
+
   constructor(public NavCtrl: NavController) {
     addIcons({ arrowBack , navigate , heartDislike });
   }
@@ -100,6 +103,16 @@ export class ConfigurationFontsSavedPage implements OnInit {
 
   OnSelect(result : any){
 
+  }
+
+  ToSearch(){
+
+  }
+
+  SerachElement(event : any  ){
+    console.log(event.target.value)
+    const query = event.target.value.toLowerCase();
+    this.results = this.data.filter((d) => d.toLowerCase().indexOf(query) > -1);
   }
 
 }
