@@ -109,10 +109,16 @@ export class ConfigurationFontsSavedPage implements OnInit {
 
   }
 
-  SerachElement(event : any  ){
-    console.log(event.target.value)
-    const query = event.target.value.toLowerCase();
-    this.results = this.data.filter((d) => d.toLowerCase().indexOf(query) > -1);
+  SearchElement(event: any) {
+    const query = event.target.value.toLocaleLowerCase();
+    this.results = this.data.filter(item => {
+      const values = Object.values(item).map(value => {
+        if (typeof value === 'string') { // Verificación de tipo
+          return value.toLocaleLowerCase();
+        }
+        return ''; // O cualquier otro valor predeterminado para tipos no string
+      });
+      return values.some(value => value.includes(query));
+    });
   }
-
 }
