@@ -99,8 +99,33 @@ export class ConfigurationLookFormsPage implements OnInit {
   }
 
 
+  ToSearch(){
+
+  }
+
   OnSelect(result : any){
 
   }
 
+  public results = [...this.data];
+
+
+  // para buscar de la lista que estara creada
+  SearchElement(event: any) {
+    const query = event.target.value.trim().toLocaleLowerCase();
+    this.results = this.data.filter(item => {
+      const values = Object.values(item).map(value => {
+        if (typeof value === 'string') {
+          return value.trim().toLocaleLowerCase();
+        } else if (typeof value === 'number') {
+          return value.toString(); // Convertir el número a string
+        } else if (typeof value === 'boolean') {
+          return value ? 'aprobado' : 'rechazado'; // Convertir booleano a texto
+        }
+        return ''; // Otros tipos de datos
+      });
+      return values.some(value => value.includes(query));
+    });
+  }
+  
 }

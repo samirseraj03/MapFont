@@ -31,6 +31,19 @@
     Tus formularios aportados a MapFont:
   </ion-card-title>
 
+
+  <ion-searchbar
+  class="mb-5"
+  color="light"
+  show-clear-button="always"
+  animated="true"
+  placeholder="SerachPlace"
+  value="Custom Clear Icon"
+  [debounce]="400"
+  [value]="ToSearch()"
+  (ionInput)="SearchElement($event)"
+></ion-searchbar>
+
    <!--body de la lista  -->
   <ion-list>
     <ion-item>
@@ -42,7 +55,7 @@
   </ion-list>
 <!-- elementos de la lista -->
     <ion-list>
-      <ion-item *ngFor="let result of data" (click)="OnSelect(result)">
+      <ion-item *ngFor="let result of results" (click)="OnSelect(result)">
         <ion-label>{{ result['id'] }}</ion-label>
         <ion-label>{{ result['nombre'] }}</ion-label>
         
