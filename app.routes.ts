@@ -25,6 +25,15 @@ export const routes: Routes = [
     path: 'viewForm',
     loadComponent: () => import('./src/app/Form/view-form/view-form.page').then( m => m.ViewFormPage)
   },
+  {
+    path: 'login',
+    loadComponent: () => import('./src/app/authentication/login/login.page').then( m => m.LoginPage)
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./src/app/authentication/register/register.page').then( m => m.RegisterPage)
+  },
+
 
 
   // {
