@@ -18,25 +18,35 @@ export const routes: Routes = [
     loadComponent: () => import('./src/app/Globals/page-success/page-success.page').then( m => m.PageSuccessPage)
   },
   {
-    path: 'configuration-tab',
-    loadComponent: () => import('./src/app/ConfigurationPage/configuration-tab/configuration-tab.page').then( m => m.ConfigurationTabPage)
+    path: 'confirmation',
+    loadComponent: () => import('./src/app/Form/confirmation-form/confirmation-form.page').then( m => m.ConfirmationFormPage)
   },
   {
-    path: 'security',
-    loadComponent: () => import('./src/app/ConfigurationPage/ConfigurationSecurity/configuration-security.page').then( m => m.ConfigurationSecurityPage)
+    path: 'viewForm',
+    loadComponent: () => import('./src/app/Form/view-form/view-form.page').then( m => m.ViewFormPage)
   },
-  {
-    path: 'donation',
-    loadComponent: () => import('./src/app/ConfigurationPage/configuration-donation/configuration-donation.page').then( m => m.ConfigurationDonationPage)
-  },
-  {
-    path: 'lookforms',
-    loadComponent: () => import('./src/app/ConfigurationPage/configuration-look-forms/configuration-look-forms.page').then( m => m.ConfigurationLookFormsPage)
-  },
-  {
-    path: 'favorites',
-    loadComponent: () => import('./src/app/ConfigurationPage/configuration-fonts-saved/configuration-fonts-saved.page').then( m => m.ConfigurationFontsSavedPage)
-  },
+
+
+  // {
+  //   path: 'configuration-tab',
+  //   loadComponent: () => import('./src/app/ConfigurationPage/configuration-tab/configuration-tab.page').then( m => m.ConfigurationTabPage)
+  // },
+  // {
+  //   path: 'security',
+  //   loadComponent: () => import('./src/app/ConfigurationPage/ConfigurationSecurity/configuration-security.page').then( m => m.ConfigurationSecurityPage)
+  // },
+  // {
+  //   path: 'donation',
+  //   loadComponent: () => import('./src/app/ConfigurationPage/configuration-donation/configuration-donation.page').then( m => m.ConfigurationDonationPage)
+  // },
+  // {
+  //   path: 'lookforms',
+  //   loadComponent: () => import('./src/app/ConfigurationPage/configuration-look-forms/configuration-look-forms.page').then( m => m.ConfigurationLookFormsPage)
+  // },
+  // {
+  //   path: 'favorites',
+  //   loadComponent: () => import('./src/app/ConfigurationPage/configuration-fonts-saved/configuration-fonts-saved.page').then( m => m.ConfigurationFontsSavedPage)
+  // },
 
 
 

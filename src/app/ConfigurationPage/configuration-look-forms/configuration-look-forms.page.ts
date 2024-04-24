@@ -6,6 +6,7 @@ import { ConfigurationTabPage } from '../configuration-tab/configuration-tab.pag
 import { arrowBack } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import GeolocationService from 'src/app/Globals/Geolocation';
+import { TabsPage } from 'src/app/tabs/tabs.page';
 
 
 @Component({
@@ -13,7 +14,7 @@ import GeolocationService from 'src/app/Globals/Geolocation';
   templateUrl: './configuration-look-forms.page.html',
   styleUrls: ['./configuration-look-forms.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule ,ConfigurationTabPage]
+  imports: [IonicModule, CommonModule, FormsModule ,ConfigurationTabPage ,TabsPage]
 })
 export class ConfigurationLookFormsPage implements OnInit {
 

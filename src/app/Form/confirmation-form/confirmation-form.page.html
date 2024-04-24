@@ -1,0 +1,76 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>ConfirmationForm</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="GeolocationService.GoBack(NavCtrl)">
+        <ion-icon slot="icon-only" name="arrow-back" color="Success">
+        </ion-icon>
+        <!-- Icono del botón -->
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <ion-card class="z-index-dropdown">
+    <ion-card-header class="text-start">
+  
+  <ion-card-title class="d-flex mb-3">
+    Formularios para Confirmar:
+  </ion-card-title>
+
+
+   <!--body de la lista  -->
+  <ion-list>
+    <ion-item>
+          <ion-label>Usuario:</ion-label>
+          <ion-label>Nombre:</ion-label>
+          <ion-label>Creado:</ion-label>
+          <ion-label>lng:</ion-label>
+          <ion-label>Lat:</ion-label>
+          <ion-label>dirrecion:</ion-label>
+
+          <ion-label></ion-label>
+
+    </ion-item>
+  </ion-list>
+<!-- elementos de la lista -->
+    <ion-list>
+      <ion-item *ngFor="let result of results" (click)="OnSelect(result)">
+        <ion-label>{{ result['username'] }}</ion-label>
+        <ion-label>{{ result['watersourcesname'] }}</ion-label>   
+        <ion-label > {{ this.timestampToDateString(result['created_at'])   }}</ion-label>
+        <ion-label >{{ result['location'].latitude }}/</ion-label>
+        <ion-label>{{result['location'].longitude}}</ion-label>
+        <ion-label >{{ result['address'] }}</ion-label>
+      
+      <ion-label> 
+        <ion-buttons class="d-flex justify-content-end">
+          <ion-button>
+            <ion-icon  name="navigate"></ion-icon>
+          </ion-button>
+
+          <ion-button>
+            <ion-icon name="checkmark"></ion-icon>
+          </ion-button>
+
+          <ion-button (click)="ViewForm()">
+            <ion-icon  name="chevron-forward"></ion-icon>
+         </ion-button>
+
+      </ion-buttons>
+    </ion-label>
+
+      </ion-item>
+    </ion-list>
+</ion-card-header>
+</ion-card>
+
+
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">ConfirmationForm</ion-title>
+    </ion-toolbar>
+  </ion-header>
+</ion-content>

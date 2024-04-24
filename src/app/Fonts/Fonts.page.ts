@@ -1,16 +1,17 @@
-import { Component } from '@angular/core';
+import { Component , ViewChild } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
   IonTitle,
-  IonContent,
-} from '@ionic/angular/standalone';
+  IonContent, IonButton, IonInput, IonItem, IonButtons, IonModal } from '@ionic/angular/standalone';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 import * as mapboxgl from 'mapbox-gl';
 import { environment } from './../../environments/environment';
 import GeolocationService from '../Globals/Geolocation';
 import DatabaseService from '../Types/SupabaseService';
 import { LoadingController, AlertController, NavController } from "@ionic/angular";
+import { OverlayEventDetail } from '@ionic/core/components';
+
 
 
 @Component({
@@ -18,7 +19,7 @@ import { LoadingController, AlertController, NavController } from "@ionic/angula
   templateUrl: 'fonts.page.html',
   styleUrls: ['fonts.page.scss'],
   standalone: true,
-  imports: [
+  imports: [IonModal, IonButtons, IonItem, IonInput, IonButton, 
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -27,8 +28,11 @@ import { LoadingController, AlertController, NavController } from "@ionic/angula
   ],
 })
 export class fontsPage {
+
+  @ViewChild(IonModal) modal: IonModal | undefined;
+
  
-  constructor(private navCtrl: NavController) {
+  constructor(private navCtrl: NavController ) {
 
     // if (this.navCtrl.get()?.extras.state) {
     //   this.image = this.navCtrl.getCurrentNavigation()?.extras.state.image;
@@ -173,4 +177,27 @@ export class fontsPage {
   isHTMLElement(element: Element): element is HTMLElement {
     return element instanceof HTMLElement;
   }
-}
+
+
+  cancel(){
+    if (this.modal)
+      this.modal.dismiss(null, 'cancel');
+
+  }
+
+  confirm(){
+    if (this.modal)
+    this.modal.dismiss("thisname", 'confirm');
+  }
+
+  message : any;
+  onWillDismiss(event : any){
+
+    const ev = event as CustomEvent<OverlayEventDetail<string>>;
+    if (ev.detail.role === 'confirm') {
+      this.message = `Hello, ${ev.detail.data}!`;
+    }
+  }
+
+  }
+
