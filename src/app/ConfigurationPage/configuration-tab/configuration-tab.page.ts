@@ -22,6 +22,12 @@ export class ConfigurationTabPage {
   constructor(public NavCtrl: NavController , private menuCtrl: MenuController) {
     addIcons({ arrowBack , arrowForward });
   }
+
+  ionViewWillEnter() {
+    // Mostrar el menú al entrar en la página de los tabs
+    this.menuCtrl.enable(true, 'main-content');
+  }
+
   GeolocationService = new GeolocationService();
 
   // para mostarar al usuario pagina completada y ir al inicio

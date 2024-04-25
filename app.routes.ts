@@ -33,6 +33,7 @@ export const routes: Routes = [
     path: 'register',
     loadComponent: () => import('./src/app/authentication/register/register.page').then( m => m.RegisterPage)
   },
+  
 
 
 

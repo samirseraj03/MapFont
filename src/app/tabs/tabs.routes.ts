@@ -51,6 +51,7 @@ export const routes: Routes = [
       //   loadComponent: () => import('../Form/confirmation-form/confirmation-form.page').then( m => m.ConfirmationFormPage)
       // },
       
+      
       {
         path: '',
         redirectTo: '/tabs/fonts',
