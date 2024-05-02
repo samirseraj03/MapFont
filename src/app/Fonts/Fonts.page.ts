@@ -47,6 +47,7 @@ export class fontsPage {
     // importamos el accessTokenMapbox para desplegar el mapa
     (mapboxgl as any).accessToken = environment.accessToken;
     // cogemos las primeras localizacion para poder desplegar el mapa y obtener posicion
+   // await this.GeolocationService.getGeolocationCapacitor();
     await this.GeolocationService.getGeolocation();
     // desplegamos el mapa de mapBox
     this.getMap();
@@ -178,7 +179,7 @@ export class fontsPage {
     return element instanceof HTMLElement;
   }
 
-
+  // para abir el popup
   cancel(){
     if (this.modal)
       this.modal.dismiss(null, 'cancel');

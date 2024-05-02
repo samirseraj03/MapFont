@@ -1,12 +1,5 @@
-
-
-
-
-
-
 <ion-tabs>
-  
-  <app-configuration-tab   ></app-configuration-tab>
+  <app-configuration-tab></app-configuration-tab>
 
   <ion-tab-bar slot="bottom">
     <ion-tab-button tab="fonts" href="/tabs/fonts">
@@ -14,20 +7,33 @@
       <ion-label>Fuentes</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="form" href="/tabs/form">
-      <ion-icon aria-hidden="true" name="push"></ion-icon>
-      <ion-label>Nueva Fuente</ion-label>
-    </ion-tab-button>
+    <ng-container>
+      <ion-tab-button
+        *ngIf="isLogin"
+        tab="form"
+        href="/tabs/form"
+      >
+        <ion-icon aria-hidden="true" name="push"></ion-icon>
+        <ion-label>Nueva Fuente</ion-label>
+      </ion-tab-button>
 
-    <ion-tab-button tab="configuration" href="/tabs/configuration">
-      <ion-icon aria-hidden="true" name="person"></ion-icon>
-      <ion-label>Configuracion</ion-label>
-    </ion-tab-button>
+      <ion-tab-button *ngIf="!isLogin" href="/tabs/login">
+        <ion-icon aria-hidden="true" name="push"></ion-icon>
+        <ion-label>Nueva Fuente login</ion-label>
+      </ion-tab-button>
+    </ng-container>
+
+    <ng-container>
+      <ion-tab-button *ngIf="isLogin" tab="configuration" href="/tabs/configuration">
+        <ion-icon aria-hidden="true" name="person"></ion-icon>
+        <ion-label>Configuracion</ion-label>
+      </ion-tab-button>
+
+      <ion-tab-button *ngIf="!isLogin" href="/tabs/login">
+        <ion-icon aria-hidden="true" name="push"></ion-icon>
+        <ion-label>Nueva Fuente login</ion-label>
+      </ion-tab-button>
+
+    </ng-container>
   </ion-tab-bar>
-
 </ion-tabs>
-
-
-
-
-

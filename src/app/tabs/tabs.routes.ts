@@ -50,6 +50,11 @@ export const routes: Routes = [
       //   path: 'confirmation',
       //   loadComponent: () => import('../Form/confirmation-form/confirmation-form.page').then( m => m.ConfirmationFormPage)
       // },
+
+      {
+        path: 'login',
+        loadComponent: () => import('../authentication/login/login.page').then( m => m.LoginPage)
+      },
       
       
       {
