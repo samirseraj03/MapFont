@@ -48,9 +48,9 @@ export class LoginPage implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe( async  params => {
-      this.email = await  params['email']; 
+      this.email = await params['email']; 
     });
-     if (this.email === undefined){
+     if ( !this.email  && this.email === undefined && this.email == 'undefined'){
         this.email = ''
      }
   }

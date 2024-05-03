@@ -7,6 +7,9 @@ import { arrowBack } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import GeolocationService from 'src/app/Globals/Geolocation';
 import { TabsPage } from 'src/app/tabs/tabs.page';
+import DatabaseService from '../../Types/SupabaseService';
+import { LoginPage } from '../../authentication/login/login.page';
+
 
 
 @Component({
@@ -18,85 +21,28 @@ import { TabsPage } from 'src/app/tabs/tabs.page';
 })
 export class ConfigurationLookFormsPage implements OnInit {
 
-  data: any[] = [
-    {
-      id: 1,
-      fecha: '2024-04-12',
-      nombre: 'Juan',
-      aprobacion: true,
-      ultimo: 'Iglesia'
-    },
-    {
-      id: 2,
-      fecha: '2024-04-11',
-      nombre: 'María',
-      aprobacion: false,
-      ultimo: 'Trabajo'
-    },
-    {
-      id: 3,
-      fecha: '2024-04-10',
-      nombre: 'Carlos',
-      aprobacion: true,
-      ultimo: 'Casa'
-    },
-    {
-      id: 4,
-      fecha: '2024-04-09',
-      nombre: 'Ana',
-      aprobacion: true,
-      ultimo: 'Supermercado'
-    },
-    {
-      id: 5,
-      fecha: '2024-04-08',
-      nombre: 'Luis',
-      aprobacion: false,
-      ultimo: 'Parque'
-    },
-    {
-      id: 6,
-      fecha: '2024-04-07',
-      nombre: 'Sofía',
-      aprobacion: true,
-      ultimo: 'Gimnasio'
-    },
-    {
-      id: 7,
-      fecha: '2024-04-06',
-      nombre: 'Pedro',
-      aprobacion: false,
-      ultimo: 'Cine'
-    },
-    {
-      id: 8,
-      fecha: '2024-04-05',
-      nombre: 'Laura',
-      aprobacion: true,
-      ultimo: 'Restaurante'
-    },
-    {
-      id: 9,
-      fecha: '2024-04-04',
-      nombre: 'Pablo',
-      aprobacion: false,
-      ultimo: 'Biblioteca'
-    },
-    {
-      id: 10,
-      fecha: '2024-04-03',
-      nombre: 'Elena',
-      aprobacion: true,
-      ultimo: 'Playa'
-    }
-  ];
-
-  constructor(public NavCtrl: NavController) {
+  
+  data: any[] = [ ]
+  GeolocationService = new GeolocationService();
+  Supabase = new DatabaseService();
+  user_data : any  
+  
+  constructor(public NavCtrl: NavController , private AuthService : LoginPage) {
     addIcons({ arrowBack });
   }
-  GeolocationService = new GeolocationService();
 
-  ngOnInit() {
+  // para ponerlo en el html
+  public results = [...this.data];
+  // imports
+  
+
+ async ngOnInit() {
+    // cogemos el user_id del usuario 
+    this.user_data = await this.GeolocationService.getUserID()
+    // cogemos lo datos
+    this.data = await this.Supabase.getFormsUser(this.user_data) as any[];
+    // aseguramos que se importen los datos a la tabla
+    this.results = [...this.data]
   }
 
 
@@ -104,12 +50,17 @@ export class ConfigurationLookFormsPage implements OnInit {
 
   }
 
+  // llevamos 
   OnSelect(result : any){
-
+    this.NavCtrl.navigateForward('viewForm' , {
+      queryParams: {
+        id : result.id,
+        data: result,
+      },
+    })
   }
 
-  public results = [...this.data];
-
+  
 
   // para buscar de la lista que estara creada
   SearchElement(event: any) {

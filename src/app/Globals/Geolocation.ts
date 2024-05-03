@@ -4,6 +4,8 @@ import {
   NavController,
 } from '@ionic/angular';
 import { Geolocation } from '@capacitor/geolocation';
+import { Preferences } from '@capacitor/preferences';
+
 
 export default class GeolocationService {
   constructor() {}
@@ -66,6 +68,10 @@ export default class GeolocationService {
     return new Promise(async (resolve, reject) => {
       // checkeamos los permisos de los dispostivos
       let check = await this.checkLocationPermission();
+      
+      console.log(check)
+      console.log(this.latitude)
+      console.log(this.longitude)
       if (check == 'granted') {
         let coordinates = await Geolocation.getCurrentPosition();
         console.log('Current position:', coordinates);
@@ -76,6 +82,45 @@ export default class GeolocationService {
       } else if (check == 'denied') {
         reject('Geolocation not supported');
       }
+
+      console.log(check)
+      console.log(this.latitude)
+      console.log(this.longitude)
     });
   }
+
+  formatDate(isoString : any) {
+    // Crear un objeto de fecha a partir de la cadena ISO 8601
+    const date = new Date(isoString);
+
+    // Obtener día, mes y año
+    const day = date.getDate().toString().padStart(2, '0'); // Asegurar que tenga 2 dígitos
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Se suma 1 porque los meses van de 0 a 11
+    const year = date.getFullYear();
+
+    // Crear la cadena de fecha en el formato dd/mm/yyyy
+    const dateString = `${day}/${month}/${year}`;
+
+    return dateString;
+}
+
+async getUserID(){
+ let  user_id = await this.getStorage('user')
+ if (user_id) {
+    return user_id.id
+ }
+ else{return null}
+
+}
+
+async getStorage(key : string ){
+  const ret = await Preferences.get({ key: key });
+  if (ret.value === null){
+    return null
+  }
+  else{
+    return JSON.parse(ret.value);
+  }
+}
+
 }

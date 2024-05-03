@@ -44,12 +44,12 @@ export class AuthenticationService {
     try {
       if (this.supabase) {
         const {  data: { user, session } ,  error, } = await this.supabase.auth.signUp({
-          email,
-          password,
+          email : email,
+          password : password,
         });
         if (error) {
           console.log(error)
-          throw error;
+          return undefined
         }
         return { user , session };
       }
@@ -59,7 +59,7 @@ export class AuthenticationService {
       }
     } catch (error) {
       console.error('Error al registrar:', error);
-      throw error;
+      return undefined
     }
   }
 

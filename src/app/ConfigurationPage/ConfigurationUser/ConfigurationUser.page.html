@@ -103,9 +103,9 @@
                 <ion-label>Nombre</ion-label>
                 <ion-input
                   placeholder="Ejemplo nombre"
-                  name="watersourcesname"
+                  name="name"
+                  [value]="formData.name"
                   [(ngModel)]="formData.name"
-                  
                 ></ion-input>
               </div>
 
@@ -113,7 +113,8 @@
                 <ion-label>Nombre usuario</ion-label>
                 <ion-input
                   placeholder="Ejemplo Nombre usuario"
-                  name="description"
+                  name="username"
+                  [value]="formData.username"
                   [(ngModel)]="formData.username"
                   
                 ></ion-input>
@@ -123,8 +124,9 @@
                 <ion-label>Email:</ion-label>
                 <ion-input
                   placeholder="Ejemplo Email"
-                  name="description"
-                  [(ngModel)]="formData.description"
+                  name="email"
+                  [value]="formData.email"
+                  [(ngModel)]="formData.email"
                   
                 ></ion-input>
               </div>
@@ -134,6 +136,7 @@
                   label="Idioma:"
                   label-placement="floating"
                   name="language"
+                  [value]="formData.language"
                   [(ngModel)]="formData.language"
                   required
                 >

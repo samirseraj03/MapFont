@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -17,6 +17,7 @@ import { ConfigurationTabPage } from '../configuration-tab/configuration-tab.pag
 import { IonicModule } from '@ionic/angular';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import DatabaseService from '../../Types/SupabaseService';
 
 @Component({
   selector: 'app-configuration-user',
@@ -31,45 +32,82 @@ import { CommonModule } from '@angular/common';
     CommonModule,
   ],
 })
-export class ConfigurationUserPage {
+export class ConfigurationUserPage implements OnInit {
   @ViewChild('myForm') myForm!: NgForm; // Obtén una referencia al formulario usando ViewChild
   formData: any = {}; // Variable para almacenar los datos del formulario en formato JSON
   img_ref_config: any = null;
+  data: any;
 
   constructor(public NavCtrl: NavController) {
     addIcons({ arrowBack });
   }
+  // improts
   GeolocationService = new GeolocationService();
+  Supabase = new DatabaseService();
 
-  Update() {
-
-    // utilizamos el supabase
-    this.ToDataBase()
-
-    this.NavCtrl.navigateForward( '/Success', {
-      state: {
-        PageSucces: 'configuration',
-      },
-    });
+  // importamos los datos
+  async ngOnInit() {
+    let user_id = await this.GeolocationService.getUserID();
+    this.data = await this.Supabase.getUser(user_id);
+    this.formData = {
+      name: this.data[0].name || '',
+      email: this.data[0].email,
+      language: this.data[0].language,
+      username: this.data[0].username,
+    };
+    if (this.data[0].photo == null) {
+      this.img_ref_config = null;
+    } else {
+      this.img_ref_config =
+        this.Supabase.GetStorage(this.data[0].photo) || null;
+    }
   }
 
-  ToDataBase(){
+  async Update() {
+    // utilizamos el supabase
+    await this.ToDataBase();
 
+    // this.NavCtrl.navigateForward( '/Success', {
+    //   state: {
+    //     PageSucces: 'configuration',
+    //   },
+    // });
+  }
+
+  async ToDataBase() {
+    // si la imagen se ha cambiado , subimos la imagen despues el hacemos el update
+    if (this.image_ref_upload_config) {
+      this.formData.photo = await this.Supabase.InsertToStoarge(this.image_ref_upload_config);
+      await this.Supabase.updateUser(
+        this.GeolocationService.getUserID(),
+        this.formData
+      );
+    } else {
+      await this.Supabase.updateUser(
+        this.GeolocationService.getUserID(),
+        this.formData
+      );
+    }
   }
 
   // para hacer click al input cuando se hace click al boton
   SelectInput() {
-    const fileInput = document.getElementById('fileItemConfig') as HTMLInputElement;
+    const fileInput = document.getElementById(
+      'fileItemConfig'
+    ) as HTMLInputElement;
     fileInput.click();
   }
-
+  image_ref_name_config: any;
+  image_ref_upload_config: any;
   // para obtener el archivo del input
   handleFileInput(event: any) {
     const selectedFile = event.target.files[0];
+    console.log();
     if (selectedFile.type.startsWith('image/')) {
       const imgReader = new FileReader();
       imgReader.onload = () => {
         this.img_ref_config = imgReader.result as string; // Asigna la URL de datos de la imagen a imgUrl
+        this.image_ref_upload_config = event.target.files[0];
       };
       imgReader.readAsDataURL(selectedFile);
     } else {

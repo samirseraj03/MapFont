@@ -32,18 +32,21 @@ export class fontsPage {
   @ViewChild(IonModal) modal: IonModal | undefined;
 
  
-  constructor(private navCtrl: NavController ) {
+  constructor(private navCtrl: NavController  ) {
 
     // if (this.navCtrl.get()?.extras.state) {
     //   this.image = this.navCtrl.getCurrentNavigation()?.extras.state.image;
     // }
+
 
   }
   map: any;
   GeolocationService = new GeolocationService();
   Supabase = new DatabaseService();
 
-  async ngOnInit() {
+  async ionViewWillEnter() {
+
+    console.log("---------------------");
     // importamos el accessTokenMapbox para desplegar el mapa
     (mapboxgl as any).accessToken = environment.accessToken;
     // cogemos las primeras localizacion para poder desplegar el mapa y obtener posicion
@@ -54,6 +57,21 @@ export class fontsPage {
 
     // test
     this.test();
+
+  }
+
+  async ngOnInit() {
+  //   console.log("---------------------");
+  //   // importamos el accessTokenMapbox para desplegar el mapa
+  //   (mapboxgl as any).accessToken = environment.accessToken;
+  //   // cogemos las primeras localizacion para poder desplegar el mapa y obtener posicion
+  //  // await this.GeolocationService.getGeolocationCapacitor();
+  //   await this.GeolocationService.getGeolocation();
+  //   // desplegamos el mapa de mapBox
+  //   this.getMap();
+
+  //   // test
+  //   this.test();
   }
 
   getMap() {

@@ -47,23 +47,28 @@
    <!--body de la lista  -->
   <ion-list>
     <ion-item>
+      
           <ion-label>id:</ion-label>
-          <ion-label>Nombre:</ion-label>
-          <ion-label >Estado:</ion-label>
+          <ion-label >Nombre:</ion-label>
+          <ion-label  class="text-center" >Estado:</ion-label>
+          <ion-label class="text-center">Creado:</ion-label>
           <ion-label></ion-label>
+          
+
     </ion-item>
   </ion-list>
 <!-- elementos de la lista -->
     <ion-list>
       <ion-item *ngFor="let result of results" (click)="OnSelect(result)">
-        <ion-label>{{ result['id'] }}</ion-label>
-        <ion-label>{{ result['nombre'] }}</ion-label>
-        
-        <ion-label *ngIf="result.aprobacion == true" class="text-success">Aprobado</ion-label>
-        <ion-label *ngIf="result.aprobacion == false" class="text-danger">Rechazado</ion-label>
+        <ion-label >{{ result['id'] }}</ion-label>
+        <ion-label>{{ result['watersourcesname'] }}</ion-label> 
+        <ion-label *ngIf="result.approved == true" class="text-success text-center">Aprobado</ion-label>
+        <ion-label *ngIf="result.approved == false" class="text-danger text-center">Rechazado</ion-label>
+        <ion-label *ngIf="result.approved == null" class="text-danger text-center">Pendiente</ion-label>
 
+        <ion-label  class="text-center">{{  GeolocationService.formatDate(result.created_at) }}</ion-label>
         <ion-label> 
-          <ion-buttons class="d-flex justify-content-end">
+          <ion-buttons class="d-flex justify-content-end" (click)="OnSelect(result)">
             <ion-button>
               <ion-icon name="arrow-forward">
             </ion-icon>
