@@ -14,7 +14,7 @@ import { arrowBack } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import GeolocationService from 'src/app/Globals/Geolocation';
 import { ConfigurationTabPage } from '../configuration-tab/configuration-tab.page';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule , LoadingController } from '@ionic/angular';
 import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import DatabaseService from '../../Types/SupabaseService';
@@ -38,7 +38,8 @@ export class ConfigurationUserPage implements OnInit {
   img_ref_config: any = null;
   data: any;
 
-  constructor(public NavCtrl: NavController) {
+  constructor(public NavCtrl: NavController ,  private loadingController: LoadingController, 
+  ) {
     addIcons({ arrowBack });
   }
   // improts
@@ -63,28 +64,43 @@ export class ConfigurationUserPage implements OnInit {
     }
   }
 
+  loading : any
   async Update() {
     // utilizamos el supabase
-    await this.ToDataBase();
 
-    // this.NavCtrl.navigateForward( '/Success', {
-    //   state: {
-    //     PageSucces: 'configuration',
-    //   },
-    // });
+    this.loading = await this.loadingController.create({
+      message: 'estamos actualizando',
+    });   
+    try {
+      this.loading.present()
+      await this.ToDataBase();
+
+    }catch {
+      this.loading.dismiss()
+    }
+    finally{
+      this.loading.dismiss()
+    }
+    this.NavCtrl.navigateForward( '/Success', {
+      state: {
+        PageSucces: 'configuration',
+      },
+    });
   }
 
   async ToDataBase() {
     // si la imagen se ha cambiado , subimos la imagen despues el hacemos el update
     if (this.image_ref_upload_config) {
       this.formData.photo = await this.Supabase.InsertToStoarge(this.image_ref_upload_config);
+
+      console.log(this.formData)
       await this.Supabase.updateUser(
-        this.GeolocationService.getUserID(),
+        await this.GeolocationService.getUserID(),
         this.formData
       );
     } else {
       await this.Supabase.updateUser(
-        this.GeolocationService.getUserID(),
+        await this.GeolocationService.getUserID(),
         this.formData
       );
     }
@@ -118,5 +134,8 @@ export class ConfigurationUserPage implements OnInit {
   // para eliminar la foto y poder subir otra
   Delete() {
     this.img_ref_config = null;
+    this.image_ref_upload_config = null;
+    this.formData.photo = null
+
   }
 }

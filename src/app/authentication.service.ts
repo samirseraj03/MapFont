@@ -73,4 +73,26 @@ export class AuthenticationService {
       throw error;
     }
   }
+
+  async updateUser(data : any){
+
+    if (this.supabase){
+      const { error: updateError } = await this.supabase.auth.updateUser(data) 
+      if (updateError){
+        console.error(updateError)
+        return null
+      }
+      else {
+        return 
+      }
+    }
+    else {
+      return null
+    }
+
+
+  }
+
+
+
 }

@@ -1,5 +1,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from './../../environments/environment';
+import { AuthenticationService } from '../authentication.service';
+
 
 export interface User {
   id?: number;
@@ -376,10 +378,11 @@ export default class DatabaseService {
 
   // para insertar a la stoarge
   async InsertToStoarge(file : any ) {
-
+    // comprovamos que es un file y que no sea string
     if (typeof(file) === "object"){
     // comprobamos si el nombre esta bien escrito 
     let nombre =  this.esNombreArchivoValido(file.name)
+    // subimos el archivo al storage
     const { data, error } = await this.supabase.storage.from('ImageWaterSource').upload( nombre, file)
         if ( error){
             // si hay un duplicado de nombre , solictamos el la subida otr vez y ponemos un caracter para que pueda subir
@@ -395,6 +398,7 @@ export default class DatabaseService {
                 }
             }
             else {
+                // retornamos que no ha sido possible subir el archivo
                 return null
             }      
         }
@@ -403,6 +407,7 @@ export default class DatabaseService {
                 return data.fullPath
             else return data.path
         }
+    // si es string retoranmos como esta el file
     }else {
         return file
     }
@@ -416,7 +421,7 @@ export default class DatabaseService {
   // comporvamos que el nombre no tenga caracteres que impiden el funcionamiento
   esNombreArchivoValido(nombreArchivo : string) {
     // Caracteres problemáticos
-    const caracteresProhibidos = ['/', '\\', '?', '%', '*', ':', '|', '"', '<', '>' , '-'];
+    const caracteresProhibidos = ['/', '\\', '?', '%', '*', ':', '|', '"', '<', '>' , '-' , ' '];
   
     // Reemplazar caracteres problemáticos por guiones bajos
     let nombreArchivoCorregido = nombreArchivo;
@@ -469,4 +474,9 @@ export default class DatabaseService {
       return error;
     }
   }
+
+
+
+
+
 }
