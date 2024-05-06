@@ -37,25 +37,25 @@
   </ion-list>
 <!-- elementos de la lista -->
     <ion-list>
-      <ion-item *ngFor="let result of results" (click)="OnSelect(result)">
-        <ion-label>{{ result['username'] }}</ion-label>
-        <ion-label>{{ result['watersourcesname'] }}</ion-label>   
-        <ion-label > {{ this.timestampToDateString(result['created_at'])   }}</ion-label>
-        <ion-label >{{ result['location'].latitude }}/</ion-label>
-        <ion-label>{{result['location'].longitude}}</ion-label>
-        <ion-label >{{ result['address'] }}</ion-label>
+      <ion-item *ngFor="let result of results" >
+        <ion-label (click)="OnSelect(result)">{{ result['username'] }}</ion-label>
+        <ion-label (click)="OnSelect(result)">{{ result['watersourcesname'] }}</ion-label>   
+        <ion-label  (click)="OnSelect(result)"> {{  this.GeolocationService.formatDate(result['created_at'])   }}</ion-label>
+        <ion-label  (click)="OnSelect(result)">{{ result['location'].latitude }}/</ion-label>
+        <ion-label (click)="OnSelect(result)">{{result['location'].longitude}}</ion-label>
+        <ion-label  (click)="OnSelect(result)">{{ result['address'] }}</ion-label>
       
       <ion-label> 
         <ion-buttons class="d-flex justify-content-end">
-          <ion-button>
+          <ion-button (click)="OnSelectNavigate(result)">
             <ion-icon  name="navigate"></ion-icon>
           </ion-button>
 
-          <ion-button>
+          <ion-button (click)="OnConfirm(result)">
             <ion-icon name="checkmark"></ion-icon>
           </ion-button>
 
-          <ion-button (click)="ViewForm()">
+          <ion-button (click)="OnSelect(result)">
             <ion-icon  name="chevron-forward"></ion-icon>
          </ion-button>
 

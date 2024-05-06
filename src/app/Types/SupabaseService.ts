@@ -1,9 +1,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from './../../environments/environment';
 import { AuthenticationService } from '../authentication.service';
-import { PostgrestQueryBuilder   } from '@supabase/postgrest-js'
-
-
+import { PostgrestQueryBuilder } from '@supabase/postgrest-js';
 
 export interface User {
   id?: number;
@@ -30,6 +28,7 @@ export interface WaterSources {
   created_at: any;
   photo: string;
   description: string;
+  watersourcetype : string
 }
 
 export interface Forms {
@@ -370,8 +369,8 @@ export default class DatabaseService {
     );
   }
   // para comprobar si es base64  o no
-  IsBase64URL(url : string) {
-    console.log("url" , url)
+  IsBase64URL(url: string) {
+    console.log('url', url);
     // Expresión regular para verificar el formato de base64 URL
     const regex = /^(data:)([a-zA-Z0-9+\/]+)(;base64,)(.*)$/;
     // Verificar si la cadena coincide con el formato de base64 URL
@@ -379,41 +378,40 @@ export default class DatabaseService {
   }
 
   // para insertar a la stoarge
-  async InsertToStoarge(file : any ) {
+  async InsertToStoarge(file: any) {
     // comprovamos que es un file y que no sea string
-    if (typeof(file) === "object"){
-    // comprobamos si el nombre esta bien escrito
-    let nombre =  this.esNombreArchivoValido(file.name)
-    // subimos el archivo al storage
-    const { data, error } = await this.supabase.storage.from('ImageWaterSource').upload( nombre, file)
-        if ( error){
-            // si hay un duplicado de nombre , solictamos el la subida otr vez y ponemos un caracter para que pueda subir
-            if (error.message == "The resource already exists"){
-                const { data, error } = await this.supabase.storage.from('ImageWaterSource').upload( `_mapfont_` + nombre  , file)
-                if (error){
-                    return null
-                }
-                else  {
-                    if ('fullPath' in data)
-                    return data.fullPath
-                    else return data.path
-                }
-            }
-            else {
-                // retornamos que no ha sido possible subir el archivo
-                return null
-            }
+    if (typeof file === 'object') {
+      // comprobamos si el nombre esta bien escrito
+      let nombre = this.esNombreArchivoValido(file.name);
+      // subimos el archivo al storage
+      const { data, error } = await this.supabase.storage
+        .from('ImageWaterSource')
+        .upload(nombre, file);
+      if (error) {
+        // si hay un duplicado de nombre , solictamos el la subida otr vez y ponemos un caracter para que pueda subir
+        if (error.message == 'The resource already exists') {
+          const { data, error } = await this.supabase.storage
+            .from('ImageWaterSource')
+            .upload(`_mapfont_` + nombre, file);
+          if (error) {
+            return null;
+          } else {
+            if ('fullPath' in data) return data.fullPath;
+            else return data.path;
+          }
+        } else {
+          // retornamos que no ha sido possible subir el archivo
+          return null;
         }
-        else {
-            if ('fullPath' in data)
-                return data.fullPath
-            else return data.path
-        }
-    // si es string retoranmos como esta el file
-    }else {
-        return file
+      } else {
+        if ('fullPath' in data) return data.fullPath;
+        else return data.path;
+      }
+      // si es string retoranmos como esta el file
+    } else {
+      return file;
     }
-}
+  }
 
   // para obtener de la storage
   GetStorage(url_image: any) {
@@ -421,9 +419,22 @@ export default class DatabaseService {
   }
 
   // comporvamos que el nombre no tenga caracteres que impiden el funcionamiento
-  esNombreArchivoValido(nombreArchivo : string) {
+  esNombreArchivoValido(nombreArchivo: string) {
     // Caracteres problemáticos
-    const caracteresProhibidos = ['/', '\\', '?', '%', '*', ':', '|', '"', '<', '>' , '-' , ' '];
+    const caracteresProhibidos = [
+      '/',
+      '\\',
+      '?',
+      '%',
+      '*',
+      ':',
+      '|',
+      '"',
+      '<',
+      '>',
+      '-',
+      ' ',
+    ];
 
     // Reemplazar caracteres problemáticos por guiones bajos
     let nombreArchivoCorregido = nombreArchivo;
@@ -477,31 +488,73 @@ export default class DatabaseService {
     }
   }
 
-  // async getSavedFoutains(){
+  async deleteSavedFoutain(savedFountain_id : any){
 
-  //   try {
+   const { data: savedFountainsData, error: fountainsError } = await this.supabase
+          .from('savedfountains')
+          .delete()
+          .eq('id', savedFountain_id);
 
-  //     const { data, error } = await this.supabase
-  //   .from<PostgrestQueryBuilder<any, any>>('public.savedfountains')
-  //   .select('*')
-  //   .innerJoin('public.users', 'autencationUserID', 's')
-  //   .innerJoin('public.watersources', 'id', 's.waterSource_id')
-
-
-  //     if (error) {
-  //       throw error;
-  //     }
-
-  //     console.log('User types retrieved:', data);
-  //     return data;
-  //   } catch (error) {
-  //     console.error('Error retrieving user types:', error);
-  //     return error;
-  //   }
-  // }
+          if (fountainsError){
+            return null
+          }else{
+            return 'Success'
+          }
+  }
 
 
+  async getSavedFoutains(user_id: any) {
+    let fountains_id = [];
+    let matchedFountains = [];
+    try {
+      // Consulta para obtener los datos de public.savedfountains
+      const { data: savedFountainsData, error: fountainsError } =
+        await this.supabase
+          .from('savedfountains')
+          .select('*')
+          .eq('autencationUserID', user_id);
 
+      if (fountainsError) {
+        throw fountainsError;
+      } else {
+        for (const fountain of savedFountainsData) {
+          // Extract the ID from the current fountain object
+          fountains_id.push(fountain.waterSource_id);
+        }
+      }
+      // Consulta para obtener los datos de public.watersources
+      const { data: FountainsData, error: FountainsError } = await this.supabase
+        .from('watersources')
+        .select('*')
+        .in('id', fountains_id);
 
+      if (FountainsError) {
+        throw FountainsError;
+      } else {
+        for (const fountain of savedFountainsData) {
+          const matchedWaterSources = FountainsData.filter(
+            (waterSource) => waterSource.id === fountain.waterSource_id
+          );
+        
+          // Agregar todas las coincidencias al array matchedFountains
+          for (const matchedWaterSource of matchedWaterSources) {
+            matchedFountains.push({
+              savedFountain: fountain,
+              matchedWaterSource: matchedWaterSource,
+            });
+          }
+        }
 
+        // Resultado
+        console.log(
+          'Fuentes guardadas que coinciden con los datos de watersources:',
+          matchedFountains
+        );
+        return matchedFountains;
+      }
+    } catch (error) {
+      console.error('Error al obtener los datos:', error);
+      return error;
+    }
+  }
 }

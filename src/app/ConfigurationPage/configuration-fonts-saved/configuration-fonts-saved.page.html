@@ -57,18 +57,18 @@
   </ion-list>
 <!-- elementos de la lista -->
     <ion-list>
-      <ion-item *ngFor="let result of results" (click)="OnSelect(result)">
-        <ion-label>{{ result['id'] }}</ion-label>
-        <ion-label>{{ result['nombre'] }}</ion-label>   
-        <ion-label >{{ result['nombre'] }}</ion-label>
+      <ion-item *ngFor="let result of results" >
+        <ion-label (click)="OnSelect(result)">{{ result['matchedWaterSource']['name'] }}</ion-label>
+        <ion-label (click)="OnSelect(result)">{{ result['matchedWaterSource']['address'] }}</ion-label>   
+        <ion-label  (click)="OnSelect(result)">{{ GeolocationService.formatDate(result['savedFountain']['created_at'])  }}</ion-label>
       <ion-label> 
         <ion-buttons class="d-flex justify-content-end">
-          <ion-button>
-            <ion-icon name="navigate" (click)="OnSelectNavigate(result)"></ion-icon>
+          <ion-button (click)="OnSelectNavigate(result)">
+            <ion-icon name="navigate" ></ion-icon>
           </ion-button>
 
-          <ion-button>
-            <ion-icon name="heart-dislike" (click)="OnSelectDislike(result)"></ion-icon>
+          <ion-button (click)="OnSelectDislike(result)">
+            <ion-icon name="heart-dislike" ></ion-icon>
           </ion-button>
       </ion-buttons>
     </ion-label>

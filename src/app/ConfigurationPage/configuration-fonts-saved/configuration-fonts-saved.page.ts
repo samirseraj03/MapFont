@@ -6,6 +6,10 @@ import { ConfigurationTabPage } from '../configuration-tab/configuration-tab.pag
 import { arrowBack, heartDislike, navigate } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import GeolocationService from 'src/app/Globals/Geolocation';
+import DatabaseService from 'src/app/Types/SupabaseService';
+import { Browser } from '@capacitor/browser';
+
+
 
 @Component({
   selector: 'app-configuration-fonts-saved',
@@ -15,93 +19,63 @@ import GeolocationService from 'src/app/Globals/Geolocation';
   imports: [IonicModule, CommonModule, FormsModule, ConfigurationTabPage],
 })
 export class ConfigurationFontsSavedPage implements OnInit {
-  data: any[] = [
-    {
-      id: 1,
-      fecha: '2024-04-12',
-      nombre: 'Juan',
-      aprobacion: true,
-      ultimo: 'Iglesia',
-    },
-    {
-      id: 2,
-      fecha: '2024-04-11',
-      nombre: 'María',
-      aprobacion: false,
-      ultimo: 'Trabajo',
-    },
-    {
-      id: 3,
-      fecha: '2024-04-10',
-      nombre: 'Carlos',
-      aprobacion: true,
-      ultimo: 'Casa',
-    },
-    {
-      id: 4,
-      fecha: '2024-04-09',
-      nombre: 'Ana',
-      aprobacion: true,
-      ultimo: 'Supermercado',
-    },
-    {
-      id: 5,
-      fecha: '2024-04-08',
-      nombre: 'Luis',
-      aprobacion: false,
-      ultimo: 'Parque',
-    },
-    {
-      id: 6,
-      fecha: '2024-04-07',
-      nombre: 'Sofía',
-      aprobacion: true,
-      ultimo: 'Gimnasio',
-    },
-    {
-      id: 7,
-      fecha: '2024-04-06',
-      nombre: 'Pedro',
-      aprobacion: false,
-      ultimo: 'Cine',
-    },
-    {
-      id: 8,
-      fecha: '2024-04-05',
-      nombre: 'Laura',
-      aprobacion: true,
-      ultimo: 'Restaurante',
-    },
-    {
-      id: 9,
-      fecha: '2024-04-04',
-      nombre: 'Pablo',
-      aprobacion: false,
-      ultimo: 'Biblioteca',
-    },
-    {
-      id: 10,
-      fecha: '2024-04-03',
-      nombre: 'Elena',
-      aprobacion: true,
-      ultimo: 'Playa',
-    },
-  ];
+  data: any[] = []
 
   public results = [...this.data];
 
-  constructor(public NavCtrl: NavController) {
+  constructor(public NavCtrl: NavController ) {
     addIcons({ arrowBack, navigate, heartDislike });
   }
   GeolocationService = new GeolocationService();
+  Supabase = new DatabaseService();
 
-  ngOnInit() {}
 
-  OnSelect(result: any) {}
+  async ngOnInit() {
+    let userid = await this.GeolocationService.getUserID()
+    this.data = await this.Supabase.getSavedFoutains(userid) as any[];
+    this.results = [...this.data];
 
-  OnSelectNavigate(result: any) {}
+    
+  }
 
-  OnSelectDislike(result: any) {}
+  OnSelect(result : any){
+    this.NavCtrl.navigateForward('viewForm' , {
+      queryParams: {
+        id : result.matchedWaterSource.id,
+        data: result.matchedWaterSource,
+      },
+    })
+  }
+
+ async OnSelectNavigate(result: any) {
+
+    let latitude = await result.matchedWaterSource.location.latitude
+    let longitude = await result.matchedWaterSource.location.longitude
+
+    // preparamos el enalce de google maps
+    let link = await this.GeolocationService.generateGoogleMapsLink(latitude , longitude) as string
+    // abrimos el enlace desde capacitor
+    await Browser.open({ url: link });
+  }
+
+  async OnSelectDislike(result: any) {
+
+    let query = await this.Supabase.deleteSavedFoutain(result.savedFountain.id)
+
+    if (query === 'Success'){
+
+      const indexToRemove = this.data.findIndex(
+        (savedFountain) => savedFountain.savedFountain.id === result.savedFountain.id
+      );
+
+      if (indexToRemove !== -1 ){
+        console.log(indexToRemove)
+        this.data.splice(indexToRemove , 1);
+        this.results = [...this.data];
+      }  
+    }
+  
+  }
 
   ToSearch() {}
 

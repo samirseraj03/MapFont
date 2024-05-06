@@ -69,9 +69,6 @@ export default class GeolocationService {
       // checkeamos los permisos de los dispostivos
       let check = await this.checkLocationPermission();
       
-      console.log(check)
-      console.log(this.latitude)
-      console.log(this.longitude)
       if (check == 'granted') {
         let coordinates = await Geolocation.getCurrentPosition();
         console.log('Current position:', coordinates);
@@ -84,8 +81,7 @@ export default class GeolocationService {
       }
 
       console.log(check)
-      console.log(this.latitude)
-      console.log(this.longitude)
+
     });
   }
 
@@ -131,6 +127,10 @@ async getStorage(key : string ){
   else{
     return JSON.parse(ret.value);
   }
+}
+
+async generateGoogleMapsLink(latitud: number, longitud: number) {
+  return `https://www.google.com/maps?q=${latitud},${longitud}`;
 }
 
 }
