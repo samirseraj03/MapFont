@@ -113,6 +113,16 @@ async getUserID(){
 
 }
 
+async getUserEmail(){
+  let  user_email = await this.getStorage('user')
+  if (user_email) {
+     return user_email.email
+  }
+  else{return null}
+ 
+ }
+
+
 async getStorage(key : string ){
   const ret = await Preferences.get({ key: key });
   if (ret.value === null){

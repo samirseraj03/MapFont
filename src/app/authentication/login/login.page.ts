@@ -180,12 +180,12 @@ export class LoginPage implements OnInit {
       });
 
       if (error == null) {
+        console.log(error)
         return null
       } else {
-        console.log('Password updated successfully');
-        return 
+        return 'Success'
       }
     }
-    else return 
+    else return null
   }
 }

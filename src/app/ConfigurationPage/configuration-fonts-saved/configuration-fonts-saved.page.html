@@ -49,8 +49,8 @@
   <ion-list>
     <ion-item>
           <ion-label>Nombre:</ion-label>
-          <ion-label>dirección</ion-label>
-          <ion-label>Ultima Visita:</ion-label>
+          <ion-label>Dirección</ion-label>
+          <ion-label>Favorito desde:</ion-label>
           <ion-label></ion-label>
 
     </ion-item>
@@ -64,11 +64,11 @@
       <ion-label> 
         <ion-buttons class="d-flex justify-content-end">
           <ion-button>
-            <ion-icon name="navigate"></ion-icon>
+            <ion-icon name="navigate" (click)="OnSelectNavigate(result)"></ion-icon>
           </ion-button>
 
           <ion-button>
-            <ion-icon name="heart-dislike"></ion-icon>
+            <ion-icon name="heart-dislike" (click)="OnSelectDislike(result)"></ion-icon>
           </ion-button>
       </ion-buttons>
     </ion-label>

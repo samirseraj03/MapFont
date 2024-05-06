@@ -1,6 +1,8 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from './../../environments/environment';
 import { AuthenticationService } from '../authentication.service';
+import { PostgrestQueryBuilder   } from '@supabase/postgrest-js'
+
 
 
 export interface User {
@@ -371,7 +373,7 @@ export default class DatabaseService {
   IsBase64URL(url : string) {
     console.log("url" , url)
     // Expresión regular para verificar el formato de base64 URL
-    const regex = /^(data:)([a-zA-Z0-9+\/]+)(;base64,)(.*)$/; 
+    const regex = /^(data:)([a-zA-Z0-9+\/]+)(;base64,)(.*)$/;
     // Verificar si la cadena coincide con el formato de base64 URL
     return regex.test(url);
   }
@@ -380,7 +382,7 @@ export default class DatabaseService {
   async InsertToStoarge(file : any ) {
     // comprovamos que es un file y que no sea string
     if (typeof(file) === "object"){
-    // comprobamos si el nombre esta bien escrito 
+    // comprobamos si el nombre esta bien escrito
     let nombre =  this.esNombreArchivoValido(file.name)
     // subimos el archivo al storage
     const { data, error } = await this.supabase.storage.from('ImageWaterSource').upload( nombre, file)
@@ -392,18 +394,18 @@ export default class DatabaseService {
                     return null
                 }
                 else  {
-                    if ('fullPath' in data) 
-                    return data.fullPath 
+                    if ('fullPath' in data)
+                    return data.fullPath
                     else return data.path
                 }
             }
             else {
                 // retornamos que no ha sido possible subir el archivo
                 return null
-            }      
+            }
         }
         else {
-            if ('fullPath' in data) 
+            if ('fullPath' in data)
                 return data.fullPath
             else return data.path
         }
@@ -422,20 +424,20 @@ export default class DatabaseService {
   esNombreArchivoValido(nombreArchivo : string) {
     // Caracteres problemáticos
     const caracteresProhibidos = ['/', '\\', '?', '%', '*', ':', '|', '"', '<', '>' , '-' , ' '];
-  
+
     // Reemplazar caracteres problemáticos por guiones bajos
     let nombreArchivoCorregido = nombreArchivo;
     for (const caracter of caracteresProhibidos) {
       nombreArchivoCorregido = nombreArchivo.split(caracter).join('_');
     }
-  
+
     // Verificar si el nombre de archivo contiene espacios al principio o al final
     if (nombreArchivoCorregido.trim() !== nombreArchivoCorregido) {
       return nombreArchivoCorregido;
     }
     return nombreArchivoCorregido;
   }
-  
+
   // obtenemos los formularios del usuario
   async getFormsUser(user_id: any) {
     try {
@@ -474,6 +476,29 @@ export default class DatabaseService {
       return error;
     }
   }
+
+  // async getSavedFoutains(){
+
+  //   try {
+
+  //     const { data, error } = await this.supabase
+  //   .from<PostgrestQueryBuilder<any, any>>('public.savedfountains')
+  //   .select('*')
+  //   .innerJoin('public.users', 'autencationUserID', 's')
+  //   .innerJoin('public.watersources', 'id', 's.waterSource_id')
+
+
+  //     if (error) {
+  //       throw error;
+  //     }
+
+  //     console.log('User types retrieved:', data);
+  //     return data;
+  //   } catch (error) {
+  //     console.error('Error retrieving user types:', error);
+  //     return error;
+  //   }
+  // }
 
 
 

@@ -34,7 +34,7 @@
           </ion-card-subtitle>
         </div>
         <div class="col d-flex justify-content-end">
-          <ion-button (click)="Update($event)" class="btn btn-success" fill="Clear">
+          <ion-button (click)="Update()" class="btn btn-success" fill="Clear">
             Guardar
           </ion-button>
         </div>
@@ -68,6 +68,7 @@
                   name="OldPassword"
                   [(ngModel)]="formData.OldPassword"
                   required
+                  type="password"
                 ></ion-input>
               </div>
 
@@ -78,6 +79,8 @@
                   name="NewPassword"
                   [(ngModel)]="formData.NewPassword"
                   required
+                  type="password"
+
                 ></ion-input>
               </div>
 
@@ -88,6 +91,8 @@
                   name="NewConfirmPassword"
                   [(ngModel)]="formData.NewConfirmPassword"
                   required
+                  type="password"
+
                 ></ion-input>
               </div>
 

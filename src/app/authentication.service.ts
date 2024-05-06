@@ -75,7 +75,6 @@ export class AuthenticationService {
   }
 
   async updateUser(data : any){
-
     if (this.supabase){
       const { error: updateError } = await this.supabase.auth.updateUser(data) 
       if (updateError){
@@ -83,14 +82,12 @@ export class AuthenticationService {
         return null
       }
       else {
-        return 
+        return 'Success'
       }
     }
     else {
       return null
     }
-
-
   }
 
 
