@@ -22,6 +22,7 @@ import {
 } from 'ionicons/icons';
 import { ConfigurationTabPage } from '../ConfigurationPage/configuration-tab/configuration-tab.page';
 import { LoginPage } from '../authentication/login/login.page';
+import { Preferences } from '@capacitor/preferences';
 
 @Component({
   selector: 'app-tabs',
@@ -45,18 +46,31 @@ export class TabsPage implements OnInit {
   public environmentInjector = inject(EnvironmentInjector);
   public isLogin : any
 
-  constructor(public loginPage: LoginPage) {
+  constructor() {
     addIcons({ triangle, ellipse, square, home, water, person, push });
   }
 
   
   async ngOnInit() {
-    this.isLogin = await this.loginPage.checkLoggedIn()
-    console.log( this.isLogin )
+    this.isLogin = await this.checkLoggedIn()
   }
 
-  
+  async checkLoggedIn() {
+    const token = await this.getStorage('session');
+    if (token && token) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
-  
+  async getStorage(key: string) {
+    const ret = await Preferences.get({ key: key });
+    if (ret.value === null) {
+      return null;
+    } else {
+      return JSON.parse(ret.value);
+    }
+  }
 
 }

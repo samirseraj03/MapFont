@@ -1,9 +1,7 @@
   <ion-menu  menuId="main-content" contentId="main-content" side="start" content-id="main-content"   root="rootMenu" >
-    <ion-header>
       <ion-toolbar color="tertiary">
         <ion-title>Menu Content</ion-title>
       </ion-toolbar>
-    </ion-header>
     <ion-content id="content">
       <ion-list lines="none" class="ion-margin ion-padding ion-justify-content-between">
         <ion-item (click)="navigateTo('formularios')" class="ion-no-margin">
@@ -23,6 +21,9 @@
         </ion-item>
         <ion-item (click)="navigateTo('Confirmacion')" class="ion-no-margin">
           <ion-button expand="full" fill="clear">Confirmacion</ion-button>
+        </ion-item>
+        <ion-item (click)="navigateTo('CerrarSession')" class="ion-no-margin">
+          <ion-button expand="full" fill="clear">Cerrar Session</ion-button>
         </ion-item>
       </ion-list>
     </ion-content>

@@ -71,6 +71,7 @@ export class FormPage {
   // para obtener el archivo del input
   handleFileInput(event: any) {
     const selectedFile = event.target.files[0];
+    this.image_push = event.target.files[0];
     if (selectedFile.type.startsWith('image/')) {
       const imgReader = new FileReader();
       imgReader.onload = () => {
@@ -86,7 +87,7 @@ export class FormPage {
   ImageSuccess() {
     if (this.img_ref) {
       this.NavCtrl.navigateForward( '/location', {
-        state: {
+        queryParams: {
           image: this.image_push,
         },
       });

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, NavController } from '@ionic/angular';
@@ -10,6 +10,8 @@ import * as mapboxgl from 'mapbox-gl';
 import { ExploreContainerComponent } from '../../explore-container/explore-container.component';
 import { AxiosResponse } from 'axios';
 import axios from 'axios';
+import { ActivatedRoute } from '@angular/router';
+
 
 @Component({
   selector: 'app-form-select-location',
@@ -26,12 +28,18 @@ export class FormSelectLocationPage implements OnInit {
   LastMarker: any;
   LocationNotIsSelected : boolean = true;
   lnglat : any = []
+  image : any
 
-  constructor(public NavCtrl: NavController) {
+  constructor(public NavCtrl: NavController , private route : ActivatedRoute) {
     addIcons({ arrowBack });
   }
   GeolocationService = new GeolocationService();
   async ngOnInit() {
+
+    this.route.queryParams.subscribe(async (params) => {
+      this.image = await params['image'];
+    });
+
     // importamos el accessTokenMapbox para desplegar el mapa
     (mapboxgl as any).accessToken = environment.accessToken;
     // cogemos las primeras localizacion para poder desplegar el mapa y obtener posicion
@@ -117,7 +125,7 @@ export class FormSelectLocationPage implements OnInit {
       );
       // para manejar los datos
       // para ponerlo en el buscador y el mapa
-      this.query = response.data.features[0].place_name;
+      this.query = await response.data.features[0].place_name;
       this.map_location.setCenter([
         this.GeolocationService.longitude,
         this.GeolocationService.latitude,
@@ -145,9 +153,10 @@ export class FormSelectLocationPage implements OnInit {
   // pasamos a la siguente para completar el forumulario
   LocationSuccess() {
       this.NavCtrl.navigateForward( '/FormInformation', {
-        state: {
+        queryParams: {
           Adress: this.query,
           lnglat : this.lnglat,
+          image : this.image
         },
     });
   }

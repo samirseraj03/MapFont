@@ -6,6 +6,7 @@ import { LoadingController } from '@ionic/angular';
 import { AuthenticationService } from '../../authentication.service';
 import { Preferences } from '@capacitor/preferences';
 import { ActivatedRoute } from '@angular/router';
+import { TabsPage } from 'src/app/tabs/tabs.page';
 
 @Injectable({
   providedIn: 'root',
@@ -31,7 +32,8 @@ export class LoginPage implements OnInit {
     private authService: AuthenticationService,
     private loadingController: LoadingController,
     public NavCtrl: NavController,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private TabsPage : TabsPage
   ) {}
 
   ngOnInit() {
@@ -83,6 +85,8 @@ export class LoginPage implements OnInit {
         this.access_token = session;
         await this.setStorage('session', session);
         await this.setStorage('user', user);
+        this.TabsPage.isLogin = true
+
 
         if (session) {
           this.setExpirationTime(session.expires_in * 1000); // Convert to milliseconds
@@ -147,6 +151,7 @@ export class LoginPage implements OnInit {
     // eliminamos el storage del capacitor
     this.removeStorage('user');
     this.removeStorage('session');
+
   }
 
   // para salir de la session
@@ -155,6 +160,7 @@ export class LoginPage implements OnInit {
       await this.authService.signOut();
     } catch {}
     this.clearAccessToken();
+    this.TabsPage.isLogin = false
   }
 
   // para restear la pagina y ir a las fuentes
