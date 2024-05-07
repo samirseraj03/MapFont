@@ -46,15 +46,13 @@ export class fontsPage {
 
   async ionViewWillEnter() {
 
-    console.log("---------------------");
     // importamos el accessTokenMapbox para desplegar el mapa
     (mapboxgl as any).accessToken = environment.accessToken;
     // cogemos las primeras localizacion para poder desplegar el mapa y obtener posicion
-   // await this.GeolocationService.getGeolocationCapacitor();
+    // await this.GeolocationService.getGeolocationCapacitor();
     await this.GeolocationService.getGeolocation();
     // desplegamos el mapa de mapBox
     this.getMap();
-
     // test
     this.test();
 

@@ -8,6 +8,8 @@ import { addIcons } from 'ionicons';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import DatabaseService from 'src/app/Types/SupabaseService';
+import {Forms} from 'src/app/Types/SupabaseService';
+
 
 
 
@@ -50,25 +52,41 @@ export class FormInsertInfromationPage implements OnInit  {
   onSubmit() {
     if (this.myForm.valid) {
       this.formData = this.myForm.value;
-      console.log(this.formData); // Aquí puedes hacer lo que quieras con los datos recolectados
       this.ToDataBase();
-     // this.GoSuccess();
+      this.GoSuccess();
     }
     else {
       alert("completa los ultimos datos para continuar")
     }
   }
 
-  ToDataBase(){
+  async ToDataBase(){
 
     // preparamos las variables a insertar para el forumulario
-    
 
-    console.log(this.lnglat)
-    console.log(this.Adress)
-    console.log(this.image)
-    console.log(this.formData)
-    this.DatabaseService.insertForm()
+    let user_id =  await this.GeolocationService.getUserID()
+    let data_user = await this.DatabaseService.getUser(user_id)
+    this.lnglat = {
+      "latitude": this.lnglat[1],
+      "longitude": this.lnglat[0],
+    }
+    let image = await this.DatabaseService.InsertToStoarge(this.image)
+    let form : Forms = {
+      username : data_user[0].username,
+      watersourcesname: this.formData.watersourcesname ,
+      created_at: new Date(),
+      location: this.lnglat ,
+      photo: image,
+      address: this.Adress ,
+      description: this.formData.description,
+      is_potable: this.formData.is_potable,
+      watersourcetype: this.formData.watersourcetype ,
+      approved: null , 
+      autencationUserID : user_id
+    }
+
+    // insertamos los datos a la base de datos
+    this.DatabaseService.insertForm(form)
     
   }
   // para mostarar al usuario pagina completada y ir al inicio

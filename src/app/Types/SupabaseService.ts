@@ -2,6 +2,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from './../../environments/environment';
 import { AuthenticationService } from '../authentication.service';
 import { PostgrestQueryBuilder } from '@supabase/postgrest-js';
+import GeolocationService from '../Globals/Geolocation';
 
 export interface User {
   id?: number;
@@ -34,15 +35,16 @@ export interface WaterSources {
 export interface Forms {
   id?: number;
   username: string;
-  WaterSourcesName: string;
+  watersourcesname: string;
   created_at: any;
   location: any;
   photo: string;
   address: string;
   description: string;
   is_potable: boolean;
-  WaterSourceType: string;
-  approved: boolean;
+  watersourcetype: string;
+  approved: boolean | null;
+  autencationUserID : string;
 }
 
 export interface UserType {
@@ -53,9 +55,9 @@ export interface UserType {
 
 export default class DatabaseService {
   private supabase: SupabaseClient;
-
   private SUPABASE_URL = environment.SUPABASE_URL;
   private SUPABASE_KEY = environment.SUPABASE_KEY;
+  private GeolocationService = new GeolocationService
 
   constructor() {
     const supabaseUrl = this.SUPABASE_URL;
@@ -328,6 +330,20 @@ export default class DatabaseService {
     return user; // Trust Supabase types
   }
 
+  async getUserName (user_id : any){
+
+    const { data: username, error } = await this.supabase
+    .from('users')
+    .select('username')
+    .eq('autencationUserID', user_id);
+
+  if (error) {
+    throw error;
+  }
+  return username; // Trust Supabase types
+
+  }
+
   async getWaterSources() {
     try {
       const { data: waterSources, error } = await this.supabase
@@ -392,7 +408,7 @@ export default class DatabaseService {
         if (error.message == 'The resource already exists') {
           const { data, error } = await this.supabase.storage
             .from('ImageWaterSource')
-            .upload(`_mapfont_` + nombre, file);
+            .upload(`_mapfont_${new Date().getDate()}_${new Date().getMilliseconds()}_${new Date().getTime()}${await this.GeolocationService.getUserID()}` + nombre, file);
           if (error) {
             return null;
           } else {

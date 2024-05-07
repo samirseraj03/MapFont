@@ -17,10 +17,13 @@ export class PageSuccessPage implements OnInit {
   ngOnInit() {
   }
 
+
+  
+
   GoToMap(){
 
     this.NavCtrl.navigateRoot( '/', {
-      state: {
+      queryParams: {
         Success: true,
       },
     });

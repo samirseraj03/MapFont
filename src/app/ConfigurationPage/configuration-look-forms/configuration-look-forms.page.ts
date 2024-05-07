@@ -25,7 +25,8 @@ export class ConfigurationLookFormsPage implements OnInit {
   data: any[] = [ ]
   GeolocationService = new GeolocationService();
   Supabase = new DatabaseService();
-  user_data : any  
+  user_data : any 
+  username : any 
   
   constructor(public NavCtrl: NavController , private AuthService : LoginPage) {
     addIcons({ arrowBack });
@@ -39,6 +40,7 @@ export class ConfigurationLookFormsPage implements OnInit {
  async ngOnInit() {
     // cogemos el user_id del usuario 
     this.user_data = await this.GeolocationService.getUserID()
+    this.username = await this.Supabase.getUserName(this.user_data)
     // cogemos lo datos
     this.data = await this.Supabase.getFormsUser(this.user_data) as any[];
     // aseguramos que se importen los datos a la tabla
@@ -52,10 +54,12 @@ export class ConfigurationLookFormsPage implements OnInit {
 
   // llevamos 
   OnSelect(result : any){
-    this.NavCtrl.navigateForward('viewForm' , {
+
+    this.NavCtrl.navigateForward('/viewForm' , {
       queryParams: {
         id : result.id,
-        data: result,
+        data : JSON.stringify(result),
+        username : this.username[0].username,
       },
     })
   }

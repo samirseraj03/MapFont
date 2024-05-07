@@ -40,44 +40,37 @@
             <ion-item>
               <ion-label>
                 <h2>Id</h2>
-                <p>Paragraph</p>
+                <p>{{id_form}}</p>
               </ion-label>
             </ion-item>
 
             <ion-item>
               <ion-label>
                 <h2>Usuario</h2>
-                <p>Paragraph</p>
-              </ion-label>
-            </ion-item>
-
-            <ion-item>
-              <ion-label>
-                <h2>Nombre Fuente</h2>
-                <p>Paragraph</p>
+                <p>{{username}}</p>
               </ion-label>
             </ion-item>
 
             <ion-item>
               <ion-label>
                 <h2>Nombre / descripcion Fuente</h2>
-                <p>Paragraph</p>
-                <p>Paragraph</p>
+                <p>{{data.watersourcesname}}</p>
+                <p>{{data.description}}</p>
               </ion-label>
             </ion-item>
 
             <ion-item>
               <ion-label>
                 <h2>LngLat / adress</h2>
-                <p>Paragraph</p>
-                <p>Paragraph</p>
+                <p>{{data.location.longitude}}</p>
+                <p>{{data.location.latitude}}</p>
               </ion-label>
             </ion-item>
 
          
             <ion-label class="ion-padding">
               <h2>Creado:</h2>
-              <p>Paragraph</p>
+              <p>{{GeolocationService.formatDate(data.created_at)}}</p>
             </ion-label>
           </ion-list>
         </div>

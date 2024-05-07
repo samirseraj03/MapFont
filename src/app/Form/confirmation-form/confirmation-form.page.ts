@@ -120,10 +120,12 @@ async OnSelectNavigate(result: any) {
 }
 
 ViewForm(data : any){
+  console.log(data);
   this.NavCtrl.navigateForward( '/viewForm', {
-    state: {
+    queryParams: {
       id : data.id,
-      data : data,
+      data : JSON.stringify(data),
+      username : data.username,
     },
   });
 }
