@@ -5,6 +5,7 @@ import {
 } from '@ionic/angular';
 import { Geolocation } from '@capacitor/geolocation';
 import { Preferences } from '@capacitor/preferences';
+import { Capacitor } from '@capacitor/core';
 
 
 export default class GeolocationService {
@@ -14,24 +15,24 @@ export default class GeolocationService {
   longitude: any = 0;
 
   // para obtener nuestra localizacion acutal
-  // getGeolocation() {
-  //   return new Promise((resolve, reject) => {
-  //     if (navigator.geolocation) {
-  //       navigator.geolocation.getCurrentPosition(
-  //         (position) => {
-  //           this.latitude = position.coords.latitude;
-  //           this.longitude = position.coords.longitude;
-  //           resolve(position); // Resolve with the position data
-  //         },
-  //         (error) => {
-  //           reject(error); // Reject with the error message
-  //         }
-  //       );
-  //     } else {
-  //       reject('Geolocation not supported');
-  //     }
-  //   });
-  // }
+  getGeolocationWeb() {
+    return new Promise((resolve, reject) => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            this.latitude = position.coords.latitude;
+            this.longitude = position.coords.longitude;
+            resolve(position); // Resolve with the position data
+          },
+          (error) => {
+            reject(error); // Reject with the error message
+          }
+        );
+      } else {
+        reject('Geolocation not supported');
+      }
+    });
+  }
 
   // para volver atras
   GoBack(navCtrl: NavController) {
@@ -39,18 +40,24 @@ export default class GeolocationService {
   }
 
   async checkLocationPermission() {
-    const permissionStatus = await Geolocation.checkPermissions();
+    console.log("is native platform" , Capacitor.isNativePlatform())
 
-    if (permissionStatus.location === 'granted' || permissionStatus.coarseLocation === 'granted') {
-      return 'granted';
-    } else if (
-      permissionStatus.location === 'prompt' ||
-      permissionStatus.location === 'prompt-with-rationale'
-    ) {
-      return await this.requestLocationPermission();
-    } else {
-      return 'denied';
+    if (Capacitor.isNativePlatform() === true){
+      const permissionStatus = await Geolocation.checkPermissions();
+      if (permissionStatus.location === 'granted' || permissionStatus.coarseLocation === 'granted') {
+        return 'granted';
+      } else if (
+        permissionStatus.location === 'prompt' ||
+        permissionStatus.location === 'prompt-with-rationale'
+      ) {
+        return await this.requestLocationPermission();
+      } else {
+        return 'denied';
+      }
     }
+    else {
+      return 'web'
+    }  
   }
 
   // solictamos el acceso si no esta disponible
@@ -68,20 +75,32 @@ export default class GeolocationService {
     return new Promise(async (resolve, reject) => {
       // checkeamos los permisos de los dispostivos
       let check = await this.checkLocationPermission();
-      
-      if (check == 'granted') {
-        let coordinates = await Geolocation.getCurrentPosition();
-        console.log('Current position:', coordinates);
-        // para insertar las cordenadas como variable global
-        this.latitude = coordinates.coords.latitude;
-        this.longitude = coordinates.coords.longitude;   
-        resolve(coordinates);
-      } else if (check == 'denied') {
-        reject('Geolocation not supported');
+
+      console.log("check" , check)
+
+      if (check === 'web'){
+
+        let data = await this.getGeolocationWeb()
+        if (data){   
+          resolve(data);
+        }
+        else {
+          reject('Geolocation not supported');
+        }
+
       }
-
-      console.log(check)
-
+      else{
+        if (check == 'granted') {
+          let coordinates = await Geolocation.getCurrentPosition();
+          console.log('Current position:', coordinates);
+          // para insertar las cordenadas como variable global
+          this.latitude = coordinates.coords.latitude;
+          this.longitude = coordinates.coords.longitude;   
+          resolve(coordinates);
+        } else if (check == 'denied') {
+          reject('Geolocation not supported');
+        }
+      }
     });
   }
 

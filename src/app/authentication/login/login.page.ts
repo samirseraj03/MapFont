@@ -1,12 +1,17 @@
-import { Component, Injectable, OnInit } from '@angular/core';
+import { Component, Injectable, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, NavController } from '@ionic/angular';
+import {   NavController  } from '@ionic/angular';
 import { LoadingController } from '@ionic/angular';
 import { AuthenticationService } from '../../authentication.service';
 import { Preferences } from '@capacitor/preferences';
 import { ActivatedRoute } from '@angular/router';
 import { TabsPage } from 'src/app/tabs/tabs.page';
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent, IonButton, IonInput, IonItem, IonButtons, IonCardContent, IonCard ,IonCardTitle , IonRow , IonCol , IonCardHeader} from '@ionic/angular/standalone';
 
 @Injectable({
   providedIn: 'root',
@@ -16,9 +21,13 @@ import { TabsPage } from 'src/app/tabs/tabs.page';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
+  imports: [IonCard, CommonModule, FormsModule ,IonButton , IonCardContent ,IonHeader , IonToolbar , IonButtons ,IonCardTitle , IonRow, IonCol ,IonItem , IonTitle , IonContent , IonCardHeader , IonInput],
 })
 export class LoginPage implements OnInit {
+
+  //@ViewChild(IonInput) ionInput: IonInput | undefined;
+
+
   public errorMessage: string | undefined;
   email: any;
   password: any;
@@ -30,7 +39,7 @@ export class LoginPage implements OnInit {
 
   constructor(
     private authService: AuthenticationService,
-    private loadingController: LoadingController,
+    public loadingController: LoadingController,
     public NavCtrl: NavController,
     private route: ActivatedRoute,
     private TabsPage : TabsPage
@@ -70,14 +79,22 @@ export class LoginPage implements OnInit {
   //
   async login() {
     try {
-      this.loading = await this.loadingController.create({
-        message: '',
-        duration: 3000,
+      console.log("loading" , this.loading )
+
+
+      this.loadingController.create({ message: 'Cargando' }).then(loading => {
+        this.loading = loading;
+        this.loading.present();
       });
-      this.loading.present();
+
+      console.log("loading" , this.loading )
+
+
       const response = await this.authService.signIn(this.email, this.password);
-      this.loading.dismiss();
+
+      console.log(response)
       if (response) {
+
         // Check if response exists
         const { user = null, session } = response;
 
@@ -106,6 +123,8 @@ export class LoginPage implements OnInit {
       // Manejar el error, por ejemplo, mostrar un mensaje de error al usuario.
     } finally {
       this.OnSuccess();
+      this.loading.dismiss();
+
     }
   }
 

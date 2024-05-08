@@ -47,14 +47,13 @@ export class RegisterPage implements OnInit {
 
   async Register() {
     // abrimos el popoup
-    this.loading = await this.loadingController.create({
-      message: '',
-      duration: 3000,
+    this.loadingController.create({ message: 'Cargando' }).then(loading => {
+      this.loading = loading;
+      this.loading.present();
     });
 
     try {
-      // presentamos el popoup
-      this.loading.present()
+
       // cogemos la localizacion del usuario previa
       let location = await this.GeolocationService.getGeolocation()
       // registramos el usuario con la funcion de supabase y obtenemos los datos

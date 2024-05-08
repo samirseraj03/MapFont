@@ -7,7 +7,7 @@ import DatabaseService from '../../Types/SupabaseService';
 import { addIcons } from 'ionicons';
 import { arrowBack } from 'ionicons/icons';
 import * as mapboxgl from 'mapbox-gl';
-import { environment } from 'src/environments/environment';
+import { environment, setMapboxAccessToken } from 'src/environments/environment';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -43,7 +43,7 @@ export class ViewFormPage implements OnInit {
     this.img_ref_view_form = this.Supabase.GetStorage(this.data.photo);
 
     // importamos el accessTokenMapbox para desplegar el mapa
-    (mapboxgl as any).accessToken = environment.accessToken;
+  //  setMapboxAccessToken(environment.accessToken);
     // cogemos las primeras localizacion para poder desplegar el mapa y obtener posicion
 
     // desplegamos el mapa de mapBox
@@ -53,6 +53,7 @@ export class ViewFormPage implements OnInit {
   getMap() {
     // desplegar el map
     this.map_view_form = new mapboxgl.Map({
+      accessToken : environment.accessToken,
       container: 'mapViewForm',
       style: 'mapbox://styles/mapbox/dark-v11',
       center: [this.data.location.longitude, this.data.location.latitude],

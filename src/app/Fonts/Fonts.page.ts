@@ -11,6 +11,8 @@ import GeolocationService from '../Globals/Geolocation';
 import DatabaseService from '../Types/SupabaseService';
 import { LoadingController, AlertController, NavController } from "@ionic/angular";
 import { OverlayEventDetail } from '@ionic/core/components';
+import { setMapboxAccessToken } from './../../environments/environment';
+
 
 
 
@@ -46,8 +48,10 @@ export class fontsPage {
 
   async ionViewWillEnter() {
 
+    this.cargarScript();
+
     // importamos el accessTokenMapbox para desplegar el mapa
-    (mapboxgl as any).accessToken = environment.accessToken;
+   // (mapboxgl as any).accessToken = environment.accessToken;
     // cogemos las primeras localizacion para poder desplegar el mapa y obtener posicion
     // await this.GeolocationService.getGeolocationCapacitor();
     await this.GeolocationService.getGeolocation();
@@ -75,6 +79,7 @@ export class fontsPage {
   getMap() {
     // desplegar el map
     this.map = new mapboxgl.Map({
+      accessToken : environment.accessToken,
       container: 'Mapa-de-box',
       style: 'mapbox://styles/mapbox/dark-v11',
       center: [
@@ -99,6 +104,7 @@ export class fontsPage {
 
   async getWatersourcesToMap() {
     try {
+
       // llamamos a supabase
       let watersources = await this.Supabase.getWaterSources();
       if (Array.isArray(watersources) && watersources.length > 0) {
@@ -111,7 +117,7 @@ export class fontsPage {
             element.ispotable,
             element.location.latitude,
             element.location.longitude,
-            element.photo
+            this.Supabase.GetStorage(element.photo)
           );
         });
       }
@@ -153,8 +159,40 @@ export class fontsPage {
       <li>${available}</li>
       <li>${ispotable}</li>
       <li>${description}</li>
-    </ul>`
-    );
+    </ul>
+    <ion-button id="open-modal" expand="block">Open</ion-button>
+
+
+    <ion-modal trigger="open-modal">
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+        <ion-button onclick="cancel()">Cancel</ion-button>
+        </ion-buttons>
+        <ion-title>Welcome</ion-title>
+        <ion-buttons slot="end">
+          <ion-button onclick="confirm()" strong="true">Confirm</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+      <ion-item>
+        <label for="">Nombre de la fuente: ${name}</label>
+      </ion-item>
+      <ion-item>
+        <label for="">${available}</label>
+      </ion-item>
+      <ion-item>
+        <label for="">${ispotable}</label>
+      </ion-item>
+      <ion-item>
+        <label for="">${description}</label>
+      </ion-item>
+    </ion-content>
+  </ion-modal>
+
+   `
+  );
 
     // create DOM element for the marker
     const el = document.createElement('div');
@@ -195,17 +233,29 @@ export class fontsPage {
     return element instanceof HTMLElement;
   }
 
-  // para abir el popup
-  cancel(){
-    if (this.modal)
-      this.modal.dismiss(null, 'cancel');
 
+
+  cargarScript(): void {
+    document.addEventListener("DOMContentLoaded", () => {
+      var modal = document.querySelector('ion-modal');
+    });
+
+    // Definir la función cancel() en el ámbito global
+    (window as any).cancel = () => {
+      var modal = document.querySelector('ion-modal');
+      if (modal)
+        modal.dismiss(null, 'cancel');
+    };
+
+    // Definir la función confirm() en el ámbito global
+    (window as any).confirm = () => {
+      var modal = document.querySelector('ion-modal');
+      if (modal)
+        modal.dismiss(null, 'cancel');
+    };
   }
 
-  confirm(){
-    if (this.modal)
-    this.modal.dismiss("thisname", 'confirm');
-  }
+
 
   message : any;
   onWillDismiss(event : any){
@@ -215,6 +265,7 @@ export class fontsPage {
       this.message = `Hello, ${ev.detail.data}!`;
     }
   }
+
 
   }
 

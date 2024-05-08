@@ -42,6 +42,9 @@ export class ConfirmationFormPage implements OnInit {
   // cuando se confirma el formulario por
   async OnConfirm(result : any){
 
+    console.log(result)
+
+
     this.loading = await this.loadingController.create({
       message: '',
     });
@@ -64,7 +67,7 @@ export class ConfirmationFormPage implements OnInit {
       },
       name: result.watersourcesname,
       address: result.address,
-      isPotable: result.is_potable,
+      ispotable: result.is_potable,
       available: result.available,
       created_at: new Date(),
       photo: result.photo,
@@ -75,8 +78,20 @@ export class ConfirmationFormPage implements OnInit {
     result.approved = true
     try {
       this.loading.present()
-      await this.Supabase.insertWaterSource(waterSource)
-      await this.Supabase.updateForm(result.id , result.approved)
+      let insert = await this.Supabase.insertWaterSource(waterSource)
+      if (insert){
+        let query = await this.Supabase.updateForm(result.id , result.approved)
+
+        if (query){
+          const indexToRemove = this.results.findIndex(
+            (form: { id: any; }) => form.id === result.id
+          );
+          if (indexToRemove !== -1 ){
+            console.log(indexToRemove)
+            this.results.splice(indexToRemove , 1);
+          }  
+        }  
+      } 
     }
     catch {
       await this.loading.dismiss();

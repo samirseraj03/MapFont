@@ -5,7 +5,7 @@ import { IonicModule, NavController } from '@ionic/angular';
 import GeolocationService from '../../Globals/Geolocation';
 import { addIcons } from 'ionicons';
 import { arrowBack } from 'ionicons/icons';
-import { environment } from './../../../environments/environment';
+import { environment, setMapboxAccessToken } from './../../../environments/environment';
 import * as mapboxgl from 'mapbox-gl';
 import { ExploreContainerComponent } from '../../explore-container/explore-container.component';
 import { AxiosResponse } from 'axios';
@@ -39,9 +39,8 @@ export class FormSelectLocationPage implements OnInit {
     this.route.queryParams.subscribe(async (params) => {
       this.image = await params['image'];
     });
-
     // importamos el accessTokenMapbox para desplegar el mapa
-    (mapboxgl as any).accessToken = environment.accessToken;
+    //setMapboxAccessToken(environment.accessToken);
     // cogemos las primeras localizacion para poder desplegar el mapa y obtener posicion
     await this.GeolocationService.getGeolocation();
     // desplegamos el mapa de mapBox
@@ -51,6 +50,7 @@ export class FormSelectLocationPage implements OnInit {
   getMap() {
     // desplegar el map
     this.map_location = new mapboxgl.Map({
+      accessToken : environment.accessToken,
       container: 'MapaLocation',
       style: 'mapbox://styles/mapbox/dark-v11',
       center: [

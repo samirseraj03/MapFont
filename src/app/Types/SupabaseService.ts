@@ -24,7 +24,7 @@ export interface WaterSources {
   location: any;
   name: string;
   address: string;
-  isPotable: boolean;
+  ispotable: boolean;
   available: boolean;
   created_at: any;
   photo: string;
@@ -69,7 +69,7 @@ export default class DatabaseService {
       );
     }
 
-    this.supabase = createClient(supabaseUrl, supabaseKey);
+    this.supabase = createClient(supabaseUrl, supabaseKey , {auth : {autoRefreshToken: false,persistSession: true}});
   }
 
   async insertUser(newUser: User): Promise<any> {

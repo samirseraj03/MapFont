@@ -1,18 +1,19 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, NavController, MenuController } from '@ionic/angular';
+import { NavController, MenuController } from '@ionic/angular';
 import { arrowBack, arrowForward } from 'ionicons/icons';
 import GeolocationService from 'src/app/Globals/Geolocation';
 import { addIcons } from 'ionicons';
 import { LoginPage } from 'src/app/authentication/login/login.page';
+import {  IonMenu   ,IonButton , IonCardContent ,IonHeader , IonToolbar , IonButtons ,IonCardTitle , IonRow, IonCol ,IonItem , IonTitle , IonContent , IonCardHeader , IonInput, IonRouterOutlet, IonList } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-configuration-tab',
   templateUrl: './configuration-tab.page.html',
   styleUrls: ['./configuration-tab.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
+  imports: [IonList, IonRouterOutlet,  IonMenu , CommonModule, FormsModule , CommonModule, FormsModule ,IonButton , IonCardContent ,IonHeader , IonToolbar , IonButtons ,IonCardTitle , IonRow, IonCol ,IonItem , IonTitle , IonContent , IonCardHeader , IonInput],
 })
 export class ConfigurationTabPage {
   constructor(public NavCtrl: NavController, private menuCtrl: MenuController , private loginPage : LoginPage) {
@@ -21,7 +22,7 @@ export class ConfigurationTabPage {
 
   ionViewWillEnter() {
     // Mostrar el menú al entrar en la página de los tabs
-    this.menuCtrl.enable(true, 'main-content');
+    //this.menuCtrl.enable(true, 'main-content');
   }
 
   GeolocationService = new GeolocationService();
@@ -63,6 +64,6 @@ export class ConfigurationTabPage {
         break;
     }
 
-    this.menuCtrl.close('main-content');
+    //this.menuCtrl.close('main-content');
   }
 }
