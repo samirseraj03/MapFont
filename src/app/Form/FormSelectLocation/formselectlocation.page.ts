@@ -1,7 +1,7 @@
 import { Component, OnInit  } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, NavController } from '@ionic/angular';
+import {  NavController } from '@ionic/angular';
 import GeolocationService from '../../Globals/Geolocation';
 import { addIcons } from 'ionicons';
 import { arrowBack } from 'ionicons/icons';
@@ -11,14 +11,14 @@ import { ExploreContainerComponent } from '../../explore-container/explore-conta
 import { AxiosResponse } from 'axios';
 import axios from 'axios';
 import { ActivatedRoute } from '@angular/router';
-
+import { IonHeader, IonToolbar, IonButtons, IonIcon, IonButton, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonSearchbar, IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
 
 @Component({
   selector: 'app-form-select-location',
   templateUrl: './formselectlocation.page.html',
   styleUrls: ['./formselectlocation.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, ExploreContainerComponent],
+  imports: [IonList, IonLabel, IonItem, IonSearchbar, IonCardTitle, IonCardHeader, IonCard, IonContent, IonTitle, IonButton, IonIcon, IonButtons, IonToolbar, IonHeader,  CommonModule, FormsModule, ExploreContainerComponent],
 })
 export class FormSelectLocationPage implements OnInit {
   map_location: any;

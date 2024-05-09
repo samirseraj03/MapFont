@@ -1,20 +1,21 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
-import { IonicModule, NavController , LoadingController } from '@ionic/angular';
+import { NavController , LoadingController } from '@ionic/angular';
 import { ConfigurationTabPage } from '../configuration-tab/configuration-tab.page';
 import { arrowBack } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import GeolocationService from 'src/app/Globals/Geolocation';
 import { LoginPage } from 'src/app/authentication/login/login.page';
 import DatabaseService from 'src/app/Types/SupabaseService';
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonCardHeader, IonCard, IonCardTitle, IonCardSubtitle, IonButton, IonList, IonLabel ,  IonMenu , IonMenuButton, } from "@ionic/angular/standalone";
 
 @Component({
   selector: 'app-configuration-security',
   templateUrl: './configuration-security.page.html',
   styleUrls: ['./configuration-security.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, ConfigurationTabPage],
+  imports: [   IonMenu , IonMenuButton, IonLabel, IonList, IonButton, IonCardSubtitle, IonCardTitle, IonCard, IonCardHeader, IonContent, IonButtons, IonTitle, IonToolbar, IonHeader,  CommonModule, FormsModule, ConfigurationTabPage],
   providers: [ConfigurationTabPage], // Agrega ConfigurationTabPage como un proveedor
 })
 export class ConfigurationSecurityPage implements OnInit {

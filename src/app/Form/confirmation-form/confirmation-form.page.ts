@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule,NavController , AlertController , LoadingController } from '@ionic/angular';
+import { NavController , AlertController , LoadingController } from '@ionic/angular';
 import GeolocationService from '../../Globals/Geolocation';
 import DatabaseService from '../../Types/SupabaseService';
 import {WaterSources} from '../../Types/SupabaseService';
@@ -9,14 +9,14 @@ import {WaterSources} from '../../Types/SupabaseService';
 import { arrowBack, heartDislike, navigate ,checkmark , chevronForward} from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { Browser } from '@capacitor/browser';
-
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, IonCardHeader, IonCard, IonCardTitle, IonList, IonLabel, IonItem } from "@ionic/angular/standalone";
 
 @Component({
   selector: 'app-confirmation-form',
   templateUrl: './confirmation-form.page.html',
   styleUrls: ['./confirmation-form.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [IonItem, IonLabel, IonList, IonCardTitle, IonCard, IonCardHeader, IonContent, IonIcon, IonButton, IonButtons, IonTitle, IonToolbar, IonHeader,  CommonModule, FormsModule]
 })
 export class ConfirmationFormPage implements OnInit {
 

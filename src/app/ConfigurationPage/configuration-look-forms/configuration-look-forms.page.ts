@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule , NavController } from '@ionic/angular';
+import {   NavController } from '@ionic/angular';
 import { ConfigurationTabPage } from '../configuration-tab/configuration-tab.page';
 import { arrowBack } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
@@ -9,15 +9,14 @@ import GeolocationService from 'src/app/Globals/Geolocation';
 import { TabsPage } from 'src/app/tabs/tabs.page';
 import DatabaseService from '../../Types/SupabaseService';
 import { LoginPage } from '../../authentication/login/login.page';
-
-
+import { IonHeader, IonToolbar, IonTitle  ,  IonMenu , IonMenuButton, IonContent, IonCard, IonCardTitle, IonCardHeader, IonSearchbar, IonList, IonItem, IonLabel, IonButtons, IonIcon, IonButton } from "@ionic/angular/standalone";
 
 @Component({
   selector: 'app-configuration-look-forms',
   templateUrl: './configuration-look-forms.page.html',
   styleUrls: ['./configuration-look-forms.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule ,ConfigurationTabPage ,TabsPage]
+  imports: [IonButton, IonIcon, IonButtons, IonLabel, IonItem, IonList, IonSearchbar, IonCardHeader, IonCardTitle, IonCard, IonContent, IonTitle, IonToolbar, IonHeader, CommonModule, FormsModule ,ConfigurationTabPage ,TabsPage ,  IonMenu , IonMenuButton]
 })
 export class ConfigurationLookFormsPage implements OnInit {
 

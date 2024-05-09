@@ -1,22 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, NavController } from '@ionic/angular';
+import {  NavController } from '@ionic/angular';
 import { ConfigurationTabPage } from '../configuration-tab/configuration-tab.page';
 import { arrowBack, heartDislike, navigate } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import GeolocationService from 'src/app/Globals/Geolocation';
 import DatabaseService from 'src/app/Types/SupabaseService';
 import { Browser } from '@capacitor/browser';
-
-
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonCardTitle, IonCard, IonCardHeader, IonSearchbar, IonList, IonItem, IonLabel, IonButton, IonIcon ,IonMenu , IonMenuButton } from "@ionic/angular/standalone";
 
 @Component({
   selector: 'app-configuration-fonts-saved',
   templateUrl: './configuration-fonts-saved.page.html',
   styleUrls: ['./configuration-fonts-saved.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, ConfigurationTabPage],
+  imports: [IonIcon, IonMenu , IonMenuButton , IonButton, IonLabel, IonItem, IonList, IonSearchbar, IonCardHeader, IonCard, IonCardTitle, IonContent, IonButtons, IonTitle, IonToolbar, IonHeader,  CommonModule, FormsModule, ConfigurationTabPage],
 })
 export class ConfigurationFontsSavedPage implements OnInit {
   data: any[] = []

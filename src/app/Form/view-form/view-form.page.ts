@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, NavController } from '@ionic/angular';
+import {  NavController } from '@ionic/angular';
 import GeolocationService from '../../Globals/Geolocation';
 import DatabaseService from '../../Types/SupabaseService';
 import { addIcons } from 'ionicons';
@@ -9,13 +9,14 @@ import { arrowBack } from 'ionicons/icons';
 import * as mapboxgl from 'mapbox-gl';
 import { environment, setMapboxAccessToken } from 'src/environments/environment';
 import { ActivatedRoute } from '@angular/router';
+import { IonHeader, IonToolbar, IonButtons, IonTitle, IonIcon, IonButton, IonContent, IonCard, IonCardHeader, IonCardTitle, IonList, IonItem, IonLabel } from "@ionic/angular/standalone";
 
 @Component({
   selector: 'app-view-form',
   templateUrl: './view-form.page.html',
   styleUrls: ['./view-form.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
+  imports: [IonLabel, IonItem, IonList, IonCardTitle, IonCardHeader, IonCard, IonContent, IonButton, IonIcon, IonTitle, IonButtons, IonToolbar, IonHeader,  CommonModule, FormsModule],
 })
 export class ViewFormPage implements OnInit {
   GeolocationService = new GeolocationService();

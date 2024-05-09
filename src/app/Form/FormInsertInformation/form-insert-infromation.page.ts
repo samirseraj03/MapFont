@@ -1,7 +1,7 @@
 import { Component ,OnInit,ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule ,NavController } from '@ionic/angular';
+import {  NavController } from '@ionic/angular';
 import GeolocationService from '../../Globals/Geolocation';
 import { arrowBack } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
@@ -9,17 +9,14 @@ import { NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import DatabaseService from 'src/app/Types/SupabaseService';
 import {Forms} from 'src/app/Types/SupabaseService';
-
-
-
-
+import { IonSelectOption , IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonIcon, IonContent, IonCard, IonCardHeader, IonCardTitle, IonList, IonLabel } from "@ionic/angular/standalone";
 
 @Component({
   selector: 'app-form-insert-infromation',
   templateUrl: './form-insert-infromation.page.html',
   styleUrls: ['./form-insert-infromation.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [ IonSelectOption, IonLabel, IonList, IonCardTitle, IonCardHeader, IonCard, IonContent, IonIcon, IonTitle, IonButton, IonButtons, IonToolbar, IonHeader,  CommonModule, FormsModule]
 })
 export class FormInsertInfromationPage implements OnInit  {
 

@@ -1,20 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, NavController } from '@ionic/angular';
+import {  NavController } from '@ionic/angular';
 import { LoadingController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { AuthenticationService } from '../../authentication.service';
 import DatabaseService from '../../Types/SupabaseService';
 import { LoginPage } from '../login/login.page';
 import GeolocationService from '../../Globals/Geolocation';
+import { IonHeader, IonRow, IonToolbar, IonTitle, IonCard, IonContent, IonCardTitle, IonCol, IonCardHeader, IonItem, IonCardContent, IonButton } from "@ionic/angular/standalone";
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
+  imports: [IonButton, IonCardContent, IonItem, IonCardHeader, IonCol, IonCardTitle, IonContent, IonCard, IonTitle, IonToolbar, IonRow, IonHeader,  CommonModule, FormsModule],
 })
 export class RegisterPage implements OnInit {
   email: any;

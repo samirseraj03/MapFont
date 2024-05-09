@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild , ChangeDetectorRef  } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -7,29 +7,35 @@ import {
   NavController,
   IonButtons,
   IonIcon,
-  IonButton,
-} from '@ionic/angular/standalone';
+  IonButton, IonCard, IonCardHeader, IonCardTitle, IonList, IonLabel , IonMenu , IonMenuButton , IonSelect , IonSelectOption, IonInput } from '@ionic/angular/standalone';
 import { ExploreContainerComponent } from '../../explore-container/explore-container.component';
 import { arrowBack } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import GeolocationService from 'src/app/Globals/Geolocation';
 import { ConfigurationTabPage } from '../configuration-tab/configuration-tab.page';
-import { IonicModule , LoadingController } from '@ionic/angular';
-import { FormsModule, NgForm } from '@angular/forms';
+import {   LoadingController } from '@ionic/angular';
+import { FormsModule, NgForm   } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import DatabaseService from '../../Types/SupabaseService';
+
 
 @Component({
   selector: 'app-configuration-user',
   templateUrl: 'ConfigurationUser.page.html',
   styleUrls: ['ConfigurationUser.page.scss'],
   standalone: true,
-  imports: [
+  imports: [IonInput, IonLabel, IonList, IonCardTitle, IonCardHeader, IonCard,  
     FormsModule,
-    IonicModule,
     ExploreContainerComponent,
     ConfigurationTabPage,
     CommonModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonButtons,
+    IonIcon,
+    IonButton, IonMenu , IonMenuButton , IonSelect ,IonSelectOption
   ],
 })
 export class ConfigurationUserPage implements OnInit {
@@ -38,7 +44,7 @@ export class ConfigurationUserPage implements OnInit {
   img_ref_config: any = null;
   data: any;
 
-  constructor(public NavCtrl: NavController ,  private loadingController: LoadingController, 
+  constructor(public NavCtrl: NavController ,  private loadingController: LoadingController, private cdr: ChangeDetectorRef
   ) {
     addIcons({ arrowBack });
   }
@@ -62,6 +68,8 @@ export class ConfigurationUserPage implements OnInit {
       this.img_ref_config =
         this.Supabase.GetStorage(this.data[0].photo) || null;
     }
+    this.cdr.detectChanges();
+
   }
 
   loading : any
