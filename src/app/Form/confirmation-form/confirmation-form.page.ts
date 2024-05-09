@@ -5,6 +5,8 @@ import { NavController , AlertController , LoadingController } from '@ionic/angu
 import GeolocationService from '../../Globals/Geolocation';
 import DatabaseService from '../../Types/SupabaseService';
 import {WaterSources} from '../../Types/SupabaseService';
+import { AgGridAngular } from 'ag-grid-angular'; // Angular Data Grid Component
+import { ColDef } from 'ag-grid-community'; // Column Definition Type Interface
 
 import { arrowBack, heartDislike, navigate ,checkmark , chevronForward} from 'ionicons/icons';
 import { addIcons } from 'ionicons';
@@ -16,7 +18,7 @@ import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonCon
   templateUrl: './confirmation-form.page.html',
   styleUrls: ['./confirmation-form.page.scss'],
   standalone: true,
-  imports: [IonItem, IonLabel, IonList, IonCardTitle, IonCard, IonCardHeader, IonContent, IonIcon, IonButton, IonButtons, IonTitle, IonToolbar, IonHeader,  CommonModule, FormsModule]
+  imports: [AgGridAngular ,IonItem, IonLabel, IonList, IonCardTitle, IonCard, IonCardHeader, IonContent, IonIcon, IonButton, IonButtons, IonTitle, IonToolbar, IonHeader,  CommonModule, FormsModule]
 })
 export class ConfirmationFormPage implements OnInit {
 
@@ -27,6 +29,38 @@ export class ConfirmationFormPage implements OnInit {
 
   loading : any 
   alert : any
+
+  rowData = [
+    { make: "Tesla", model: "Model Y", price: 64950, electric: true },
+    { make: "Ford", model: "F-Series", price: 33850, electric: false },
+    { make: "Toyota", model: "Corolla", price: 29600, electric: false },
+  ];
+ 
+  // Column Definitions: Defines the columns to be displayed.
+  colDefs: ColDef[] = [
+    { field: "username" ,headerName:"Usuario:" },
+    { field: "watersourcesname" ,headerName:"Nombre fuente:" },
+    { field: "created_at" ,headerName:"Creado:"  },
+    { field: "location.latitude" ,headerName:"latitude:"  },
+    { field: "location.longitude" ,headerName:"longitude:"  },
+    { field: "address" ,headerName:"adreça:"},
+    { field: `  <ion-label> 
+    <ion-buttons class="d-flex justify-content-end">
+      <ion-button (click)="OnSelectNavigate(result)">
+        <ion-icon  name="navigate"></ion-icon>
+      </ion-button>
+
+      <ion-button (click)="OnConfirm(result)">
+        <ion-icon name="checkmark"></ion-icon>
+      </ion-button>
+
+      <ion-button (click)="OnSelect(result)">
+        <ion-icon  name="chevron-forward"></ion-icon>
+     </ion-button>
+
+  </ion-buttons>
+</ion-label>`  , headerName:"" },
+  ];
 
 
 

@@ -27,57 +27,63 @@
       <ion-card-subtitle>Puja la Foto del Font</ion-card-subtitle>
     </ion-card-header>
 
+    <div class="container ms-md-0">
     <img
       *ngIf="!img_ref"
-      class="ms-3 d-block w-50 h-50"
+      class="me-1 w-md-50 h-md-50 "
       alt="Silhouette of mountains"
       src="https://ionicframework.com/docs/img/demos/card-media.png"
     />
 
     <img
       *ngIf="img_ref"
-      class="ms-3 d-block w-50"
+      class="me-1 w-md-50 h-md-50"
       alt="Silhouette of mountains"
       [src]="img_ref"
       style="max-height: 345px"
     />
-    <input
-      id="fileItem"
-      type="file"
-      style="display: none"
-      (change)="handleFileInput($event)"
-    />
+  </div>
+    
 
-    <div class="row w-50">  
+    <div class="row mx-1 mt-2">  
     <!-- upload -->
-      <div class="col">
+      <div class="col  w-100">
+        <input
+        id="fileItem"
+        type="file"
+        style="display: none"
+        (change)="handleFileInput($event)"   />
+   
         <ion-button
-          class="btn btn-secondary mt-4 ms-3 mb-0 w-100"
+          class="btn btn-secondary  "
           fill="clear"
-          (click)="SelectInput()"
-        >
+          (click)="SelectInput()" >
           Pujar Foto
         </ion-button>
       </div>
       <!-- delete -->
-      <div class="col w-50 ">
+      <div class="col w-sm-100 w-md-50">
         <ion-button
-          class="btn btn-danger mt-4 ms-3 mb-0 w-100 me-auto"
+          class="btn btn-danger "
           fill="clear"
           (click)="Delete()"
         >
           eliminar Foto
         </ion-button>
       </div>
-    </div>
+
+      <div class="col">
 
     <!-- siguente -->
     <ion-button
-      class="btn btn-success mt-3 ms-3 mb-3 w-50"
+      class="btn btn-success "
       fill="clear"
       (click)="ImageSuccess()"
     >
       siguente
     </ion-button>
+  </div>
+  </div>
+
   </ion-card>
 </ion-content>

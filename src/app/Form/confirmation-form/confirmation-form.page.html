@@ -21,8 +21,16 @@
   </ion-card-title>
 
 
+  <ag-grid-angular
+ class="ag-theme-quartz"
+ style="height: 500px;" 
+ [rowData]="results"
+ [columnDefs]="colDefs">
+</ag-grid-angular>
+
+
    <!--body de la lista  -->
-  <ion-list>
+  <!-- <ion-list>
     <ion-item>
           <ion-label>Usuario:</ion-label>
           <ion-label>Nombre:</ion-label>
@@ -34,9 +42,9 @@
           <ion-label></ion-label>
 
     </ion-item>
-  </ion-list>
+  </ion-list> -->
 <!-- elementos de la lista -->
-    <ion-list>
+    <!-- <ion-list>
       <ion-item *ngFor="let result of results" >
         <ion-label (click)="OnSelect(result)">{{ result['username'] }}</ion-label>
         <ion-label (click)="OnSelect(result)">{{ result['watersourcesname'] }}</ion-label>   
@@ -63,7 +71,7 @@
     </ion-label>
 
       </ion-item>
-    </ion-list>
+    </ion-list> -->
 </ion-card-header>
 </ion-card>
 

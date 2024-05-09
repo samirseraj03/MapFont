@@ -17,3 +17,6 @@
     z-index: 9999; /* Establece un valor menor para que esté detrás del elemento .z-index-sticky */
 }
 
+ion-button {
+    width: 100% !important;
+}

@@ -35,19 +35,14 @@
             Confirma el sitio de la fuente , es Correcto ?
           </ion-card-title>
         </div>
-        <div class="col d-flex justify-content-end ">
-          <ion-button (click)="LocationSuccess()" [disabled]="LocationNotIsSelected" 
-          class="btn btn-success" fill="Clear">
-          Siguente
-        </ion-button>
-        </div>
+    
       </div>
 
 
-      <div class="row">
-        <div class="col">
+      <div class="row mt-5">
+        <div class="col-12 col-md-8">
           <ion-searchbar
-            class="mt-5"
+            class=""
             color="light"
             show-clear-button="always"
             animated="true"
@@ -58,12 +53,18 @@
             (ionInput)="SerachPlace($event)"
           ></ion-searchbar>
         </div>
-        <div class="d-flex align-items-end justify-content-center me-2 col-1">
+        <div class="col-12  col-md ">
           <ion-button (click)="SerachWithGps()" 
-          class="btn btn-danger " fill="clear">
+          class="btn btn-danger  " fill="clear">
           <span class="material-symbols-outlined">
           my_location
           </span>
+        </ion-button>
+        </div>
+        <div class="col-12  col-md">
+          <ion-button (click)="LocationSuccess()" [disabled]="LocationNotIsSelected" 
+          class="btn btn-success" fill="Clear">
+          Siguente
         </ion-button>
         </div>
       </div>

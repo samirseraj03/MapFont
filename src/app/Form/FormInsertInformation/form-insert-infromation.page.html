@@ -20,21 +20,15 @@
             Completa los ultimos pasos para subir la fuente :
           </ion-card-title>
         </div>
-        <div class="col d-flex justify-content-end">
-          <ion-button
-            (click)="onSubmit()"
-            class="btn btn-success"
-            fill="Clear"
-          >
-            Siguente
-          </ion-button>
-        </div>
+     
       </div>
+
+ 
 
       <form #myForm="ngForm">
 
       <ion-list>
-        <div class="mb-3">
+        <div class="mb-3 mt-4">
           <ion-label>Nombre de la fuente: </ion-label>
           <ion-input placeholder="Nombre" name="watersourcesname" [(ngModel)]="formData.watersourcesname" required></ion-input>
         </div>
@@ -67,6 +61,16 @@
       </ion-list>
 
       </form>
+
+      <div class=" w-100 ">
+        <ion-button
+          (click)="onSubmit()"
+          class="btn btn-success"
+          fill="Clear"
+        >
+          Siguente
+        </ion-button>
+      </div>
     </ion-card-header>
   </ion-card>
 

@@ -43,6 +43,7 @@
     "@supabase/supabase-js": "^2.43.1",
     "@swimlane/ngx-datatable": "^20.1.0",
     "@types/mapbox-gl": "^3.1.0",
+    "ag-grid-angular": "^31.3.1",
     "bootstrap": "^5.3.2",
     "ionicons": "^7.2.1",
     "mapbox-gl": "^3.2.0",
