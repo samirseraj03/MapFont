@@ -45,8 +45,17 @@
     ></ion-searchbar>
 
 
+
+    <ag-grid-angular
+    class="ag-theme-quartz"
+    style="height: 500px;" 
+    [rowData]="results"
+    [columnDefs]="colDefs">
+   </ag-grid-angular>
+   
+
    <!--body de la lista  -->
-  <ion-list>
+  <!-- <ion-list>
     <ion-item>
           <ion-label>Nombre:</ion-label>
           <ion-label>Dirección</ion-label>
@@ -54,9 +63,9 @@
           <ion-label></ion-label>
 
     </ion-item>
-  </ion-list>
+  </ion-list> -->
 <!-- elementos de la lista -->
-    <ion-list>
+    <!-- <ion-list>
       <ion-item *ngFor="let result of results" >
         <ion-label (click)="OnSelect(result)">{{ result['matchedWaterSource']['name'] }}</ion-label>
         <ion-label (click)="OnSelect(result)">{{ result['matchedWaterSource']['address'] }}</ion-label>   
@@ -74,7 +83,7 @@
     </ion-label>
 
       </ion-item>
-    </ion-list>
+    </ion-list> -->
 </ion-card-header>
 </ion-card>
 

@@ -6,8 +6,7 @@ import GeolocationService from '../../Globals/Geolocation';
 import DatabaseService from '../../Types/SupabaseService';
 import {WaterSources} from '../../Types/SupabaseService';
 import { AgGridAngular } from 'ag-grid-angular'; // Angular Data Grid Component
-import { ColDef } from 'ag-grid-community'; // Column Definition Type Interface
-
+import { ColDef   } from 'ag-grid-community'; // Column Definition Type Interface
 import { arrowBack, heartDislike, navigate ,checkmark , chevronForward} from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { Browser } from '@capacitor/browser';
@@ -30,38 +29,65 @@ export class ConfirmationFormPage implements OnInit {
   loading : any 
   alert : any
 
-  rowData = [
-    { make: "Tesla", model: "Model Y", price: 64950, electric: true },
-    { make: "Ford", model: "F-Series", price: 33850, electric: false },
-    { make: "Toyota", model: "Corolla", price: 29600, electric: false },
-  ];
- 
+
   // Column Definitions: Defines the columns to be displayed.
   colDefs: ColDef[] = [
-    { field: "username" ,headerName:"Usuario:" },
-    { field: "watersourcesname" ,headerName:"Nombre fuente:" },
-    { field: "created_at" ,headerName:"Creado:"  },
-    { field: "location.latitude" ,headerName:"latitude:"  },
-    { field: "location.longitude" ,headerName:"longitude:"  },
-    { field: "address" ,headerName:"adreça:"},
-    { field: `  <ion-label> 
-    <ion-buttons class="d-flex justify-content-end">
-      <ion-button (click)="OnSelectNavigate(result)">
-        <ion-icon  name="navigate"></ion-icon>
-      </ion-button>
-
-      <ion-button (click)="OnConfirm(result)">
-        <ion-icon name="checkmark"></ion-icon>
-      </ion-button>
-
-      <ion-button (click)="OnSelect(result)">
-        <ion-icon  name="chevron-forward"></ion-icon>
-     </ion-button>
-
-  </ion-buttons>
-</ion-label>`  , headerName:"" },
+    { field: "username", headerName: "Usuario:" },
+    { field: "watersourcesname", headerName: "Nombre fuente:" },
+    { field: "created_at", headerName: "Creado:" },
+    { field: "location.latitude", headerName: "latitude:" },
+    { field: "location.longitude", headerName: "longitude:" },
+    { field: "address", headerName: "adreça:" },
+    {
+      field: "",
+      headerName: "",
+      cellRenderer: (params: any) => {
+        const rowData = params.data;
+  
+        const onSelectNavigate = () => this.OnSelectNavigate(rowData);
+        const onConfirm = () => this.OnConfirm(rowData);
+        const onSelect = () => this.OnSelect(rowData);
+  
+        const buttonsHTML = `
+          <ion-buttons class="d-flex justify-content-end">
+            <ion-button id="navigateBtn">
+              <ion-icon name="navigate"></ion-icon>
+            </ion-button>
+            <ion-button id="confirmBtn">
+              <ion-icon name="checkmark"></ion-icon>
+            </ion-button>
+            <ion-button id="selectBtn">
+              <ion-icon name="chevron-forward"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        `;
+  
+        // Crear un elemento div temporal para contener los botones y registrar los eventos de clic
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = buttonsHTML;
+  
+        // Agregar los eventos de clic a los botones solo si existen
+        const navigateBtn = tempDiv.querySelector('#navigateBtn');
+        const confirmBtn = tempDiv.querySelector('#confirmBtn');
+        const selectBtn = tempDiv.querySelector('#selectBtn');
+  
+        if (navigateBtn) {
+          navigateBtn.addEventListener('click', onSelectNavigate);
+        }
+  
+        if (confirmBtn) {
+          confirmBtn.addEventListener('click', onConfirm);
+        }
+  
+        if (selectBtn) {
+          selectBtn.addEventListener('click', onSelect);
+        }
+  
+        return tempDiv;
+      },
+    },
   ];
-
+  
 
 
   constructor(public NavCtrl: NavController , public alertController : AlertController ,  private loadingController: LoadingController,
@@ -76,7 +102,6 @@ export class ConfirmationFormPage implements OnInit {
   // cuando se confirma el formulario por
   async OnConfirm(result : any){
 
-    console.log(result)
 
 
     this.loading = await this.loadingController.create({
@@ -150,6 +175,7 @@ export class ConfirmationFormPage implements OnInit {
 
   // lo llevamos para mirar el forumulario
   OnSelect(result : any){
+    console.log("result" , result)
     this.ViewForm(result);
   }
  // obtener todos los elementos de forms
@@ -158,6 +184,9 @@ export class ConfirmationFormPage implements OnInit {
 }
 
 async OnSelectNavigate(result: any) {
+
+  console.log(result)
+
 
   let latitude = await result.location.latitude
   let longitude = await result.location.longitude
@@ -169,7 +198,6 @@ async OnSelectNavigate(result: any) {
 }
 
 ViewForm(data : any){
-  console.log(data);
   this.NavCtrl.navigateForward( '/viewForm', {
     queryParams: {
       id : data.id,

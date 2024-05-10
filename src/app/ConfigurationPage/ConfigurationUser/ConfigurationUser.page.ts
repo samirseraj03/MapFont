@@ -76,11 +76,12 @@ export class ConfigurationUserPage implements OnInit {
   async Update() {
     // utilizamos el supabase
 
-    this.loading = await this.loadingController.create({
-      message: 'estamos actualizando',
-    });   
+    this.loadingController.create({ message: 'Cargando' }).then(loading => {
+      this.loading = loading;
+      this.loading.present();
+    });
+
     try {
-      this.loading.present()
       await this.ToDataBase();
 
     }catch {

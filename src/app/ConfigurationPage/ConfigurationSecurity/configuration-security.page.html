@@ -37,7 +37,6 @@
         </div>
       </div>
 
-      <form #myForm="ngForm">
         <!-- div row col Grande  -->
         <div class="row">
           <div class="col d-flex justify-content-center align-items-center">
@@ -63,7 +62,7 @@
                 <ion-input
                   placeholder="contrasenya"
                   name="OldPassword"
-                  [(ngModel)]="formData.OldPassword"
+                  [(ngModel)]="OldPassword"
                   required
                   type="password"
                 ></ion-input>
@@ -74,7 +73,8 @@
                 <ion-input
                   placeholder="contrasenya"
                   name="NewPassword"
-                  [(ngModel)]="formData.NewPassword"
+                  value="NewPassword"
+                  [(ngModel)]="NewPassword"
                   required
                   type="password"
 
@@ -86,7 +86,7 @@
                 <ion-input
                   placeholder="contrasenya"
                   name="NewConfirmPassword"
-                  [(ngModel)]="formData.NewConfirmPassword"
+                  [(ngModel)]="NewConfirmPassword"
                   required
                   type="password"
 
@@ -96,7 +96,6 @@
             </ion-list>
           </div>
         </div>
-      </form>
     </ion-card-header>
   </ion-card>
 

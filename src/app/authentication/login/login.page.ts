@@ -79,7 +79,6 @@ export class LoginPage implements OnInit {
   //
   async login() {
     try {
-      console.log("loading" , this.loading )
 
 
       this.loadingController.create({ message: 'Cargando' }).then(loading => {

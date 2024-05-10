@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild , NgModule    } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, NgForm } from '@angular/forms';
+import { FormsModule, NgForm , ReactiveFormsModule } from '@angular/forms';
 import { NavController , LoadingController } from '@ionic/angular';
 import { ConfigurationTabPage } from '../configuration-tab/configuration-tab.page';
 import { arrowBack } from 'ionicons/icons';
@@ -8,19 +8,25 @@ import { addIcons } from 'ionicons';
 import GeolocationService from 'src/app/Globals/Geolocation';
 import { LoginPage } from 'src/app/authentication/login/login.page';
 import DatabaseService from 'src/app/Types/SupabaseService';
-import { IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonCardHeader, IonCard, IonCardTitle, IonCardSubtitle, IonButton, IonList, IonLabel ,  IonMenu , IonMenuButton, } from "@ionic/angular/standalone";
+import { IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonCardHeader, IonCard, IonCardTitle, IonCardSubtitle, IonButton, IonList, IonLabel ,  IonMenu , IonMenuButton, IonInput } from "@ionic/angular/standalone";
 
 @Component({
   selector: 'app-configuration-security',
   templateUrl: './configuration-security.page.html',
   styleUrls: ['./configuration-security.page.scss'],
   standalone: true,
-  imports: [   IonMenu , IonMenuButton, IonLabel, IonList, IonButton, IonCardSubtitle, IonCardTitle, IonCard, IonCardHeader, IonContent, IonButtons, IonTitle, IonToolbar, IonHeader,  CommonModule, FormsModule, ConfigurationTabPage],
+  imports: [IonInput, ReactiveFormsModule , CommonModule, FormsModule,  IonMenu , IonMenuButton, IonLabel, IonList, IonButton, IonCardSubtitle, IonCardTitle, IonCard, IonCardHeader, IonContent, IonButtons, IonTitle, IonToolbar, IonHeader,  ConfigurationTabPage],
   providers: [ConfigurationTabPage], // Agrega ConfigurationTabPage como un proveedor
 })
+
 export class ConfigurationSecurityPage implements OnInit {
   @ViewChild('myForm') myForm!: NgForm; // Obtén una referencia al formulario usando ViewChild
-  formData: any = {}; // Variable para almacenar los datos del formulario en formato JSON
+
+  OldPassword : any 
+  NewPassword : any 
+  NewConfirmPassword : any 
+
+
   img_ref_config: any = null;
   loading: any;
 
@@ -36,20 +42,22 @@ export class ConfigurationSecurityPage implements OnInit {
   // para hacer el update
   async Update() {
 
-    this.loading = await this.loadingController.create({
-      message: '',
-      duration: 3000,
+
+    this.loadingController.create({ message: 'Cargando' }).then(loading => {
+      this.loading = loading;
+      this.loading.present();
     });
-    this.loading.present();
+
+
     // comprovamos que coindicen las nuevas contrasenyas :
-    if (this.formData.NewPassword === this.formData.NewConfirmPassword) {
+    if (this.NewPassword === this.NewConfirmPassword) {
       // pasamos la funcion donde comprueba la antigua contrasenya y hace la nueva
       try {
         let email = await this.GeolocationService.getUserEmail();
         let data = await this.LoginService.UpdatePassword(
           email,
-          this.formData.OldPassword,
-          this.formData.NewPassword
+          this.OldPassword,
+          this.NewPassword
         );
         console.log(data)
         if (data === 'Success') {
@@ -80,7 +88,7 @@ export class ConfigurationSecurityPage implements OnInit {
 
   // subimos la contrsenya a la base de datos del usuario
   async ToDataBase() {
-    let password = { password: this.formData.NewPassword } as any;
+    let password = { password: this.NewPassword } as any;
     await this.Supabase.updateUser(
       await this.GeolocationService.getUserID(),
       password

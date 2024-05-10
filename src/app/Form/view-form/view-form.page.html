@@ -30,7 +30,7 @@
   <ion-card class="z-index-dropdown">
     <ion-card-header class="text-start">
       <ion-card-title class="d-flex mb-3">
-        {{ this.data.name }}
+        {{ data?.watersourcesname }}
       </ion-card-title>
 
       <div class="row">
@@ -54,23 +54,23 @@
             <ion-item>
               <ion-label>
                 <h2>Nombre / descripcion Fuente</h2>
-                <p>{{data.watersourcesname}}</p>
-                <p>{{data.description}}</p>
+                <p>{{data?.watersourcesname}}</p>
+                <p>{{data?.description}}</p>
               </ion-label>
             </ion-item>
 
             <ion-item>
               <ion-label>
                 <h2>LngLat / adress</h2>
-                <p>{{data.location.longitude}}</p>
-                <p>{{data.location.latitude}}</p>
+                <p>{{data?.location?.longitude}}</p>
+                <p>{{data?.location?.latitude}}</p>
               </ion-label>
             </ion-item>
 
          
             <ion-label class="ion-padding">
               <h2>Creado:</h2>
-              <p>{{GeolocationService.formatDate(data.created_at)}}</p>
+              <p>{{GeolocationService.formatDate(data?.created_at)}}</p>
             </ion-label>
           </ion-list>
         </div>
