@@ -24,6 +24,7 @@ import { NavController } from '@ionic/angular';
 import { arrowBack } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { FormSelectLocationPage } from '../FormSelectLocation/formselectlocation.page';
+import { Dialog } from '@capacitor/dialog';
 
 @Component({
   selector: 'app-form',
@@ -69,7 +70,7 @@ export class FormPage {
   }
 
   // para obtener el archivo del input
-  handleFileInput(event: any) {
+  async handleFileInput(event: any) {
     const selectedFile = event.target.files[0];
     this.image_push = event.target.files[0];
     if (selectedFile.type.startsWith('image/')) {
@@ -79,12 +80,15 @@ export class FormPage {
       };
       imgReader.readAsDataURL(selectedFile);
     } else {
-      alert('el tipo de archivo no es valido');
+      await Dialog.alert({
+        title: 'Atencion',
+        message: 'el tipo de archivo no es valido'
+      });
     }
   }
 
   // cunado la imagen esta succesed , ya se puede subir
-  ImageSuccess() {
+  async ImageSuccess() {
     if (this.img_ref) {
       this.NavCtrl.navigateForward( '/location', {
         queryParams: {
@@ -92,7 +96,10 @@ export class FormPage {
         },
       });
     } else {
-      alert('Sube una foto para poder continuar');
+      await Dialog.alert({
+        title: 'Atencion',
+        message: 'Sube una foto para poder continuar'
+      });
     }
   }
   // para eliminar la foto y poder subir otra

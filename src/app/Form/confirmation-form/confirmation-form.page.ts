@@ -7,10 +7,11 @@ import DatabaseService from '../../Types/SupabaseService';
 import {WaterSources} from '../../Types/SupabaseService';
 import { AgGridAngular } from 'ag-grid-angular'; // Angular Data Grid Component
 import { ColDef   } from 'ag-grid-community'; // Column Definition Type Interface
-import { arrowBack, heartDislike, navigate ,checkmark , chevronForward} from 'ionicons/icons';
+import { arrowBack, heartDislike, navigate ,checkmark , chevronForward , close} from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { Browser } from '@capacitor/browser';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, IonCardHeader, IonCard, IonCardTitle, IonList, IonLabel, IonItem } from "@ionic/angular/standalone";
+import { Dialog } from '@capacitor/dialog';
 
 @Component({
   selector: 'app-confirmation-form',
@@ -47,9 +48,13 @@ export class ConfirmationFormPage implements OnInit {
         const onSelectNavigate = () => this.OnSelectNavigate(rowData);
         const onConfirm = () => this.OnConfirm(rowData);
         const onSelect = () => this.OnSelect(rowData);
+        const onReject = () => this.OnReject(rowData);
   
         const buttonsHTML = `
           <ion-buttons class="d-flex justify-content-end">
+            <ion-button id="rejectBtn">
+              <ion-icon name="close"></ion-icon>
+            </ion-button>
             <ion-button id="navigateBtn">
               <ion-icon name="navigate"></ion-icon>
             </ion-button>
@@ -70,6 +75,7 @@ export class ConfirmationFormPage implements OnInit {
         const navigateBtn = tempDiv.querySelector('#navigateBtn');
         const confirmBtn = tempDiv.querySelector('#confirmBtn');
         const selectBtn = tempDiv.querySelector('#selectBtn');
+        const rejectBtn = tempDiv.querySelector('#rejectBtn');
   
         if (navigateBtn) {
           navigateBtn.addEventListener('click', onSelectNavigate);
@@ -82,6 +88,9 @@ export class ConfirmationFormPage implements OnInit {
         if (selectBtn) {
           selectBtn.addEventListener('click', onSelect);
         }
+        if ( rejectBtn) {
+          rejectBtn.addEventListener('click', onReject);
+        }
   
         return tempDiv;
       },
@@ -92,7 +101,7 @@ export class ConfirmationFormPage implements OnInit {
 
   constructor(public NavCtrl: NavController , public alertController : AlertController ,  private loadingController: LoadingController,
   ) {
-    addIcons({ arrowBack , heartDislike, navigate , checkmark ,chevronForward });
+    addIcons({ arrowBack , heartDislike, navigate , checkmark ,chevronForward ,close });
   }
 
   ngOnInit() {
@@ -104,21 +113,11 @@ export class ConfirmationFormPage implements OnInit {
 
 
 
-    this.loading = await this.loadingController.create({
-      message: '',
+    this.loadingController.create({ message: 'Cargando' }).then(loading => {
+      this.loading = loading;
+      this.loading.present();
     });
 
-    this.alert = await this.alertController.create({
-      header: 'SE HA CREADO LA FUENTE CORRECTAMENTE A LA BASE DE DATOS',
-      buttons: [
-        {
-          text: 'Exit',
-          htmlAttributes: {
-            'aria-label': 'close',
-          },
-        },
-      ],
-    });
     const waterSource: WaterSources = {
       location: { // Ejemplo de objeto anidado, asegúrate de que el tipo sea correcto
         latitude: result.location.latitude,
@@ -134,42 +133,45 @@ export class ConfirmationFormPage implements OnInit {
       watersourcetype : result.watersourcetype
     };
     // cambaiamos la variable y ponemos que se ha aprbado correctamente
-    result.approved = true
+    let ApprovedUpdated = {
+      approved : true
+    }
     try {
-      this.loading.present()
+     
       let insert = await this.Supabase.insertWaterSource(waterSource)
       if (insert){
-        let query = await this.Supabase.updateForm(result.id , result.approved)
+        let query = await this.Supabase.updateForm(result.id , ApprovedUpdated)
 
-        if (query){
+        if (query.length > 0){
           const indexToRemove = this.results.findIndex(
             (form: { id: any; }) => form.id === result.id
           );
+
           if (indexToRemove !== -1 ){
             console.log(indexToRemove)
             this.results.splice(indexToRemove , 1);
+            this.results = [...this.results]
           }  
-        }  
+        }  else {
+          throw Error
+        }
       } 
+      await Dialog.alert({
+        title: 'Atencion',
+        message: 'SE HA CREADO LA FUENTE CORRECTAMENTE A LA BASE DE DATOS'
+      });
+
     }
     catch {
       await this.loading.dismiss();
-      this.alert = await this.alertController.create({
-        header: 'NO SE HA CREADO LA FUENTE',
-        buttons: [
-          {
-            text: 'Exit',
-            htmlAttributes: {
-              'aria-label': 'close',
-            },
-          },
-        ],
+      await Dialog.alert({
+        title: 'Atencion',
+        message: 'NO SE HA CREADO LA FUENTE'
       });
-      this.alert.present();
     }
     finally {
       await this.loading.dismiss();
-      await this.alert.present();
+
     }
   }
 
@@ -185,9 +187,6 @@ export class ConfirmationFormPage implements OnInit {
 
 async OnSelectNavigate(result: any) {
 
-  console.log(result)
-
-
   let latitude = await result.location.latitude
   let longitude = await result.location.longitude
 
@@ -195,6 +194,27 @@ async OnSelectNavigate(result: any) {
   let link = await this.GeolocationService.generateGoogleMapsLink(latitude , longitude) as string
   // abrimos el enlace desde capacitor
   await Browser.open({ url: link });
+}
+
+// para rechazar el formulario
+  async OnReject(result : any){
+
+  let ApprovedUpdated = {
+    approved : true
+  }
+
+  let query = await this.Supabase.updateForm(result.id , ApprovedUpdated)
+
+  if (query.length > 0){
+    const indexToRemove = this.results.findIndex(
+      (form: { id: any; }) => form.id === result.id
+    );
+
+    if (indexToRemove !== -1 ){
+      this.results.splice(indexToRemove , 1);
+      this.results = [...this.results]
+    }  
+  }
 }
 
 ViewForm(data : any){

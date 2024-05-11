@@ -208,7 +208,7 @@ export default class DatabaseService {
     }
   }
 
-  async updateForm(formId: number, updatedForm: Forms): Promise<any> {
+  async updateForm(formId: number, updatedForm: any): Promise<any> {
     try {
       const { data: updatedFormData, error: updateError } = await this.supabase
         .from('forms')
@@ -219,11 +219,12 @@ export default class DatabaseService {
       if (updateError) {
         throw updateError;
       }
-
-      console.log('Form updated:', updatedFormData);
+      
       return updatedFormData;
     } catch (error) {
       console.error('Error updating form:', error);
+      return null; 
+
     }
   }
 
@@ -364,12 +365,13 @@ export default class DatabaseService {
     try {
       const { data: forms, error } = await this.supabase
         .from('forms')
-        .select('*');
+        .select('*')
+        .is('approved', null);
 
       if (error) {
         throw error;
       }
-
+    
       console.log('Forms retrieved:', forms);
       return forms;
     } catch (error) {
@@ -516,6 +518,56 @@ export default class DatabaseService {
           }else{
             return 'Success'
           }
+  }
+
+
+  async insertSavedFoutainWithUser(user_id : any , idFountain : any){
+
+    // prepramos las variables para insertar
+    let SavedFountain = {
+      autencationUserID : user_id ,
+      waterSource_id :idFountain,
+      created_at : new Date()
+
+    }
+
+    try {
+    const { data: insertedSavedFountain, error: savedFountainError } = await this.supabase
+    .from('savedfountains')
+    .insert(SavedFountain)
+    .select();
+
+    if (savedFountainError) {
+      throw savedFountainError;
+    } 
+    return insertedSavedFountain
+    }catch (error) {
+      console.error('Error al obtener los datos:', error);
+      return error;
+    }
+
+  }
+
+  // buscamos el fontain con el existente user , solo debe devolver un dato
+  async getSavedFoutainWithUser(user_id : any , idFountain : any){
+
+    try {
+      // Consulta para obtener los datos de public.savedfountains
+      const { data: savedFountainsData, error: fountainsError } =
+        await this.supabase
+          .from('savedfountains')
+          .select('*')
+          .eq('autencationUserID', user_id)
+          .eq ( 'waterSource_id' ,idFountain);
+
+      if (fountainsError) {
+        throw fountainsError;
+      } 
+      return savedFountainsData
+  }  catch (error) {
+    console.error('Error al obtener los datos:', error);
+    return error;
+  }
   }
 
 

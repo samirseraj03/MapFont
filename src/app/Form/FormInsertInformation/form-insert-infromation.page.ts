@@ -10,6 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 import DatabaseService from 'src/app/Types/SupabaseService';
 import {Forms} from 'src/app/Types/SupabaseService';
 import { IonSelectOption , IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonIcon, IonContent, IonCard, IonCardHeader, IonCardTitle, IonList, IonLabel } from "@ionic/angular/standalone";
+import { Dialog } from '@capacitor/dialog';
 
 @Component({
   selector: 'app-form-insert-infromation',
@@ -46,14 +47,17 @@ export class FormInsertInfromationPage implements OnInit  {
 
 
   // Método para recopilar la información del formulario
-  onSubmit() {
+  async onSubmit() {
     if (this.myForm.valid) {
       this.formData = this.myForm.value;
       this.ToDataBase();
       this.GoSuccess();
     }
     else {
-      alert("completa los ultimos datos para continuar")
+      await Dialog.alert({
+        title: 'Atencion',
+        message: 'completa los ultimos datos para continuar'
+      });
     }
   }
 

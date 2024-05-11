@@ -12,6 +12,7 @@ import { AxiosResponse } from 'axios';
 import axios from 'axios';
 import { ActivatedRoute } from '@angular/router';
 import { IonHeader, IonToolbar, IonButtons, IonIcon, IonButton, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonSearchbar, IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
+import { Dialog } from '@capacitor/dialog';
 
 @Component({
   selector: 'app-form-select-location',
@@ -147,7 +148,10 @@ export class FormSelectLocationPage implements OnInit {
     // habiltamos el boton que esta confiramado la dirrecion
     this.LocationNotIsSelected = false
     } catch (error) {
-      alert("ha sucedido un error , intentalo manualmente o mas tarde !")
+      await Dialog.alert({
+        title: 'Atencion',
+        message: 'ha sucedido un error , intentalo manualmente o mas tarde !'
+      });
     }
   }
   // pasamos a la siguente para completar el forumulario

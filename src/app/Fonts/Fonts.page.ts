@@ -12,6 +12,9 @@ import DatabaseService from '../Types/SupabaseService';
 import { LoadingController, AlertController, NavController } from "@ionic/angular";
 import { OverlayEventDetail } from '@ionic/core/components';
 import { setMapboxAccessToken } from './../../environments/environment';
+import { Browser } from '@capacitor/browser';
+import { Dialog } from '@capacitor/dialog';
+
 
 
 
@@ -111,13 +114,15 @@ export class fontsPage {
         // recorremos la lista que obtenemos de la base de datos
         watersources.forEach((element) => {
           this.UploadPopup(
+            element.id ,
             element.name,
             element.available,
             element.description,
             element.ispotable,
             element.location.latitude,
             element.location.longitude,
-            this.Supabase.GetStorage(element.photo)
+            element.photo ,
+            element.address
           );
         });
       }
@@ -128,14 +133,29 @@ export class fontsPage {
 
   // desplegamos los popups para las fuentes
   UploadPopup(
+    id : any ,
     name: any,
     available: any,
     description: string,
     ispotable: any,
     lat: any,
     lng: any,
-    photo: string
+    photo: string,
+    address : string
   ) {
+
+    // preparamos la localizacion
+
+     // buscamos si hay foto o no
+     if (!photo){
+      photo = '../../assets/icon/agua-potable.png'
+    }
+    else{
+      photo = this.Supabase.GetStorage(photo)
+    }
+
+
+
     // miramos si esta disponible la fuente :
     if (available) {
       available = 'Esta disponible la fuente';
@@ -169,30 +189,42 @@ export class fontsPage {
         <ion-buttons slot="start">
         <ion-button onclick="cancel()">Cancel</ion-button>
         </ion-buttons>
-        <ion-title>Welcome</ion-title>
+        <ion-title>${name}</ion-title>
         <ion-buttons slot="end">
           <ion-button onclick="confirm()" strong="true">Confirm</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
-      <ion-item>
-        <label for="">Nombre de la fuente: ${name}</label>
-      </ion-item>
-      <ion-item>
-        <label for="">${available}</label>
-      </ion-item>
-      <ion-item>
-        <label for="">${ispotable}</label>
-      </ion-item>
-      <ion-item>
-        <label for="">${description}</label>
-      </ion-item>
+  
+      <ion-img
+        src="${photo}"
+        alt="fuente de agua"
+      ></ion-img>
+      <div class="mt-3"> 
+        <ion-item>
+
+          <ion-text class="mt-3" color="primary">
+            <h1>${name}</h1>
+            <p class="ms-3">  ${description} </p>
+            <p class="ms-3">  ${address} </p>
+
+            <p class="ms-3">  ${available} </p>
+            <p class="ms-3">  ${ispotable} </p>
+          </ion-text>
+        </ion-item>
+        <div class="d-block mt-2"> 
+          <ion-button class="w-100 mt-2" onclick="OnNavigate(${lng} , ${lat})">Navegar</ion-button>
+          <ion-button class="w-100 mt-2" onclick="OnSaveFountain(${id})">Guardar fuente</ion-button>
+        </div>
+      </div>
     </ion-content>
   </ion-modal>
 
    `
   );
+
+ 
 
     // create DOM element for the marker
     const el = document.createElement('div');
@@ -236,9 +268,41 @@ export class fontsPage {
 
 
   cargarScript(): void {
+
+
     document.addEventListener("DOMContentLoaded", () => {
       var modal = document.querySelector('ion-modal');
     });
+
+    (window as any).OnNavigate = async (lng : any , lat : any ) => {
+
+      let link = await this.GeolocationService.generateGoogleMapsLink(lat , lng)
+      console.log()
+      await Browser.open({ url: link });
+    }
+
+    (window as any ).OnSaveFountain = async (id : any) => {
+
+      let data: any[] =  [] 
+      data = await this.Supabase.getSavedFoutainWithUser( await this.GeolocationService.getUserID() , id) as any
+      if ( data.length === 0 ){
+          console.log(data)
+          await this.Supabase.insertSavedFoutainWithUser( await this.GeolocationService.getUserID() , id)
+
+            await Dialog.alert({
+              title: 'fuente guardada',
+              message: 'la fuente ha sido guardada',
+            });
+          
+          
+      }
+      else {      
+          await Dialog.alert({
+            title: 'fuente no guardada',
+            message: 'la fuente ha sido guardada anteriormente',
+          });     
+      }
+    }
 
     // Definir la función cancel() en el ámbito global
     (window as any).cancel = () => {
@@ -254,8 +318,6 @@ export class fontsPage {
         modal.dismiss(null, 'cancel');
     };
   }
-
-
 
   message : any;
   onWillDismiss(event : any){

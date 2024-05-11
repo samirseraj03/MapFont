@@ -17,6 +17,7 @@ import {   LoadingController } from '@ionic/angular';
 import { FormsModule, NgForm   } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import DatabaseService from '../../Types/SupabaseService';
+import { Dialog } from '@capacitor/dialog';
 
 
 @Component({
@@ -102,7 +103,6 @@ export class ConfigurationUserPage implements OnInit {
     if (this.image_ref_upload_config) {
       this.formData.photo = await this.Supabase.InsertToStoarge(this.image_ref_upload_config);
 
-      console.log(this.formData)
       await this.Supabase.updateUser(
         await this.GeolocationService.getUserID(),
         this.formData
@@ -125,7 +125,7 @@ export class ConfigurationUserPage implements OnInit {
   image_ref_name_config: any;
   image_ref_upload_config: any;
   // para obtener el archivo del input
-  handleFileInput(event: any) {
+  async handleFileInput(event: any) {
     const selectedFile = event.target.files[0];
     console.log();
     if (selectedFile.type.startsWith('image/')) {
@@ -136,7 +136,10 @@ export class ConfigurationUserPage implements OnInit {
       };
       imgReader.readAsDataURL(selectedFile);
     } else {
-      alert('el tipo de archivo no es valido');
+      await Dialog.alert({
+        title: 'Atencion',
+        message: 'el tipo de archivo no es valido'
+      });
     }
   }
 

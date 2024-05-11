@@ -9,6 +9,7 @@ import GeolocationService from 'src/app/Globals/Geolocation';
 import { LoginPage } from 'src/app/authentication/login/login.page';
 import DatabaseService from 'src/app/Types/SupabaseService';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonCardHeader, IonCard, IonCardTitle, IonCardSubtitle, IonButton, IonList, IonLabel ,  IonMenu , IonMenuButton, IonInput } from "@ionic/angular/standalone";
+import { Dialog } from '@capacitor/dialog';
 
 @Component({
   selector: 'app-configuration-security',
@@ -65,16 +66,21 @@ export class ConfigurationSecurityPage implements OnInit {
           this.Success();
         }
       } catch (error) {
-        alert(
-          'tu contrasenya no se ha podido cambiar , comporuba las credentciales'
-        );
+        await Dialog.alert({
+          title: 'Atencion',
+          message: 'tu contrasenya no se ha podido cambiar , comporuba las credentciales'
+        });
+      
       }
       finally {
         this.loading.dismiss();
       }
     } else {
       await this.loading.dismiss();
-      alert('las contrasenyas no coinciden');
+      await Dialog.alert({
+        title: 'Atencion',
+        message: 'las contrasenyas no coinciden'
+      });
     }
   }
   // llevamos el guardado a succes
