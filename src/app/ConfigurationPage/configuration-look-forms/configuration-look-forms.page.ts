@@ -29,6 +29,8 @@ import {
 } from '@ionic/angular/standalone';
 import { AgGridAngular } from 'ag-grid-angular'; // Angular Data Grid Component
 import { ColDef } from 'ag-grid-community'; // Column Definition Type Interface
+import { TranslateModule , TranslateService } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-configuration-look-forms',
   templateUrl: './configuration-look-forms.page.html',
@@ -56,6 +58,7 @@ import { ColDef } from 'ag-grid-community'; // Column Definition Type Interface
     TabsPage,
     IonMenu,
     IonMenuButton,
+    TranslateModule
   ],
 })
 export class ConfigurationLookFormsPage implements OnInit {
@@ -65,7 +68,7 @@ export class ConfigurationLookFormsPage implements OnInit {
   user_data: any;
   username: any;
 
-  constructor(public NavCtrl: NavController, private AuthService: LoginPage) {
+  constructor(public NavCtrl: NavController, private AuthService: LoginPage , private Transalte : TranslateService) {
     addIcons({ arrowBack, chevronForward });
   }
 
@@ -87,15 +90,15 @@ export class ConfigurationLookFormsPage implements OnInit {
 
         if (rowData.approved == true) {
           buttonsHTML = `
-        <ion-label " class="text-success text-center">Aprobado</ion-label>
+        <ion-label " class="text-success text-center">${this.Transalte.instant('approved')}</ion-label>
      `;
         } else if (rowData.approved == false) {
           buttonsHTML = `
-         <ion-label  class="text-danger text-center">Rechazado</ion-label>
+         <ion-label  class="text-danger text-center">${this.Transalte.instant('rejected')}</ion-label>
      `;
         } else if (rowData.approved == null) {
           buttonsHTML = `
-         <ion-label  class="text-danger text-center">Pendiente</ion-label>
+         <ion-label  class="text-danger text-center">${this.Transalte.instant('pending')}</ion-label>
      `;
         }
         return buttonsHTML;

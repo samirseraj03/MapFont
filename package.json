@@ -35,6 +35,8 @@
     "@capacitor/preferences": "6.0.0",
     "@capacitor/status-bar": "6.0.0",
     "@ionic/angular": "^7.5.0",
+    "@ngx-translate/core": "^15.0.0",
+    "@ngx-translate/http-loader": "^8.0.0",
     "@supabase/auth-js": "^2.64.2",
     "@supabase/functions-js": "^2.3.1",
     "@supabase/gotrue-js": "^2.62.2",

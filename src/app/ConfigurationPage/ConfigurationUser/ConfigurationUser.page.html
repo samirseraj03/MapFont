@@ -7,7 +7,7 @@
           <ion-buttons slot="start" >
             <ion-menu-button></ion-menu-button>
           </ion-buttons>
-          <ion-title>Menu</ion-title>
+          <ion-title>{{ 'config' | translate }}:</ion-title>
         </ion-toolbar>
       </ion-header>
     </div>
@@ -21,12 +21,12 @@
       <div class="row">
         <div class="col">
           <ion-card-title class="d-flex">
-            Configuración:
+            {{ 'config' | translate }}:
           </ion-card-title>
         </div>
         <div class="col d-flex justify-content-end">
           <ion-button (click)="Update()" class="btn btn-success" fill="Clear">
-            Siguente
+            {{ 'next' | translate }} 
           </ion-button>
         </div>
       </div>
@@ -78,8 +78,8 @@
                       fill="clear"
                       (click)="SelectInput()"
                     >
-                      Pujar Foto
-                    </ion-button>
+                    {{ 'upload_photo' | translate }}
+                      </ion-button>
                   </div>
                   <!-- delete -->
                   <div class="col">
@@ -88,7 +88,7 @@
                       fill="clear"
                       (click)="Delete()"
                     >
-                      eliminar Foto
+                    {{ 'delete_photo' | translate }}
                     </ion-button>
                   </div>
                 </div>
@@ -100,7 +100,7 @@
           <div class="col">
             <ion-list>
               <div class="mb-3">
-                <ion-label>Nombre</ion-label>
+                <ion-label> {{ 'name' | translate }}</ion-label>
                 <ion-input
                   placeholder="Ejemplo nombre"
                   name="name"
@@ -110,7 +110,7 @@
               </div>
 
               <div class="mb-3">
-                <ion-label>Nombre usuario</ion-label>
+                <ion-label> {{ 'username' | translate }}</ion-label>
                 <ion-input
                   placeholder="Ejemplo Nombre usuario"
                   name="username"
@@ -133,7 +133,7 @@
 
               <div class="">
                 <ion-select
-                  label="Idioma:"
+                  label=" {{ 'language' | translate }}"
                   label-placement="floating"
                   name="language"
                   [value]="formData.language"
@@ -155,7 +155,6 @@
 
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
     </ion-toolbar>
   </ion-header>
 </ion-content>

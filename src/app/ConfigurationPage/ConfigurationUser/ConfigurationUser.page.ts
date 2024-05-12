@@ -18,7 +18,7 @@ import { FormsModule, NgForm   } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import DatabaseService from '../../Types/SupabaseService';
 import { Dialog } from '@capacitor/dialog';
-
+import { TranslateModule , TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-configuration-user',
@@ -36,7 +36,7 @@ import { Dialog } from '@capacitor/dialog';
     IonContent,
     IonButtons,
     IonIcon,
-    IonButton, IonMenu , IonMenuButton , IonSelect ,IonSelectOption
+    IonButton, IonMenu , IonMenuButton , IonSelect ,IonSelectOption , TranslateModule
   ],
 })
 export class ConfigurationUserPage implements OnInit {
@@ -45,7 +45,7 @@ export class ConfigurationUserPage implements OnInit {
   img_ref_config: any = null;
   data: any;
 
-  constructor(public NavCtrl: NavController ,  private loadingController: LoadingController, private cdr: ChangeDetectorRef
+  constructor(public NavCtrl: NavController ,  private loadingController: LoadingController, private cdr: ChangeDetectorRef , private TranslateService :TranslateService
   ) {
     addIcons({ arrowBack });
   }
@@ -84,6 +84,7 @@ export class ConfigurationUserPage implements OnInit {
 
     try {
       await this.ToDataBase();
+      this.onLanguageChange(this.formData.language ? this.formData.language : 'es');
 
     }catch {
       this.loading.dismiss()
@@ -97,6 +98,10 @@ export class ConfigurationUserPage implements OnInit {
       this.loading.dismiss()
     }
 
+  }
+
+  onLanguageChange(language : any){
+    this.TranslateService.use(language);
   }
 
   async ToDataBase() {
