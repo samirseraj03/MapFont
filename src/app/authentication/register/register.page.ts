@@ -48,19 +48,14 @@ export class RegisterPage implements OnInit {
 
   async Register() {
     // abrimos el popoup
-    this.loadingController.create({ message: 'Cargando' }).then(loading => {
-      this.loading = loading;
-      this.loading.present();
-    });
-
+  
     try {
 
       // cogemos la localizacion del usuario previa
       let location = await this.GeolocationService.getGeolocation()
       // registramos el usuario con la funcion de supabase y obtenemos los datos
       this.data = this.authService.signUp(this.email , this.password)
-      console.log(this.data)
-      console.log(this.data.user.id)
+
       // insertamos los primeros passos para el usuario
       this.Supabase.insertUser({
         email: this.email,
@@ -83,15 +78,15 @@ export class RegisterPage implements OnInit {
         // ponemos el storage de capacitor 
         await this.loginService.setStorage('session' , this.data.session );
         await this.loginService.setStorage('user' , this.data.user );
-        // si el usuario se ha registrado correctamente , lo llevamos al inicio
-        this.OnSucces()
+    
       }
     }
     catch (error) {
       throw console.error("se ha producido un error: " ,  error );
     }
     finally {
-      this.loading.dismiss()
+       // si el usuario se ha registrado correctamente , lo llevamos al inicio
+      this.OnSucces()
     }
   }
 

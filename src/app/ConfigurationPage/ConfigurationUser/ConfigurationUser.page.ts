@@ -89,13 +89,14 @@ export class ConfigurationUserPage implements OnInit {
       this.loading.dismiss()
     }
     finally{
+      this.NavCtrl.navigateForward( '/Success', {
+        state: {
+          PageSucces: 'configuration',
+        },
+      });
       this.loading.dismiss()
     }
-    this.NavCtrl.navigateForward( '/Success', {
-      state: {
-        PageSucces: 'configuration',
-      },
-    });
+
   }
 
   async ToDataBase() {
