@@ -9,6 +9,7 @@ import DatabaseService from '../../Types/SupabaseService';
 import { LoginPage } from '../login/login.page';
 import GeolocationService from '../../Globals/Geolocation';
 import { IonHeader, IonRow, IonToolbar, IonTitle, IonCard, IonContent, IonCardTitle, IonCol, IonCardHeader, IonItem, IonCardContent, IonButton } from "@ionic/angular/standalone";
+import { TabsPage } from 'src/app/tabs/tabs.page';
 
 @Component({
   selector: 'app-register',
@@ -33,29 +34,38 @@ export class RegisterPage implements OnInit {
     public NavCtrl: NavController,
     private route: ActivatedRoute,
     private authService: AuthenticationService,
-    private loginService : LoginPage
+    private loginService : LoginPage ,
+    private TabsPage : TabsPage
+
   ) {}
 
   ngOnInit() {
-    // verficamos si el usuario ha escrito antes el email para no hacer que lo escriba otra vez
+    let email: string | undefined = ""; // Declara 'email' como string o undefined
+
     this.route.queryParams.subscribe(async (params) => {
-      this.email = await params['email'];
+      email = await params['email'];
+
+      // Comprueba si 'email' no es null o undefined
+      if (email !== null && email !== undefined) {
+        this.email = email; // Establece 'this.email' al valor recuperado
+      } else {
+        this.email = ""; // Establece 'this.email' a una cadena vacía
+      }
     });
-    if (!this.email  && this.email === undefined && this.email == 'undefined') {
-      this.email = '';
-    }
   }
 
   async Register() {
+
     // abrimos el popoup
-  
     try {
 
       // cogemos la localizacion del usuario previa
       let location = await this.GeolocationService.getGeolocation()
       // registramos el usuario con la funcion de supabase y obtenemos los datos
-      this.data = this.authService.signUp(this.email , this.password)
+      this.data = await this.authService.signUp(this.email , this.password)
 
+      // si hay datos en el supabase y se inserto correctamente
+      if (this.data){
       // insertamos los primeros passos para el usuario
       this.Supabase.insertUser({
         email: this.email,
@@ -65,19 +75,22 @@ export class RegisterPage implements OnInit {
         },
         username: this.username || '',
         name: '',
-        lastNname: '',
+        lastname: '',
         number: 0,
         address: '',
-        photo: '',
-        created_at: this.data.user.created_at,
+        photo : null,
         password: this.password ,
-        autencationUserID :  this.data.user.id
+        autencationUserID :  this.data.user.id,
+        language : "es"
       } )
-      // si hay datos en el supabase y se inserto correctamente
-      if (this.data){
+
         // ponemos el storage de capacitor 
-        await this.loginService.setStorage('session' , this.data.session );
-        await this.loginService.setStorage('user' , this.data.user );
+        let user = await this.loginService.setStorage('session' , this.data.session );
+        let session = await this.loginService.setStorage('user' , this.data.user );
+        this.loginService.data_user = user;
+        this.loginService.access_token = session;
+        this.TabsPage.isLogin = true
+
     
       }
     }

@@ -9,7 +9,7 @@
   <div class="card-container">
     <ion-card>
       <ion-row>
-        <ion-col size-md="3" size="12" class="ion-padding ion-blue-bkg">
+        <ion-col size-md="4" size="6" class="ion-padding ion-blue-bkg">
           <img
             src="https://images.prismic.io/ionicframeworkcom/ac68e1d9-9887-4e5a-9820-9290d06638de_ionic+logo+white+on+blue.png"
             alt="Ionic logo"
@@ -22,15 +22,15 @@
           </ion-card-header>
 
           <ion-item>
-            <ion-input label="Email: " placeholder="email" [(ngModel)]="email" type="email" required></ion-input>
+            <ion-input label="Email: " placeholder="email" [(ngModel)]="email" type="email" ngDefaultControl  required></ion-input>
           </ion-item>
 
           <ion-item>
-            <ion-input  label="Contrasenya: " placeholder="password" [(ngModel)]="password" type="password" required></ion-input>
+            <ion-input  label="Contrasenya: " placeholder="password" [(ngModel)]="password" type="password" ngDefaultControl  required></ion-input>
           </ion-item>
 
           <ion-item>
-            <ion-input  label="Nombre Usuario: " placeholder="username" [(ngModel)]="username" required></ion-input>
+            <ion-input  label="Nombre Usuario: " placeholder="username" [(ngModel)]="username"  ngDefaultControl  required></ion-input>
           </ion-item>
           
 

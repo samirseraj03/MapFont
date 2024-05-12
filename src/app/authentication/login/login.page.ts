@@ -46,12 +46,19 @@ export class LoginPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    let email: string | undefined = ""; // Declara 'email' como string o undefined
+
     this.route.queryParams.subscribe(async (params) => {
-      this.email = await params['email'];
+      email = await params['email'];
+
+      // Comprueba si 'email' no es null o undefined
+      if (email !== null && email !== undefined) {
+        this.email = email; // Establece 'this.email' al valor recuperado
+      } else {
+        this.email = ""; // Establece 'this.email' a una cadena vacía
+      }
     });
-    if (!this.email && this.email === undefined && this.email == 'undefined') {
-      this.email = '';
-    }
+
   }
 
   // para guardar en storage y en andoroid y ios informacion temportal
@@ -188,7 +195,7 @@ export class LoginPage implements OnInit {
 
   // para ir a la pagina de register
   GoRegister() {
-    this.NavCtrl.navigateForward('/register', {
+    this.NavCtrl.navigateForward('/tabs/register', {
       queryParams: {
         email: this.email,
       },

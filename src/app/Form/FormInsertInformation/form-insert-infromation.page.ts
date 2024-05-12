@@ -49,29 +49,38 @@ export class FormInsertInfromationPage implements OnInit  {
   // Método para recopilar la información del formulario
   async onSubmit() {
 
-    if (this.myForm && this.myForm.form) {
-      const formControls = this.myForm.form.controls;
-      let isValid = true;
+    this.ToDataBase();
+    this.GoSuccess();
+
+    // if (this.myForm && this.myForm.form) {
+    //   const formControls = this.myForm.form.controls;
+    //   let isValid = true;
     
-      // Verifica cada campo individualmente
-      Object.keys(formControls).forEach(key => {
-        if (formControls[key].invalid) {
-          isValid = false;
-        }
-      });
+    //   console.log(formControls)
+    //   // Verifica cada campo individualmente
+    //   Object.keys(formControls).forEach(key => {
+    //     if (formControls[key].invalid) {
+    //       isValid = false;
+    //     }
+    //   });
     
-      if (isValid) {
-        this.formData = this.myForm.value;
-        this.ToDataBase();
-        this.GoSuccess();
-      }
-    }
-    else {
-      await Dialog.alert({
-        title: 'Atencion',
-        message: 'Por favor, completa el formulario correctamente.',
-      });
-    }
+    //   if (isValid) {
+    //     this.formData = this.myForm.value;
+    //     // this.ToDataBase();
+    //     // this.GoSuccess();
+    //   }else{
+    //     await Dialog.alert({
+    //       title: 'Atencion',
+    //       message: 'Por favor, completa el formulario correctamente.',
+    //     });
+    //   }
+    // }
+    // else {
+    //   await Dialog.alert({
+    //     title: 'Atencion',
+    //     message: 'Por favor, completa el formulario correctamente.',
+    //   });
+    // }
   }
 
   async ToDataBase(){

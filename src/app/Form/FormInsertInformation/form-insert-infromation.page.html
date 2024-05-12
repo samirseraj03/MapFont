@@ -30,37 +30,36 @@
       <ion-list>
         <div class="mb-3 mt-4">
           <ion-label>Nombre de la fuente: </ion-label>
-          <ion-input placeholder="Nombre" name="watersourcesname" [(ngModel)]="formData.watersourcesname" required></ion-input>
+          <ion-input placeholder="Nombre" name="watersourcesname" ngDefaultControl [(ngModel)]="formData.watersourcesname" required></ion-input>
         </div>
 
         <div class="mb-3">
           <ion-label>Descripcion de la fuente: </ion-label>
-          <ion-input placeholder="Descripcion" name="description" [(ngModel)]="formData.description" required></ion-input>
+          <ion-input placeholder="Descripcion" name="description" ngDefaultControl [(ngModel)]="formData.description"  required></ion-input>
         </div>
 
         <div class="mb-3">
-          <ion-select label="Es Potable la fuente ?" label-placement="floating" name="is_potable" [(ngModel)]="formData.is_potable" required>
+          <ion-select label="Es Potable la fuente ?" label-placement="floating" ngDefaultControl name="is_potable" [(ngModel)]="formData.is_potable" required>
             <ion-select-option value="true">SI</ion-select-option>
             <ion-select-option value="false">NO</ion-select-option>
           </ion-select>
         </div>
 
         <div class="mb-3">
-          <ion-select label="esta disponible la fuente" label-placement="floating"  name="enabled"  [(ngModel)]="formData.enabled" required>
+          <ion-select label="esta disponible la fuente" label-placement="floating"  ngDefaultControl name="enabled"  [(ngModel)]="formData.enabled" required>
             <ion-select-option value="true">SI</ion-select-option>
             <ion-select-option value="false">NO</ion-select-option>
           </ion-select>
         </div>
 
         <div class="mb-3">
-          <ion-select label="¿La fuente está disponible para el público o es privada?" label-placement="floating"   name="watersourcetype"  [(ngModel)]="formData.watersourcetype" required>
+          <ion-select label="¿La fuente está disponible para el público o es privada?" label-placement="floating" ngDefaultControl  name="watersourcetype"  [(ngModel)]="formData.watersourcetype" required>
             <ion-select-option value="public">Publico</ion-select-option>
             <ion-select-option value="private">Privado</ion-select-option>
           </ion-select>
         </div>
       </ion-list>
 
-      </form>
 
       <div class=" w-100 ">
         <ion-button
@@ -71,6 +70,7 @@
           Siguente
         </ion-button>
       </div>
+    </form>
     </ion-card-header>
   </ion-card>
 

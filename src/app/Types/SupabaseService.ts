@@ -10,13 +10,13 @@ export interface User {
   username: string;
   email: string;
   name: string;
-  lastNname: string;
+  lastname: string;
   number: number;
   address: string;
-  photo: string;
-  created_at: any;
+  photo?: any;
   password: string;
   autencationUserID: string;
+  language : string;
 }
 
 export interface WaterSources {
