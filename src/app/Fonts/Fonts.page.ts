@@ -28,8 +28,8 @@ import { Preferences } from '@capacitor/preferences';
 
 @Component({
   selector: 'app-fonts',
-  templateUrl: 'fonts.page.html',
-  styleUrls: ['fonts.page.scss'],
+  templateUrl: 'Fonts.page.html',
+  styleUrls: ['Fonts.page.scss'],
   standalone: true,
   imports: [
     IonModal,
@@ -136,10 +136,10 @@ export class fontsPage {
           const filterFeatures = (feature: any) => {
             // Aquí definimos los criterios de filtrado
             // Filtramos las características que están dentro de un área específica alrededor del centro actual
-            // y tienen un zoom mayor o igual a 13
+            // y tienen un zoom mayor o igual a 5 para no tener mucha carga en el mapa
             return (
               this.map.getBounds().contains(feature.geometry.coordinates) &&
-              zoom >= 9
+              zoom >= 5
             );
           };
     
