@@ -10,7 +10,7 @@ export const environment = {
 
 };
 
-
+ 
 export const setMapboxAccessToken = (accessToken: string) => {
   (window as any).mapboxgl.accessToken = accessToken;
 };
