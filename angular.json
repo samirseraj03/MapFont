@@ -18,8 +18,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "www",
-            "baseHref": "/", 
+            "outputPath": "dist", 
             "index": "src/index.html",
             "polyfills": [
               "src/polyfills.ts"
@@ -38,11 +37,14 @@
               "src/theme/variables.scss",
               "node_modules/bootstrap/dist/css/bootstrap.min.css"
             ],
-            "scripts": [],
+            "scripts": [{
+              "postbuild": "node .\\post-build.js"  
+            }],
             "browser": "src/main.ts"
           },
           "configurations": {
             "production": {
+              "deleteOutputPath" : true,
               "budgets": [
                 {
                   "type": "initial",
