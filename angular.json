@@ -18,7 +18,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist", 
+            "outputPath": "www", 
             "index": "src/index.html",
             "polyfills": [
               "src/polyfills.ts"
@@ -37,9 +37,7 @@
               "src/theme/variables.scss",
               "node_modules/bootstrap/dist/css/bootstrap.min.css"
             ],
-            "scripts": [{
-              "postbuild": "node .\\post-build.js"  
-            }],
+            "scripts": [],
             "browser": "src/main.ts"
           },
           "configurations": {
