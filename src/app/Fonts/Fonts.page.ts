@@ -311,7 +311,7 @@ export class fontsPage {
     // buscamos si hay foto o no
     let photo_url = photo
       ? this.Supabase.GetStorage(photo)
-      : './assets/icon/agua-potable.png';
+      : '../assets/icon/agua-potable.png';
 
     // miramos si esta disponible la fuente:
     const availableText = available ? 'Disponible' : 'No disponible';

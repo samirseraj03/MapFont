@@ -433,8 +433,8 @@ export default class DatabaseService {
 
   // para obtener de la storage
   GetStorage(url_image: string) {  
-    url_image.replace(/ /g, "%20") 
-    return `https://xcperzkujymdzvhfuqgi.supabase.co/storage/v1/object/public/${url_image}`;
+     
+    return `https://xcperzkujymdzvhfuqgi.supabase.co/storage/v1/object/public/${url_image.replace(/ /g, "%20")}`;
   }
 
   // comporvamos que el nombre no tenga caracteres que impiden el funcionamiento
