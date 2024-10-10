@@ -347,10 +347,12 @@ export class fontsPage {
       </ion-header>
       <ion-content class="ion-padding">
     
-        <ion-img
-          src="${photo_url}"
-          alt="fuente de agua"
-        ></ion-img>
+
+
+      <div class="w-100  h-50">
+        <img src="${photo_url}" alt="">
+      </div>
+
         <div class="mt-3"> 
           <ion-item>
   
