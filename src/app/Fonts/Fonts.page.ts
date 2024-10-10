@@ -57,8 +57,7 @@ export class fontsPage {
     this.cargarScript();
     // cogemos las primeras localizacion para poder desplegar el mapa y obtener posicion
     await this.GeolocationService.getGeolocation();
-    // desplegamos el mapa de mapBox
-    this.getMap();
+
     // obtenemos los fountains
     this.getWatersourcesToMap();
   }
@@ -89,14 +88,29 @@ export class fontsPage {
 
     try {
       let geojson = await this.getStorageCache();
+
+      console.log("geojson" , geojson)
+
       if (!geojson) {
         // ponemos el storage
         geojson = await this.setStorageIfnotExsit(geojson);
+
+        console.log("if not  exist geojson" , geojson)
+
       }
+
+      console.log("he llegado aqui")
+
+      // desplegamos el mapa de mapBox
+      this.getMap();
+
       // Añade el GeoJSON al mapa de Mapbox
       this.map.on('load', () => {
         const center_init = this.map.getCenter();
         const zoom_init = this.map.getZoom();
+
+        console.log("he llegado aqui", "map on load")
+
 
         const filterFeatures = (feature: any) => {
           // Aquí definimos los criterios de filtrado
@@ -108,6 +122,9 @@ export class fontsPage {
           );
         };
         const filteredFeatures = geojson.features.filter(filterFeatures);
+
+        console.log(filteredFeatures)
+
         // habilitamos el cluster y subimos el contendido
         this.map.addSource('watersources', {
           type: 'geojson',
@@ -308,10 +325,19 @@ export class fontsPage {
     address: string,
     coordinates: any
   ) {
+
+    // definimos la classe de foto si existe o no
+    let class_photo = photo
+    ? "w-100" : "w-50";
+
     // buscamos si hay foto o no
     let photo_url = photo
       ? this.Supabase.GetStorage(photo)
       : '../assets/icon/agua-potable.png';
+
+      
+
+      
 
     // miramos si esta disponible la fuente:
     const availableText = available ? 'Disponible' : 'No disponible';
@@ -349,8 +375,8 @@ export class fontsPage {
     
 
 
-      <div class="w-100  h-50">
-        <img src="${photo_url}" alt="">
+      <div class=" d-flex justify-content-center">
+        <img class="${class_photo}" src="${photo_url}" alt="">
       </div>
 
         <div class="mt-3"> 
