@@ -57,7 +57,6 @@ export class fontsPage {
     this.cargarScript();
     // cogemos las primeras localizacion para poder desplegar el mapa y obtener posicion
     await this.GeolocationService.getGeolocation();
-
     // obtenemos los fountains
     this.getWatersourcesToMap();
   }
@@ -89,28 +88,17 @@ export class fontsPage {
     try {
       let geojson = await this.getStorageCache();
 
-      console.log("geojson" , geojson)
-
       if (!geojson) {
         // ponemos el storage
         geojson = await this.setStorageIfnotExsit(geojson);
-
-        console.log("if not  exist geojson" , geojson)
-
       }
 
-      console.log("he llegado aqui")
-
-      // desplegamos el mapa de mapBox
+      // desplegamos el mapa de mapBox cuando ya tenemos el geojson cargado y listo
       this.getMap();
-
       // Añade el GeoJSON al mapa de Mapbox
       this.map.on('load', () => {
         const center_init = this.map.getCenter();
         const zoom_init = this.map.getZoom();
-
-        console.log("he llegado aqui", "map on load")
-
 
         const filterFeatures = (feature: any) => {
           // Aquí definimos los criterios de filtrado
@@ -118,12 +106,10 @@ export class fontsPage {
           // y tienen un zoom mayor o igual a 13
           return (
             this.map.getBounds().contains(feature.geometry.coordinates) &&
-            zoom_init >= 9
+            zoom_init >= 1
           );
         };
         const filteredFeatures = geojson.features.filter(filterFeatures);
-
-        console.log(filteredFeatures)
 
         // habilitamos el cluster y subimos el contendido
         this.map.addSource('watersources', {
@@ -134,20 +120,13 @@ export class fontsPage {
           },
           cluster: true, // Habilita el clustering
           clusterMaxZoom: 14, // Zoom máximo para agrupar
-          clusterRadius: 15, // Radio del cluster
+          clusterRadius: 80, // Radio del cluster entre uno y el otro 
         });
 
 
         this.map.on('moveend', () => {
           const center = this.map.getCenter();
           const zoom = this.map.getZoom();
-    
-          // console.log(
-          //   'Nueva ubicación después del zoom:',
-          //   center,
-          //   'Nivel de zoom:',
-          //   zoom
-          // );
     
           // Definir la función de filtrado
           const filterFeatures = (feature: any) => {
