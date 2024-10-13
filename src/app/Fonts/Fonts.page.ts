@@ -61,6 +61,19 @@ export class fontsPage {
     this.getWatersourcesToMap();
   }
 
+
+  // añadir control al mapa , la localizacion actulizada del Gps
+  geolocate = new mapboxgl.GeolocateControl({
+    positionOptions: {
+      enableHighAccuracy: true
+    },
+     // When active the map will receive updates to the device's location as it changes.
+     trackUserLocation: true,
+     // Draw an arrow next to the location dot to indicate which direction the device is heading.
+     showUserHeading: true
+  })
+
+
   getMap() {
     // desplegar el map
     this.map = new mapboxgl.Map({
@@ -73,18 +86,14 @@ export class fontsPage {
       ],
       zoom: 15.15,
     });
-    // añadir el marcador del usuario
-    new mapboxgl.Marker()
-      .setLngLat([
-        this.GeolocationService.longitude,
-        this.GeolocationService.latitude,
-      ])
-      .addTo(this.map);
+
+    // añadimos los controles despues de desplegar el mapa 
+    this.map.addControl(this.geolocate)
+
   }
 
   async getWatersourcesToMap() {
  
-
     try {
       let geojson = await this.getStorageCache();
 
@@ -99,6 +108,8 @@ export class fontsPage {
       this.map.on('load', () => {
         const center_init = this.map.getCenter();
         const zoom_init = this.map.getZoom();
+
+        this.geolocate.trigger(); //<- Automatically activates geolocation and trackuser
 
         const filterFeatures = (feature: any) => {
           // Aquí definimos los criterios de filtrado
