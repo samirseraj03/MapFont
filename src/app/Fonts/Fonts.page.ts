@@ -61,6 +61,15 @@ export class fontsPage {
     this.getWatersourcesToMap();
   }
 
+  ionViewWillLeave(){ // Cuando salimos de la pagina y hacemos route a otra pagina o salir directamente.
+    this.removeGeolocateControl() // desactivamos Controles
+  }
+
+
+  // cuando salimos desactivamos el checkeo de trackuser
+  removeGeolocateControl() {
+    this.map.removeControl(this.geolocate);
+  }
 
   // añadir control al mapa , la localizacion actulizada del Gps
   geolocate = new mapboxgl.GeolocateControl({
