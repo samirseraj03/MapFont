@@ -200,7 +200,7 @@ async OnSelectNavigate(result: any) {
   async OnReject(result : any){
 
   let ApprovedUpdated = {
-    approved : true
+    approved : false
   }
 
   let query = await this.Supabase.updateForm(result.id , ApprovedUpdated)
