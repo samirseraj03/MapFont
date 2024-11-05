@@ -27,22 +27,26 @@
       <ion-card-subtitle>Puja la Foto del Font</ion-card-subtitle>
     </ion-card-header>
 
+<div class="row">
+
+  <div class="col-md-6 col-lg-6 col-xl-6">
+
     <div class="container ms-md-0">
-    <img
+    <img style="max-width: 100%;"
       *ngIf="!img_ref"
-      class="me-1 w-md-50 h-md-50 "
+      class="me-3  "
       alt="Silhouette of mountains"
       src="https://ionicframework.com/docs/img/demos/card-media.png"
     />
 
     <img
       *ngIf="img_ref"
-      class="me-1 w-md-50 h-md-50"
+      class="me-1"
       alt="Silhouette of mountains"
       [src]="img_ref"
       style="max-height: 345px"
     />
-  </div>
+    </div>
     
 
     <div class="row mx-1 mt-2">  
@@ -84,6 +88,8 @@
     </ion-button>
   </div>
   </div>
+</div>
+</div>
 
-  </ion-card>
+</ion-card>
 </ion-content>

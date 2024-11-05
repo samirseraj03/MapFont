@@ -10,7 +10,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "postbuild": "node post-build.js"    
+    "postbuild": "node post-build.js"
   },
   "private": true,
   "dependencies": {
@@ -27,6 +27,7 @@
     "@capacitor/android": "6.0.0",
     "@capacitor/app": "6.0.0",
     "@capacitor/browser": "^6.0.0",
+    "@capacitor/camera": "^6.1.0",
     "@capacitor/core": "^6.0.0",
     "@capacitor/dialog": "^6.0.0",
     "@capacitor/geolocation": "6.0.0",

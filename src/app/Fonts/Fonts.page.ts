@@ -98,8 +98,18 @@ export class fontsPage {
 
     // añadimos los controles despues de desplegar el mapa 
     this.map.addControl(this.geolocate)
-
+    // para quitar el box que se encuentra a la derecha
+    this.HideMapboxBottomRight()
   }
+
+  HideMapboxBottomRight(){
+
+    let HideMapboxBottomRight = document.getElementsByClassName('mapboxgl-ctrl-bottom-right')
+    for (const element of Array.from(HideMapboxBottomRight)) {
+      (element as HTMLElement).style.display = 'none';
+    }
+  }
+
 
   async getWatersourcesToMap() {
  
@@ -115,6 +125,9 @@ export class fontsPage {
       this.getMap();
       // Añade el GeoJSON al mapa de Mapbox
       this.map.on('load', () => {
+
+ 
+
         const center_init = this.map.getCenter();
         const zoom_init = this.map.getZoom();
 

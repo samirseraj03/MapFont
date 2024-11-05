@@ -20,11 +20,14 @@ import {
 import { ExploreContainerComponent } from '../../explore-container/explore-container.component';
 import { CommonModule } from '@angular/common';
 import GeolocationService from '../../Globals/Geolocation';
-import { NavController } from '@ionic/angular';
+import { NavController, ActionSheetController } from '@ionic/angular';
 import { arrowBack } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { FormSelectLocationPage } from '../FormSelectLocation/formselectlocation.page';
 import { Dialog } from '@capacitor/dialog';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
+import { Capacitor } from '@capacitor/core';
+
 
 @Component({
   selector: 'app-form',
@@ -59,13 +62,15 @@ export class FormPage {
   image_push: any;
   GeolocationService = new GeolocationService();
 
-  constructor(public NavCtrl: NavController) {
+  constructor(public NavCtrl: NavController, private actionSheetController: ActionSheetController) {
     addIcons({ arrowBack });
   }
 
   // para hacer click al input cuando se hace click al boton
-  SelectInput() {
+  selectImage() {
     const fileInput = document.getElementById('fileItem') as HTMLInputElement;
+
+    // cuando se clicka el boton se haga click al inputfile
     fileInput.click();
   }
 
@@ -90,7 +95,7 @@ export class FormPage {
   // cunado la imagen esta succesed , ya se puede subir
   async ImageSuccess() {
     if (this.img_ref) {
-      this.NavCtrl.navigateForward( '/location', {
+      this.NavCtrl.navigateForward('/location', {
         queryParams: {
           image: this.image_push,
         },
@@ -106,4 +111,85 @@ export class FormPage {
   Delete() {
     this.img_ref = null;
   }
+
+
+  async takePicture() {
+    try {
+
+
+      const image = await Camera.getPhoto({
+        quality: 100,
+        resultType: CameraResultType.Uri,
+        source: CameraSource.Camera, // Abrir la cámara
+      });
+
+      // Crear una URL de la imagen
+      this.img_ref = image.webPath; // Usar webPath para mostrar en el navegador
+
+
+    } catch (error) {
+      console.error(error)
+      await Dialog.alert({
+        title: 'Atencion',
+        message: 'el tipo de archivo no es valido , no se pudo subir el archivo'
+      });
+
+
+    }
+  }
+
+
+
+
+  async SelectInput() {
+
+
+    if (Capacitor.isNativePlatform() === true) {
+      const actionSheet = await this.actionSheetController.create({
+        header: 'Selecciona una opción',
+        buttons: [
+          {
+            text: 'Tomar Foto',
+            handler: () => {
+              this.takePicture();
+            }
+          },
+          {
+            text: 'Subir desde Galería',
+            handler: () => {
+              this.selectImage();
+            }
+          },
+          {
+            text: 'Cancelar',
+            role: 'cancel'
+          }
+        ]
+      });
+      await actionSheet.present();
+    }
+    else {
+
+      const actionSheet = await this.actionSheetController.create({
+        header: 'Selecciona una opción',
+        buttons: [
+          {
+            text: 'Subir desde Galería',
+            handler: () => {
+              this.selectImage();
+            }
+          },
+          {
+            text: 'Cancelar',
+            role: 'cancel'
+          }
+        ]
+      });
+      await actionSheet.present();
+
+    }
+  }
+
+
+
 }

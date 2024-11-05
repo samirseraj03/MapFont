@@ -6,7 +6,7 @@ import GeolocationService from '../../Globals/Geolocation';
 import DatabaseService from '../../Types/SupabaseService';
 import {WaterSources} from '../../Types/SupabaseService';
 import { AgGridAngular } from 'ag-grid-angular'; // Angular Data Grid Component
-import { ColDef   } from 'ag-grid-community'; // Column Definition Type Interface
+import { ColDef } from 'ag-grid-community'; // Column Definition Type Interface
 import { arrowBack, heartDislike, navigate ,checkmark , chevronForward , close} from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { Browser } from '@capacitor/browser';
