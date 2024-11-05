@@ -11,6 +11,7 @@ import DatabaseService from 'src/app/Types/SupabaseService';
 import {Forms} from 'src/app/Types/SupabaseService';
 import { IonSelectOption , IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonIcon, IonContent, IonCard, IonCardHeader, IonCardTitle, IonList, IonLabel } from "@ionic/angular/standalone";
 import { Dialog } from '@capacitor/dialog';
+import {FormPage } from '../FormUploadImage/form.page'
 
 @Component({
   selector: 'app-form-insert-infromation',
@@ -28,7 +29,7 @@ export class FormInsertInfromationPage implements OnInit  {
   Adress: any;
 
 
-  constructor(public NavCtrl: NavController , private route : ActivatedRoute) {
+  constructor(public NavCtrl: NavController , private route : ActivatedRoute , private FormUploadImagePage : FormPage) {
     addIcons({ arrowBack });
   }
   
@@ -114,6 +115,8 @@ export class FormInsertInfromationPage implements OnInit  {
   }
   // para mostarar al usuario pagina completada y ir al inicio
   GoSuccess(){
+    // entramos a la pagina de upload image para eliminar la imagen cuando se haya subido el formulario correctamente
+    this.FormUploadImagePage.img_ref = null
     this.NavCtrl.navigateForward( '/Success', {
       queryParams: {
         page : 'form',

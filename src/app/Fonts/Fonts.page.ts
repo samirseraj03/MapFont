@@ -55,14 +55,21 @@ export class fontsPage {
 
   async ionViewWillEnter() {
     this.cargarScript();
+
     // cogemos las primeras localizacion para poder desplegar el mapa y obtener posicion
     await this.GeolocationService.getGeolocation();
+
     // obtenemos los fountains
     this.getWatersourcesToMap();
   }
 
   ionViewWillLeave(){ // Cuando salimos de la pagina y hacemos route a otra pagina o salir directamente.
     this.removeGeolocateControl() // desactivamos Controles
+    this.map = null;
+    const mapContainer = document.getElementById('Mapa-de-box');
+    if (mapContainer) {
+      mapContainer.innerHTML = ''; // Vacía el contenedor
+    }
   }
 
 
@@ -126,7 +133,6 @@ export class fontsPage {
       // Añade el GeoJSON al mapa de Mapbox
       this.map.on('load', () => {
 
- 
 
         const center_init = this.map.getCenter();
         const zoom_init = this.map.getZoom();

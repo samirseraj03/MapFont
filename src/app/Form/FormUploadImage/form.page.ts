@@ -140,7 +140,7 @@ export class FormPage {
 
 
 
-
+// dejar que decida el usuario si quiere tomar una foto o elegir desde su galeria 
   async SelectInput() {
 
 
