@@ -83,6 +83,8 @@ export class ViewFormPage implements OnInit {
     // Utilizamos this.data directamente sin necesidad de almacenar el resultado de la suscripción
     this.img_ref_view_form = this.Supabase.GetStorage(this.data.photo);
   
+    console.log(this.img_ref_view_form)
+
     // desplegamos el mapa de mapBox
     this.getMap(this.data);
 

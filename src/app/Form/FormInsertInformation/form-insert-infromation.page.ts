@@ -11,8 +11,7 @@ import DatabaseService from 'src/app/Types/SupabaseService';
 import {Forms} from 'src/app/Types/SupabaseService';
 import { IonSelectOption , IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonIcon, IonContent, IonCard, IonCardHeader, IonCardTitle, IonList, IonLabel } from "@ionic/angular/standalone";
 import { Dialog } from '@capacitor/dialog';
-import {FormPage } from '../FormUploadImage/form.page'
-
+import { Services } from 'src/app/services.service';
 @Component({
   selector: 'app-form-insert-infromation',
   templateUrl: './form-insert-infromation.page.html',
@@ -29,7 +28,7 @@ export class FormInsertInfromationPage implements OnInit  {
   Adress: any;
 
 
-  constructor(public NavCtrl: NavController , private route : ActivatedRoute , private FormUploadImagePage : FormPage) {
+  constructor(public NavCtrl: NavController , private route : ActivatedRoute ,  private Service : Services) {
     addIcons({ arrowBack });
   }
   
@@ -86,6 +85,7 @@ export class FormInsertInfromationPage implements OnInit  {
 
   async ToDataBase(){
 
+
     // preparamos las variables a insertar para el forumulario
 
     let user_id =  await this.GeolocationService.getUserID()
@@ -115,8 +115,9 @@ export class FormInsertInfromationPage implements OnInit  {
   }
   // para mostarar al usuario pagina completada y ir al inicio
   GoSuccess(){
-    // entramos a la pagina de upload image para eliminar la imagen cuando se haya subido el formulario correctamente
-    this.FormUploadImagePage.img_ref = null
+    // eliminamos la variable imgRef service y la ponemos a null
+    this.Service.img_ref = null
+
     this.NavCtrl.navigateForward( '/Success', {
       queryParams: {
         page : 'form',

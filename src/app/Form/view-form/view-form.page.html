@@ -1,16 +1,12 @@
 <ion-header [translucent]="true">
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.1/mapbox-gl.js"></script>
-  <link
-    href="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.css"
-    rel="stylesheet"
-  />
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.css" rel="stylesheet" />
 
-  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
-  <link
-    rel="stylesheet"
+  <script
+    src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
+  <link rel="stylesheet"
     href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css"
-    type="text/css"
-  />
+    type="text/css" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -67,7 +63,7 @@
               </ion-label>
             </ion-item>
 
-         
+
             <ion-label class="ion-padding">
               <h2>Creado:</h2>
               <p>{{GeolocationService.formatDate(data?.created_at)}}</p>
@@ -76,31 +72,22 @@
         </div>
 
         <!-- right -->
-        <div
-          class="col"
-          style="display: flex; flex-direction: column; align-items: center"
-        >
+        <div class="col-md-6">
 
-          <div style="width: 500px; height: 200px; margin-bottom: 5%">
-            <ion-item>
-              <img
-                *ngIf="!img_ref_view_form"
-                class="ms-3 mt-2 d-block w-100 h-100"
-                alt="Silhouette of mountains"
-                src="https://ionicframework.com/docs/img/demos/card-media.png"
-              />
+          <div class="container ">
+            <ion-item class="" style="min-width: 300px; max-width: 300px;">
+              <img *ngIf="!img_ref_view_form" class="ms-3 mt-2 d-block mw-75 h-75" alt="Silhouette of mountains"
+                src="https://ionicframework.com/docs/img/demos/card-media.png" />
+         
 
-              <img
-                *ngIf="img_ref_view_form"
-                class="ms-3 d-block w-100"
-                alt="Silhouette of mountains"
-                [src]="img_ref_view_form"
-                style="max-height: 345px"
-              />
+                <img *ngIf="img_ref_view_form" class="ms-3 mt-2 d-block mw-75" alt="img"
+                  [src]="img_ref_view_form"  />
+
+          
             </ion-item>
           </div>
 
-          <div id="mapViewForm" class="mx-auto my-auto z-index-sticky">
+          <div id="mapViewForm" class="mx-auto my-auto z-index-sticky " style="position: relative;">
             <div id="mapViewForm" class="me-5 w-100 h-100"></div>
           </div>
 

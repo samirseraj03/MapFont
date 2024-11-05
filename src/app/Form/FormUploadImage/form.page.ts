@@ -27,7 +27,7 @@ import { FormSelectLocationPage } from '../FormSelectLocation/formselectlocation
 import { Dialog } from '@capacitor/dialog';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
 import { Capacitor } from '@capacitor/core';
-
+import { Services } from 'src/app/services.service';
 
 @Component({
   selector: 'app-form',
@@ -58,13 +58,16 @@ import { Capacitor } from '@capacitor/core';
   ],
 })
 export class FormPage {
-  img_ref: any = null;
+
   image_push: any;
   GeolocationService = new GeolocationService();
 
-  constructor(public NavCtrl: NavController, private actionSheetController: ActionSheetController) {
+  constructor(public NavCtrl: NavController, private actionSheetController: ActionSheetController , public Service : Services) {
     addIcons({ arrowBack });
+    this.Service.img_ref =  null;
   }
+
+
 
   // para hacer click al input cuando se hace click al boton
   selectImage() {
@@ -81,7 +84,7 @@ export class FormPage {
     if (selectedFile.type.startsWith('image/')) {
       const imgReader = new FileReader();
       imgReader.onload = () => {
-        this.img_ref = imgReader.result as string; // Asigna la URL de datos de la imagen a imgUrl
+        this.Service.img_ref = imgReader.result as string; // Asigna la URL de datos de la imagen a imgUrl
       };
       imgReader.readAsDataURL(selectedFile);
     } else {
@@ -94,7 +97,7 @@ export class FormPage {
 
   // cunado la imagen esta succesed , ya se puede subir
   async ImageSuccess() {
-    if (this.img_ref) {
+    if (this.Service.img_ref) {
       this.NavCtrl.navigateForward('/location', {
         queryParams: {
           image: this.image_push,
@@ -109,7 +112,7 @@ export class FormPage {
   }
   // para eliminar la foto y poder subir otra
   Delete() {
-    this.img_ref = null;
+    this.Service.img_ref = null;
   }
 
 
@@ -124,7 +127,7 @@ export class FormPage {
       });
 
       // Crear una URL de la imagen
-      this.img_ref = image.webPath; // Usar webPath para mostrar en el navegador
+      this.Service.img_ref = image.webPath; // Usar webPath para mostrar en el navegador
 
 
     } catch (error) {

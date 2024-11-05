@@ -33,17 +33,17 @@
 
     <div class="container ms-md-0">
     <img style="max-width: 100%;"
-      *ngIf="!img_ref"
+      *ngIf="!Service.img_ref"
       class="me-3  "
       alt="Silhouette of mountains"
       src="https://ionicframework.com/docs/img/demos/card-media.png"
     />
 
     <img
-      *ngIf="img_ref"
+      *ngIf="Service.img_ref"
       class="me-1"
       alt="Silhouette of mountains"
-      [src]="img_ref"
+      [src]="Service.img_ref"
       style="max-height: 345px"
     />
     </div>
