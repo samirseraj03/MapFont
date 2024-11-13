@@ -130,7 +130,8 @@ export class ConfirmationFormPage implements OnInit {
       created_at: new Date(),
       photo: result.photo,
       description: result.description,
-      watersourcetype : result.watersourcetype
+      watersourcetype : result.watersourcetype,
+      updated_at : result.updated_at
     };
     // cambaiamos la variable y ponemos que se ha aprbado correctamente
     let ApprovedUpdated = {

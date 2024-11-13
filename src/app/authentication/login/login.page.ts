@@ -4,9 +4,10 @@ import { FormsModule } from '@angular/forms';
 import {   NavController  } from '@ionic/angular';
 import { LoadingController } from '@ionic/angular';
 import { AuthenticationService } from '../../authentication.service';
-import { Preferences } from '@capacitor/preferences';
 import { ActivatedRoute } from '@angular/router';
 import { TabsPage } from 'src/app/tabs/tabs.page';
+import { Services } from 'src/app/services.service';
+
 import {
   IonHeader,
   IonToolbar,
@@ -42,7 +43,8 @@ export class LoginPage implements OnInit {
     public loadingController: LoadingController,
     public NavCtrl: NavController,
     private route: ActivatedRoute,
-    private TabsPage : TabsPage
+    private TabsPage : TabsPage,
+    private Service : Services
   ) {}
 
   ngOnInit() {
@@ -61,25 +63,7 @@ export class LoginPage implements OnInit {
 
   }
 
-  // para guardar en storage y en andoroid y ios informacion temportal
-  async setStorage(key: string, value: any) {
-    await Preferences.set({ key: key, value: JSON.stringify(value) });
-  }
-  // para obtener en storage y en andoroid y ios informacion temportal
-  async getStorage(key: string) {
-    const ret = await Preferences.get({ key: key });
-    if (ret.value === null) {
-      return null;
-    } else {
-      return JSON.parse(ret.value);
-    }
-  }
 
-  // para eliminar en storage y en andoroid y ios informacion temportal
-  async removeStorage(key: string) {
-    await Preferences.remove({ key: key });
-    return 0;
-  }
 
   // sistema de login
   // chekea supabase si el usuario existe o no y luego guarda el acceso en el storage de capacitor
@@ -106,10 +90,9 @@ export class LoginPage implements OnInit {
 
         this.data_user = user;
         this.access_token = session;
-        await this.setStorage('session', session);
-        await this.setStorage('user', user);
+        await this.Service.setStorage('session', session);
+        await this.Service.setStorage('user', user);
         this.TabsPage.isLogin = true
-
 
         if (session) {
           this.setExpirationTime(session.expires_in * 1000); // Convert to milliseconds
@@ -136,7 +119,7 @@ export class LoginPage implements OnInit {
 
   // para chekear el login
   async checkLoggedIn() {
-    const token = await this.getStorage('session');
+    const token = await this.Service.getStorage('session');
     if (token && token) {
       return true;
     } else {
@@ -174,8 +157,8 @@ export class LoginPage implements OnInit {
     // Optionally clear user data as well
     this.data_user = null;
     // eliminamos el storage del capacitor
-    this.removeStorage('user');
-    this.removeStorage('session');
+    this.Service.removeStorage('user');
+    this.Service.removeStorage('session');
 
   }
 
@@ -201,6 +184,9 @@ export class LoginPage implements OnInit {
       },
     });
   }
+
+
+
 
   async UpdatePassword(email: any, password: any, new_password: any) {
     const response = await this.authService.signIn(email, password);

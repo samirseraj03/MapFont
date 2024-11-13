@@ -30,6 +30,8 @@ export interface WaterSources {
   photo: string;
   description: string;
   watersourcetype : string
+  updated_at : Date
+
 }
 
 export interface Forms {
@@ -626,4 +628,26 @@ export default class DatabaseService {
       return error;
     }
   }
+
+  // obtener el ultimo update de watersources
+  async getUpdateDateFountains(){
+    try {
+        const { data : waterSources, error } = await this.supabase
+        .from('watersources')
+        .select('updated_at')
+        .order('updated_at', { ascending: false })
+        .limit(1);
+      
+      if (error) {
+        throw error;
+      }
+      return waterSources;
+    } catch (error) {
+      console.error('Error retrieving water sources:', error);
+      return error;
+    }
+
+  }
+
+
 }

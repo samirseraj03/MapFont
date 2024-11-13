@@ -10,6 +10,7 @@ import { LoginPage } from '../login/login.page';
 import GeolocationService from '../../Globals/Geolocation';
 import { IonHeader, IonRow, IonToolbar, IonTitle, IonCard, IonContent, IonCardTitle, IonCol, IonCardHeader, IonItem, IonCardContent, IonButton } from "@ionic/angular/standalone";
 import { TabsPage } from 'src/app/tabs/tabs.page';
+import { Services } from 'src/app/services.service';
 
 @Component({
   selector: 'app-register',
@@ -35,7 +36,8 @@ export class RegisterPage implements OnInit {
     private route: ActivatedRoute,
     private authService: AuthenticationService,
     private loginService : LoginPage ,
-    private TabsPage : TabsPage
+    private TabsPage : TabsPage,
+    private Service : Services
 
   ) {}
 
@@ -85,9 +87,10 @@ export class RegisterPage implements OnInit {
       } )
 
         // ponemos el storage de capacitor 
-        let user = await this.loginService.setStorage('session' , this.data.session );
-        let session = await this.loginService.setStorage('user' , this.data.user );
-        this.loginService.data_user = user;
+        let user = await this.Service.setStorage('session' , this.data.session );
+        let session = await this.Service.setStorage('user' , this.data.user );      
+
+        this.loginService.data_user = user; 
         this.loginService.access_token = session;
         this.TabsPage.isLogin = true
 

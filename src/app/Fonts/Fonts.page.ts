@@ -9,6 +9,7 @@ import {
   IonItem,
   IonButtons,
   IonModal,
+  IonIcon
 } from '@ionic/angular/standalone';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
 import * as mapboxgl from 'mapbox-gl';
@@ -25,6 +26,11 @@ import { setMapboxAccessToken } from './../../environments/environment';
 import { Browser } from '@capacitor/browser';
 import { Dialog } from '@capacitor/dialog';
 import { Preferences } from '@capacitor/preferences';
+import { Services } from '../services.service';
+import { CommonModule } from '@angular/common';
+import { addIcons } from 'ionicons';
+import { heart, logoApple, settingsSharp, star , refreshCircle } from 'ionicons/icons';
+
 
 @Component({
   selector: 'app-fonts',
@@ -42,35 +48,61 @@ import { Preferences } from '@capacitor/preferences';
     IonTitle,
     IonContent,
     ExploreContainerComponent,
+    CommonModule,
+    IonIcon,
   ],
 })
 export class fontsPage {
   @ViewChild(IonModal) modal: IonModal | undefined;
 
-  constructor(private navCtrl: NavController) {}
+  constructor(private navCtrl: NavController , public Service : Services) {
+    addIcons({ heart, settingsSharp, star , refreshCircle});
+  }
   map: any;
   GeolocationService = new GeolocationService();
   Supabase = new DatabaseService();
   marker: any;
+  // se compruba el mapa si esta actualizada o no ..
+  // por defecto esta en updated para no mostrar el boton
+  UpdatedMap : boolean = true;
+  // geojson global
+  geojson : any
 
   async ionViewWillEnter() {
-    this.cargarScript();
-
-    // cogemos las primeras localizacion para poder desplegar el mapa y obtener posicion
-    await this.GeolocationService.getGeolocation();
-
-    // obtenemos los fountains
-    this.getWatersourcesToMap();
+    this.insertMap()
   }
 
   ionViewWillLeave(){ // Cuando salimos de la pagina y hacemos route a otra pagina o salir directamente.
+  this.removeMap()
+  }
+
+
+  removeMap(){
+
     this.removeGeolocateControl() // desactivamos Controles
     this.map = null;
     const mapContainer = document.getElementById('Mapa-de-box');
     if (mapContainer) {
       mapContainer.innerHTML = ''; // Vacía el contenedor
     }
+
+
   }
+
+ async insertMap(){
+       // chkeamos la ultima actulizacion de las fuentes para ver si hace falta actulizar.
+       this.UpdatedMap = await this.Service.CheckLatestUpdateFontains();
+
+       this.cargarScript();
+       // cogemos las primeras localizacion para poder desplegar el mapa y obtener posicion
+       await this.GeolocationService.getGeolocation();
+   
+       // obtenemos los fountains
+       this.getWatersourcesToMap();
+  }
+
+
+
 
 
   // cuando salimos desactivamos el checkeo de trackuser
@@ -121,11 +153,11 @@ export class fontsPage {
   async getWatersourcesToMap() {
  
     try {
-      let geojson = await this.getStorageCache();
+       this.geojson = await this.getStorageCache();
 
-      if (!geojson) {
+      if (!this.geojson) {
         // ponemos el storage
-        geojson = await this.setStorageIfnotExsit(geojson);
+        this.geojson = await this.setStorageIfnotExsit(this.geojson);
       }
 
       // desplegamos el mapa de mapBox cuando ya tenemos el geojson cargado y listo
@@ -148,7 +180,7 @@ export class fontsPage {
             zoom_init >= 1
           );
         };
-        const filteredFeatures = geojson.features.filter(filterFeatures);
+        const filteredFeatures = this.geojson.features.filter(filterFeatures);
 
         // habilitamos el cluster y subimos el contendido
         this.map.addSource('watersources', {
@@ -179,7 +211,7 @@ export class fontsPage {
           };
     
           // Filtrar el GeoJSON según la función de filtrado
-          const filteredFeatures = geojson.features.filter(filterFeatures);
+          const filteredFeatures = this.geojson.features.filter(filterFeatures);
 
           // Obtener la fuente existente
           const existingSource = this.map.getSource('watersources');
@@ -462,6 +494,26 @@ export class fontsPage {
     }
     return geojson;
   }
+
+  // la base de datos tiene un trigger para hacer actulizacion automaticamente a la hora de cambiar un dato al mapa
+  // hacer el update al mapa cuando haya nueva actulizacion. 
+  // comapramos el cache con una solicitud de base de datos , si los 2 coindicen , es false por lo contrario se actauliza en la funcion de this.Service.CheckLatestUpdateFontains();
+  async UpdateMap(){
+
+      // quitamos el antiguo cache geojson
+      await this.Service.removeStorage('geojson')
+      // quitamos el cache dategeojson para el date
+      await this.Service.removeStorage('dateGeoJson')
+       // eliminamos antiguo mapa 
+      await this.removeMap()
+       // solicitamos los nuevos datos y la ponemos en el cache y
+      //actulizamos el mapa y finalmente la desplegamos
+      await this.insertMap()
+      // quitamos el updatedMap para quitarla del mapa a la hora de acutlizar
+      this.UpdatedMap = true;
+
+  }
+
 
   // cargamos los scripts a los marcadores
   cargarScript(): void {
