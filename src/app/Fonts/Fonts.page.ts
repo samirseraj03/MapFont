@@ -78,15 +78,12 @@ export class fontsPage {
 
 
   removeMap(){
-
     this.removeGeolocateControl() // desactivamos Controles
     this.map = null;
     const mapContainer = document.getElementById('Mapa-de-box');
     if (mapContainer) {
       mapContainer.innerHTML = ''; // Vacía el contenedor
     }
-
-
   }
 
  async insertMap(){
@@ -151,13 +148,13 @@ export class fontsPage {
 
 
   async getWatersourcesToMap() {
- 
     try {
        this.geojson = await this.getStorageCache();
 
       if (!this.geojson) {
         // ponemos el storage
         this.geojson = await this.setStorageIfnotExsit(this.geojson);
+        this.UpdatedMap = true
       }
 
       // desplegamos el mapa de mapBox cuando ya tenemos el geojson cargado y listo
@@ -458,7 +455,6 @@ export class fontsPage {
   async setStorageIfnotExsit(geojson: any) {
     // Llama a Supabase para obtener los datos de las fuentes de agua
     let watersources = await this.Supabase.getWaterSources();
-    console.log(watersources);
 
     if (Array.isArray(watersources) && watersources.length > 0) {
       // Crea un objeto GeoJSON
@@ -523,7 +519,6 @@ export class fontsPage {
 
     (window as any).OnNavigate = async (lng: any, lat: any) => {
       let link = await this.GeolocationService.generateGoogleMapsLink(lat, lng);
-      console.log();
       await Browser.open({ url: link });
     };
 
@@ -534,7 +529,6 @@ export class fontsPage {
         id
       )) as any;
       if (data.length === 0) {
-        console.log(data);
         await this.Supabase.insertSavedFoutainWithUser(
           await this.GeolocationService.getUserID(),
           id
@@ -586,30 +580,3 @@ export class fontsPage {
     await Preferences.set({ key: 'geojson', value: JSON.stringify(geojson) });
   }
 }
-
-// async getWatersourcesToMap() {
-//   try {
-//     // llamamos a supabase
-//     let watersources = await this.Supabase.getWaterSources();
-//     if (Array.isArray(watersources) && watersources.length > 0) {
-//       // recorremos la lista que obtenemos de la base de datos
-//       console.log(watersources.length)
-//       watersources.forEach((element) => {
-//         this.UploadPopup(
-//           element.id ,
-//           element.name,
-//           element.available,
-//           element.description,
-//           element.ispotable,
-//           element.location.latitude,
-//           element.location.longitude,
-//           element.photo ,
-//           element.address
-//         );
-//       });
-//     }
-
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
