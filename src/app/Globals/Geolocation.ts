@@ -9,7 +9,7 @@ import { Capacitor } from '@capacitor/core';
 
 
 export default class GeolocationService {
-  constructor() {}
+  constructor() { }
 
   latitude: any = 0;
   longitude: any = 0;
@@ -40,9 +40,9 @@ export default class GeolocationService {
   }
 
   async checkLocationPermission() {
-    console.log("is native platform" , Capacitor.isNativePlatform())
+    console.log("is native platform", Capacitor.isNativePlatform())
 
-    if (Capacitor.isNativePlatform() === true){
+    if (Capacitor.isNativePlatform() === true) {
       const permissionStatus = await Geolocation.checkPermissions();
       if (permissionStatus.location === 'granted' || permissionStatus.coarseLocation === 'granted') {
         return 'granted';
@@ -57,7 +57,7 @@ export default class GeolocationService {
     }
     else {
       return 'web'
-    }  
+    }
   }
 
   // solictamos el acceso si no esta disponible
@@ -76,12 +76,12 @@ export default class GeolocationService {
       // checkeamos los permisos de los dispostivos
       let check = await this.checkLocationPermission();
 
-      console.log("check" , check)
+      console.log("check", check)
 
-      if (check === 'web'){
+      if (check === 'web') {
 
         let data = await this.getGeolocationWeb()
-        if (data){   
+        if (data) {
           resolve(data);
         }
         else {
@@ -89,13 +89,13 @@ export default class GeolocationService {
         }
 
       }
-      else{
+      else {
         if (check == 'granted') {
           let coordinates = await Geolocation.getCurrentPosition();
           console.log('Current position:', coordinates);
           // para insertar las cordenadas como variable global
           this.latitude = coordinates.coords.latitude;
-          this.longitude = coordinates.coords.longitude;   
+          this.longitude = coordinates.coords.longitude;
           resolve(coordinates);
         } else if (check == 'denied') {
           reject('Geolocation not supported');
@@ -104,7 +104,7 @@ export default class GeolocationService {
     });
   }
 
-  formatDate(isoString : any) {
+  formatDate(isoString: any) {
     // Crear un objeto de fecha a partir de la cadena ISO 8601
     const date = new Date(isoString);
 
@@ -117,39 +117,47 @@ export default class GeolocationService {
     const dateString = `${day}/${month}/${year}`;
 
     return dateString;
-}
-
-async getUserID(){
- let  user_id = await this.getStorage('user')
- if (user_id) {
-    return user_id.id
- }
- else{return null}
-
-}
-
-async getUserEmail(){
-  let  user_email = await this.getStorage('user')
-  if (user_email) {
-     return user_email.email
   }
-  else{return null}
- 
- }
 
+  async getUserID() {
+    let user_id = await this.getStorage('user')
+    if (user_id) {
+      return user_id.id
+    }
+    else { return null }
 
-async getStorage(key : string ){
-  const ret = await Preferences.get({ key: key });
-  if (ret.value === null){
-    return null
   }
-  else{
-    return JSON.parse(ret.value);
-  }
-}
 
-async generateGoogleMapsLink(latitud: number, longitud: number) {
-  return `https://www.google.com/maps?q=${latitud},${longitud}`;
-}
+  async getUserEmail() {
+    let user_email = await this.getStorage('user')
+    if (user_email) {
+      return user_email.email
+    }
+    else { return null }
+
+  }
+
+
+  async getStorage(key: string) {
+    const ret = await Preferences.get({ key: key });
+    if (ret.value === null) {
+      return null
+    }
+    else {
+      return JSON.parse(ret.value);
+    }
+  }
+
+  async generateGoogleMapsLink(latitud: number, longitud: number) {
+    return `https://www.google.com/maps/search/?api=1&query=${latitud},${longitud}`;
+  }
+
+  async generateAppleMapsLink(latitud: number, longitud: number) {
+    return `http://maps.apple.com/?q=${latitud},${longitud}`;
+  }
+
+  async generateWazeLink(latitud: number, longitud: number) {
+    return `https://waze.com/ul?ll=${latitud},${longitud}&navigate=yes`;
+  }
 
 }

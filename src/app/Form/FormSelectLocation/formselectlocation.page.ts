@@ -1,7 +1,7 @@
-import { Component, OnInit  } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {  NavController } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
 import GeolocationService from '../../Globals/Geolocation';
 import { addIcons } from 'ionicons';
 import { arrowBack } from 'ionicons/icons';
@@ -13,13 +13,14 @@ import axios from 'axios';
 import { ActivatedRoute } from '@angular/router';
 import { IonHeader, IonToolbar, IonButtons, IonIcon, IonButton, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonSearchbar, IonItem, IonLabel, IonList } from "@ionic/angular/standalone";
 import { Dialog } from '@capacitor/dialog';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-form-select-location',
   templateUrl: './formselectlocation.page.html',
   styleUrls: ['./formselectlocation.page.scss'],
   standalone: true,
-  imports: [IonList, IonLabel, IonItem, IonSearchbar, IonCardTitle, IonCardHeader, IonCard, IonContent, IonTitle, IonButton, IonIcon, IonButtons, IonToolbar, IonHeader,  CommonModule, FormsModule, ExploreContainerComponent],
+  imports: [IonList, IonLabel, IonItem, IonSearchbar, IonCardTitle, IonCardHeader, IonCard, IonContent, IonTitle, IonButton, IonIcon, IonButtons, IonToolbar, IonHeader, CommonModule, FormsModule, ExploreContainerComponent, TranslateModule],
 })
 export class FormSelectLocationPage implements OnInit {
   map_location: any;
@@ -27,11 +28,11 @@ export class FormSelectLocationPage implements OnInit {
   public results = [...this.data];
   public query: any;
   LastMarker: any;
-  LocationNotIsSelected : boolean = true;
-  lnglat : any = []
-  image : any
+  LocationNotIsSelected: boolean = true;
+  lnglat: any = []
+  image: any
 
-  constructor(public NavCtrl: NavController , private route : ActivatedRoute) {
+  constructor(public NavCtrl: NavController, private route: ActivatedRoute, public translate: TranslateService) {
     addIcons({ arrowBack });
   }
   GeolocationService = new GeolocationService();
@@ -51,7 +52,7 @@ export class FormSelectLocationPage implements OnInit {
   getMap() {
     // desplegar el map
     this.map_location = new mapboxgl.Map({
-      accessToken : environment.accessToken,
+      accessToken: environment.accessToken,
       container: 'MapaLocation',
       style: 'mapbox://styles/mapbox/dark-v11',
       center: [
@@ -145,23 +146,23 @@ export class FormSelectLocationPage implements OnInit {
           this.GeolocationService.latitude,
         ])
         .addTo(this.map_location);
-    // habiltamos el boton que esta confiramado la dirrecion
-    this.LocationNotIsSelected = false
+      // habiltamos el boton que esta confiramado la dirrecion
+      this.LocationNotIsSelected = false
     } catch (error) {
       await Dialog.alert({
-        title: 'Atencion',
-        message: 'ha sucedido un error , intentalo manualmente o mas tarde !'
+        title: this.translate.instant('attention'),
+        message: this.translate.instant('location_error_gps')
       });
     }
   }
   // pasamos a la siguente para completar el forumulario
   LocationSuccess() {
-      this.NavCtrl.navigateForward( '/FormInformation', {
-        queryParams: {
-          Adress: this.query,
-          lnglat : this.lnglat,
-          image : this.image
-        },
+    this.NavCtrl.navigateForward('/FormInformation', {
+      queryParams: {
+        Adress: this.query,
+        lnglat: this.lnglat,
+        image: this.image
+      },
     });
   }
 

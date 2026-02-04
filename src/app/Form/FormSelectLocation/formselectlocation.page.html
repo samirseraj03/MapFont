@@ -1,16 +1,12 @@
 <ion-header [translucent]="true">
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.1/mapbox-gl.js"></script>
-  <link
-    href="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.css"
-    rel="stylesheet"
-  />
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.css" rel="stylesheet" />
 
-  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
-  <link
-    rel="stylesheet"
+  <script
+    src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
+  <link rel="stylesheet"
     href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css"
-    type="text/css"
-  />
+    type="text/css" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -22,7 +18,7 @@
         <!-- Icono del botón -->
       </ion-button>
     </ion-buttons>
-    <ion-title>FormSelectLocation</ion-title>
+    <ion-title>{{ 'select_location' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -32,40 +28,31 @@
       <div class="row">
         <div class="col">
           <ion-card-title class="d-flex">
-            Confirma el sitio de la fuente , es Correcto ?
+            {{ 'confirm_font_location_is_correct' | translate }}
           </ion-card-title>
         </div>
-    
+
       </div>
 
 
       <div class="row mt-5">
         <div class="col-12 col-md-8">
-          <ion-searchbar
-            class=""
-            color="light"
-            show-clear-button="always"
-            animated="true"
-            placeholder="SerachPlace"
-            value="Custom Clear Icon"
-            [debounce]="400"
-            [value]="ToSearch()"
-            (ionInput)="SerachPlace($event)"
-          ></ion-searchbar>
+          <ion-searchbar class="" color="light" show-clear-button="always" animated="true"
+            [placeholder]="'search_place' | translate" value="Custom Clear Icon" [debounce]="400" [value]="ToSearch()"
+            (ionInput)="SerachPlace($event)"></ion-searchbar>
         </div>
         <div class="col-12  col-md ">
-          <ion-button (click)="SerachWithGps()" 
-          class="btn btn-danger  " fill="clear">
-          <span class="material-symbols-outlined">
-          my_location
-          </span>
-        </ion-button>
+          <ion-button (click)="SerachWithGps()" class="btn btn-danger  " fill="clear">
+            <span class="material-symbols-outlined">
+              my_location
+            </span>
+          </ion-button>
         </div>
         <div class="col-12  col-md">
-          <ion-button (click)="LocationSuccess()" [disabled]="LocationNotIsSelected" 
-          class="btn btn-success" fill="Clear">
-          Siguente
-        </ion-button>
+          <ion-button (click)="LocationSuccess()" [disabled]="LocationNotIsSelected" class="btn btn-success"
+            fill="Clear">
+            {{ 'next_step' | translate }}
+          </ion-button>
         </div>
       </div>
       <ion-list>
@@ -82,7 +69,7 @@
 
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">FormSelectLocation</ion-title>
+      <ion-title size="large">{{ 'select_location' | translate }}</ion-title>
     </ion-toolbar>
   </ion-header>
 </ion-content>

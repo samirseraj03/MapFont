@@ -13,44 +13,55 @@ export class Services {
   img_ref: any;
   Supabase = new DatabaseService();
 
-    // para guardar en storage y en andoroid y ios informacion temportal
-    async setStorage(key: string, value: any) {
-      await Preferences.set({ key: key, value: JSON.stringify(value) });
+  // para guardar en storage y en andoroid y ios informacion temportal
+  async setStorage(key: string, value: any) {
+    await Preferences.set({ key: key, value: JSON.stringify(value) });
+  }
+  // para obtener en storage y en andoroid y ios informacion temportal
+  async getStorage(key: string) {
+    const ret = await Preferences.get({ key: key });
+    if (ret.value === null) {
+      return null;
+    } else {
+      return JSON.parse(ret.value);
     }
-    // para obtener en storage y en andoroid y ios informacion temportal
-    async getStorage(key: string) {
-      const ret = await Preferences.get({ key: key });
-      if (ret.value === null) {
-        return null;
+  }
+
+  // para eliminar en storage y en andoroid y ios informacion temportal
+  async removeStorage(key: string) {
+    await Preferences.remove({ key: key });
+    return 0;
+  }
+
+
+  // comprovar la ultima actulizacion del usuario
+  async CheckLatestUpdateFontains(): Promise<boolean> {
+    let LocaldateGeoJson: any = await this.getStorage('dateGeoJson');
+
+    // Obtenemos la fecha del servidor
+    let SupabseUpdateFountains: any = await this.Supabase.getUpdateDateFountains();
+
+    // Verificamos que tengamos datos válidos del servidor
+    if (!Array.isArray(SupabseUpdateFountains) || SupabseUpdateFountains.length === 0) {
+      // Si no hay datos en el servidor, devolvemos false (forzar actualización o manejar vacío)
+      // Si no hay fuentes, tal vez queramos borrar el local.
+      // Por seguridad, si el servidor no devuelve nada, asumimos que no hay coincidencia
+      return false;
+    }
+
+    // Si tenemos datos locales y del servidor
+    if (Array.isArray(LocaldateGeoJson) && LocaldateGeoJson.length > 0) {
+      // Comparamos las fechas
+      if (SupabseUpdateFountains[0].updated_at === LocaldateGeoJson[0].updated_at) {
+        return true; // Están sincronizados
       } else {
-        return JSON.parse(ret.value);
+        return false; // Necesita actualización
       }
     }
-  
-    // para eliminar en storage y en andoroid y ios informacion temportal
-    async removeStorage(key: string) {
-      await Preferences.remove({ key: key });
-      return 0;
-    }
-
-
-      // comprovar la ultima actulizacion del usuario
-  async CheckLatestUpdateFontains() :Promise<boolean>{
-    let LocaldateGeoJson  : any = await this.getStorage('dateGeoJson');
-    if (LocaldateGeoJson) {
-      let SupabseUpdateFountains : any = await this.Supabase.getUpdateDateFountains()       
-      // si existe el storage y coincide con la ultima actulizacion succes y ponemos necesidad de update en false
-       if (SupabseUpdateFountains[0].updated_at === LocaldateGeoJson[0].updated_at){
-          return true
-       }
-       else {
-          return false
-       }
-    }
-    // si no existe updated_at en el storage, lo creamos pero lo dejamos en false para que cuando se haga un update secundario.
+    // si no existe updated_at en el storage o está vacío
     else {
-      let dateGeoJson = await this.Supabase.getUpdateDateFountains()
-      await this.setStorage('dateGeoJson' , dateGeoJson )
+      // Guardamos la nueva fecha y devolvemos false para indicar que se debe actualizar el mapa
+      await this.setStorage('dateGeoJson', SupabseUpdateFountains)
       return false
     }
   }

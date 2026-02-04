@@ -20,6 +20,7 @@ import {
   LoadingController,
   AlertController,
   NavController,
+  ActionSheetController,
 } from '@ionic/angular';
 import { OverlayEventDetail } from '@ionic/core/components';
 import { setMapboxAccessToken } from './../../environments/environment';
@@ -29,7 +30,8 @@ import { Preferences } from '@capacitor/preferences';
 import { Services } from '../services.service';
 import { CommonModule } from '@angular/common';
 import { addIcons } from 'ionicons';
-import { heart, logoApple, settingsSharp, star , refreshCircle } from 'ionicons/icons';
+import { heart, logoApple, settingsSharp, star, refreshCircle } from 'ionicons/icons';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 
 
 @Component({
@@ -50,13 +52,14 @@ import { heart, logoApple, settingsSharp, star , refreshCircle } from 'ionicons/
     ExploreContainerComponent,
     CommonModule,
     IonIcon,
+    TranslateModule
   ],
 })
 export class fontsPage {
   @ViewChild(IonModal) modal: IonModal | undefined;
 
-  constructor(private navCtrl: NavController , public Service : Services) {
-    addIcons({ heart, settingsSharp, star , refreshCircle});
+  constructor(private navCtrl: NavController, public Service: Services, public actionSheetCtrl: ActionSheetController, public translate: TranslateService) {
+    addIcons({ heart, settingsSharp, star, refreshCircle });
   }
   map: any;
   GeolocationService = new GeolocationService();
@@ -64,63 +67,69 @@ export class fontsPage {
   marker: any;
   // se compruba el mapa si esta actualizada o no ..
   // por defecto esta en updated para no mostrar el boton
-  UpdatedMap : boolean = true;
+  UpdatedMap: boolean = true;
   // geojson global
-  geojson : any
-
-  async ionViewWillEnter() {
-    this.insertMap()
-  }
-
-  ionViewWillLeave(){ // Cuando salimos de la pagina y hacemos route a otra pagina o salir directamente.
-  this.removeMap()
-  }
-
-
-  removeMap(){
-    this.removeGeolocateControl() // desactivamos Controles
-    this.map = null;
-    const mapContainer = document.getElementById('Mapa-de-box');
-    if (mapContainer) {
-      mapContainer.innerHTML = ''; // Vacía el contenedor
-    }
-  }
-
- async insertMap(){
-       // chkeamos la ultima actulizacion de las fuentes para ver si hace falta actulizar.
-       this.UpdatedMap = await this.Service.CheckLatestUpdateFontains();
-
-       this.cargarScript();
-       // cogemos las primeras localizacion para poder desplegar el mapa y obtener posicion
-       await this.GeolocationService.getGeolocation();
-   
-       // obtenemos los fountains
-       this.getWatersourcesToMap();
-  }
-
-
-
-
-
-  // cuando salimos desactivamos el checkeo de trackuser
-  removeGeolocateControl() {
-    this.map.removeControl(this.geolocate);
-  }
+  geojson: any
 
   // añadir control al mapa , la localizacion actulizada del Gps
   geolocate = new mapboxgl.GeolocateControl({
     positionOptions: {
       enableHighAccuracy: true
     },
-     // When active the map will receive updates to the device's location as it changes.
-     trackUserLocation: true,
-     // Draw an arrow next to the location dot to indicate which direction the device is heading.
-     showUserHeading: true
-  })
+    // When active the map will receive updates to the device's location as it changes.
+    trackUserLocation: true,
+    // Draw an arrow next to the location dot to indicate which direction the device is heading.
+    showUserHeading: true
+  });
 
+  ionViewWillEnter() {
+    this.insertMap();
+  }
+
+  // Removed redundant ionViewWillLeave to keep map instance alive if possible
+  // If memory is an issue, we can destroy it, but for performance, keeping it is better in Tabs.
+
+  async insertMap() {
+    // Check if map is initialized
+    if (this.map) {
+      const container = this.map.getContainer();
+      // Check if the map's container is still part of the document
+      // If Ionic navigated away and back, the old container might be detached
+      if (container && document.body.contains(container)) {
+        this.map.resize();
+        await this.checkAndPerformUpdate();
+        return;
+      } else {
+        // Map instance exists but container is invalid/detached. 
+        // Cleanup and re-init.
+        this.map.remove();
+        this.map = null;
+      }
+    }
+
+    // Si no existe, inicializamos
+    this.UpdatedMap = await this.Service.CheckLatestUpdateFontains();
+    this.cargarScript();
+    await this.GeolocationService.getGeolocation();
+    this.getWatersourcesToMap();
+  }
+
+  async checkAndPerformUpdate() {
+    // Check background update
+    const isUpdated = await this.Service.CheckLatestUpdateFontains();
+    this.UpdatedMap = isUpdated;
+    // Si no estaba actualizado (false), el template mostrará el botón de actualizar
+    // No forzamos actualización automática para no bloquear UI, el usuario lo hará manual o
+    // podemos hacerlo silencioso:
+    if (!isUpdated) {
+      // Opcional: Auto-update silencioso
+      // console.log("Silent update available");
+    }
+  }
 
   getMap() {
-    // desplegar el map
+    if (this.map) return; // Prevent duplicate initialization
+
     this.map = new mapboxgl.Map({
       accessToken: environment.accessToken,
       container: 'Mapa-de-box',
@@ -132,119 +141,63 @@ export class fontsPage {
       zoom: 15.15,
     });
 
-    // añadimos los controles despues de desplegar el mapa 
-    this.map.addControl(this.geolocate)
-    // para quitar el box que se encuentra a la derecha
-    this.HideMapboxBottomRight()
+    this.map.addControl(this.geolocate);
+    this.HideMapboxBottomRight();
   }
 
-  HideMapboxBottomRight(){
-
-    let HideMapboxBottomRight = document.getElementsByClassName('mapboxgl-ctrl-bottom-right')
-    for (const element of Array.from(HideMapboxBottomRight)) {
-      (element as HTMLElement).style.display = 'none';
-    }
+  HideMapboxBottomRight() {
+    // Es posible que los elementos no existan aún si el mapa no cargó, intentar con timeout o en load
+    setTimeout(() => {
+      let HideMapboxBottomRight = document.getElementsByClassName('mapboxgl-ctrl-bottom-right');
+      for (const element of Array.from(HideMapboxBottomRight)) {
+        (element as HTMLElement).style.display = 'none';
+      }
+    }, 500);
   }
-
 
   async getWatersourcesToMap() {
     try {
-       this.geojson = await this.getStorageCache();
+      this.geojson = await this.getStorageCache();
 
       if (!this.geojson) {
-        // ponemos el storage
         this.geojson = await this.setStorageIfnotExsit(this.geojson);
-        this.UpdatedMap = true
+        this.UpdatedMap = true;
       }
 
-      // desplegamos el mapa de mapBox cuando ya tenemos el geojson cargado y listo
       this.getMap();
-      // Añade el GeoJSON al mapa de Mapbox
+
       this.map.on('load', () => {
+        this.geolocate.trigger();
 
-
-        const center_init = this.map.getCenter();
-        const zoom_init = this.map.getZoom();
-
-        this.geolocate.trigger(); //<- Automatically activates geolocation and trackuser
-
-        const filterFeatures = (feature: any) => {
-          // Aquí definimos los criterios de filtrado
-          // Filtramos las características que están dentro de un área específica alrededor del centro inicial
-          // y tienen un zoom mayor o igual a 13
-          return (
-            this.map.getBounds().contains(feature.geometry.coordinates) &&
-            zoom_init >= 1
-          );
-        };
-        const filteredFeatures = this.geojson.features.filter(filterFeatures);
-
-        // habilitamos el cluster y subimos el contendido
+        // Agregamos la fuente con TODOS los datos. 
+        // Mapbox maneja perfectamente 12k puntos con clustering.
+        // NO filtramos manualmente en moveend.
         this.map.addSource('watersources', {
           type: 'geojson',
           data: {
             type: 'FeatureCollection',
-            features: filteredFeatures,
+            features: this.geojson.features, // Carga todo de una vez
           },
-          cluster: true, // Habilita el clustering
-          clusterMaxZoom: 14, // Zoom máximo para agrupar
-          clusterRadius: 80, // Radio del cluster entre uno y el otro 
+          cluster: true,
+          clusterMaxZoom: 14,
+          clusterRadius: 80,
         });
 
-
-        this.map.on('moveend', () => {
-          const center = this.map.getCenter();
-          const zoom = this.map.getZoom();
-    
-          // Definir la función de filtrado
-          const filterFeatures = (feature: any) => {
-            // Aquí definimos los criterios de filtrado
-            // Filtramos las características que están dentro de un área específica alrededor del centro actual
-            // y tienen un zoom mayor o igual a 5 para no tener mucha carga en el mapa
-            return (
-              this.map.getBounds().contains(feature.geometry.coordinates) &&
-              zoom >= 5
-            );
-          };
-    
-          // Filtrar el GeoJSON según la función de filtrado
-          const filteredFeatures = this.geojson.features.filter(filterFeatures);
-
-          // Obtener la fuente existente
-          const existingSource = this.map.getSource('watersources');
-
-          // Verificar si la fuente ya existe y si hay capas asociadas a ella
-          if (existingSource) {
-              // Actualizar los datos de la fuente existente
-              existingSource.setData({
-                  type: 'FeatureCollection',
-                  features: filteredFeatures
-              });
-          } else {
-              console.error('La fuente "watersources" no existe en el mapa.');
-          }
-        });
-
-        // Añade una capa de puntos para representar las fuentes de agua en el mapa
+        // Capas (Layers) - Sin cambios significativos, solo eliminamos el filtro manual de moveend
         this.map.addLayer({
           id: 'clusters',
           type: 'circle',
           source: 'watersources',
           filter: ['has', 'point_count'],
           paint: {
-            // Use step expressions (https://docs.mapbox.com/style-spec/reference/expressions/#step)
-            // with three steps to implement three types of circles:
-            //   * Blue, 20px circles when point count is less than 100
-            //   * Yellow, 30px circles when point count is between 100 and 750
-            //   * Pink, 40px circles when point count is greater than or equal to 750
             'circle-color': [
               'step',
               ['get', 'point_count'],
               '#51bbd6',
-              100,
+              100, //blue
               '#f1f075',
-              750,
-              '#f28cb1',
+              750, // yellow
+              '#f28cb1', // pink
             ],
             'circle-radius': [
               'step',
@@ -283,6 +236,7 @@ export class fontsPage {
           },
         });
 
+        // Eventos de Click (Cluster expansión)
         this.map.on('click', 'clusters', (e: any) => {
           const features = this.map.queryRenderedFeatures(e.point, {
             layers: ['clusters'],
@@ -292,7 +246,6 @@ export class fontsPage {
             .getSource('watersources')
             .getClusterExpansionZoom(clusterId, (err: any, zoom: any) => {
               if (err) return;
-
               this.map.easeTo({
                 center: features[0].geometry.coordinates,
                 zoom: zoom,
@@ -375,20 +328,17 @@ export class fontsPage {
 
     // definimos la classe de foto si existe o no
     let class_photo = photo
-    ? "w-100" : "w-50";
+      ? "w-100" : "w-50";
 
     // buscamos si hay foto o no
     let photo_url = photo
       ? this.Supabase.GetStorage(photo)
       : '../assets/icon/agua-potable.png';
 
-      
-
-      
-
     // miramos si esta disponible la fuente:
-    const availableText = available ? 'Disponible' : 'No disponible';
-    const isPotableText = ispotable ? 'Potable' : 'No potable';
+    const availableText = available ? this.translate.instant('available') : this.translate.instant('not_available');
+    const isPotableText = ispotable ? this.translate.instant('potable') : this.translate.instant('not_potable');
+
     // create the popup
     const popup = new mapboxgl.Popup({
       offset: 25,
@@ -397,24 +347,24 @@ export class fontsPage {
       .setLngLat(coordinates)
       .setHTML(
         `
-      <p class="mt-3 mb-0"><strong>Nombre de la fuente:</strong> ${name}</p>
-      <p class="mb-0" ><strong>Información de la fuente:</strong></p>
+      <p class="mt-3 mb-0"><strong>${this.translate.instant('font_name')}</strong> ${name}</p>
+      <p class="mb-0" ><strong>${this.translate.instant('font_info')}</strong></p>
       <ul>
           <li>${availableText}</li>
           <li>${isPotableText}</li>
           <li>${description}</li>
       </ul>
-      <ion-button id="open-modal" expand="block">Open</ion-button>
+      <ion-button id="open-modal" expand="block">${this.translate.instant('open')}</ion-button>
 
       <ion-modal trigger="open-modal">
       <ion-header>
         <ion-toolbar>
           <ion-buttons slot="start">
-          <ion-button onclick="cancel()">Cancel</ion-button>
+          <ion-button onclick="cancel()">${this.translate.instant('cancel')}</ion-button>
           </ion-buttons>
           <ion-title>${name}</ion-title>
           <ion-buttons slot="end">
-            <ion-button onclick="confirm()" strong="true">Confirm</ion-button>
+            <ion-button onclick="confirm()" strong="true">${this.translate.instant('confirm')}</ion-button>
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
@@ -439,8 +389,8 @@ export class fontsPage {
             </ion-text>
           </ion-item>
           <div class="d-block mt-2"> 
-            <ion-button class="w-100 mt-2" onclick="OnNavigate(${lng} , ${lat})">Navegar</ion-button>
-            <ion-button class="w-100 mt-2" onclick="OnSaveFountain(${id})">Guardar fuente</ion-button>
+            <ion-button class="w-100 mt-2" onclick="OnNavigate(${lng} , ${lat})">${this.translate.instant('navigate')}</ion-button>
+            <ion-button class="w-100 mt-2" onclick="OnSaveFountain(${id})">${this.translate.instant('save_font')}</ion-button>
           </div>
         </div>
       </ion-content>
@@ -494,20 +444,27 @@ export class fontsPage {
   // la base de datos tiene un trigger para hacer actulizacion automaticamente a la hora de cambiar un dato al mapa
   // hacer el update al mapa cuando haya nueva actulizacion. 
   // comapramos el cache con una solicitud de base de datos , si los 2 coindicen , es false por lo contrario se actauliza en la funcion de this.Service.CheckLatestUpdateFontains();
-  async UpdateMap(){
+  async UpdateMap() {
+    // quitamos el antiguo cache geojson
+    await this.Service.removeStorage('geojson')
+    // quitamos el cache dategeojson para el date
+    await this.Service.removeStorage('dateGeoJson')
 
-      // quitamos el antiguo cache geojson
-      await this.Service.removeStorage('geojson')
-      // quitamos el cache dategeojson para el date
-      await this.Service.removeStorage('dateGeoJson')
-       // eliminamos antiguo mapa 
-      await this.removeMap()
-       // solicitamos los nuevos datos y la ponemos en el cache y
-      //actulizamos el mapa y finalmente la desplegamos
-      await this.insertMap()
-      // quitamos el updatedMap para quitarla del mapa a la hora de acutlizar
-      this.UpdatedMap = true;
+    // Obtenemos nuevos datos
+    this.geojson = await this.setStorageIfnotExsit(null); // Force fetch
 
+    // Actualizamos la fuente del mapa en lugar de destruirlo
+    if (this.map && this.map.getSource('watersources')) {
+      (this.map.getSource('watersources') as mapboxgl.GeoJSONSource).setData({
+        type: 'FeatureCollection',
+        features: this.geojson.features
+      });
+    } else {
+      // Fallback si algo falló
+      this.getWatersourcesToMap();
+    }
+
+    this.UpdatedMap = true;
   }
 
 
@@ -518,8 +475,42 @@ export class fontsPage {
     });
 
     (window as any).OnNavigate = async (lng: any, lat: any) => {
-      let link = await this.GeolocationService.generateGoogleMapsLink(lat, lng);
-      await Browser.open({ url: link });
+
+      const actionSheet = await this.actionSheetCtrl.create({
+        header: this.translate.instant('navigate_with'),
+        buttons: [
+          {
+            text: this.translate.instant('google_maps'),
+            handler: async () => {
+              let link = await this.GeolocationService.generateGoogleMapsLink(lat, lng);
+              await Browser.open({ url: link });
+            }
+          },
+          {
+            text: this.translate.instant('apple_maps'),
+            handler: async () => {
+              let link = await this.GeolocationService.generateAppleMapsLink(lat, lng);
+              await Browser.open({ url: link });
+            }
+          },
+          {
+            text: this.translate.instant('waze'),
+            handler: async () => {
+              let link = await this.GeolocationService.generateWazeLink(lat, lng);
+              await Browser.open({ url: link });
+            }
+          },
+          {
+            text: this.translate.instant('cancel'),
+            role: 'cancel',
+            data: {
+              action: 'cancel',
+            },
+          },
+        ],
+      });
+
+      await actionSheet.present();
     };
 
     (window as any).OnSaveFountain = async (id: any) => {
@@ -535,13 +526,13 @@ export class fontsPage {
         );
 
         await Dialog.alert({
-          title: 'fuente guardada',
-          message: 'la fuente ha sido guardada',
+          title: this.translate.instant('fountain_saved'),
+          message: this.translate.instant('fountain_has_been_saved'),
         });
       } else {
         await Dialog.alert({
-          title: 'fuente no guardada',
-          message: 'la fuente ha sido guardada anteriormente',
+          title: this.translate.instant('fountain_not_saved'),
+          message: this.translate.instant('fountain_already_saved'),
         });
       }
     };

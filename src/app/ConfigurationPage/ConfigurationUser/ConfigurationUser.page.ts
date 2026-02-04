@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild , ChangeDetectorRef  } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -7,25 +7,26 @@ import {
   NavController,
   IonButtons,
   IonIcon,
-  IonButton, IonCard, IonCardHeader, IonCardTitle, IonList, IonLabel , IonMenu , IonMenuButton , IonSelect , IonSelectOption, IonInput } from '@ionic/angular/standalone';
+  IonButton, IonCard, IonCardHeader, IonCardTitle, IonList, IonLabel, IonMenu, IonMenuButton, IonSelect, IonSelectOption, IonInput
+} from '@ionic/angular/standalone';
 import { ExploreContainerComponent } from '../../explore-container/explore-container.component';
 import { arrowBack } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import GeolocationService from 'src/app/Globals/Geolocation';
 import { ConfigurationTabPage } from '../configuration-tab/configuration-tab.page';
-import {   LoadingController } from '@ionic/angular';
-import { FormsModule, NgForm   } from '@angular/forms';
+import { LoadingController } from '@ionic/angular';
+import { FormsModule, NgForm } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import DatabaseService from '../../Types/SupabaseService';
 import { Dialog } from '@capacitor/dialog';
-import { TranslateModule , TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-configuration-user',
   templateUrl: 'ConfigurationUser.page.html',
   styleUrls: ['ConfigurationUser.page.scss'],
   standalone: true,
-  imports: [IonInput, IonLabel, IonList, IonCardTitle, IonCardHeader, IonCard,  
+  imports: [IonInput, IonLabel, IonList, IonCardTitle, IonCardHeader, IonCard,
     FormsModule,
     ExploreContainerComponent,
     ConfigurationTabPage,
@@ -36,7 +37,7 @@ import { TranslateModule , TranslateService } from '@ngx-translate/core';
     IonContent,
     IonButtons,
     IonIcon,
-    IonButton, IonMenu , IonMenuButton , IonSelect ,IonSelectOption , TranslateModule
+    IonButton, IonMenu, IonMenuButton, IonSelect, IonSelectOption, TranslateModule
   ],
 })
 export class ConfigurationUserPage implements OnInit {
@@ -45,7 +46,7 @@ export class ConfigurationUserPage implements OnInit {
   img_ref_config: any = null;
   data: any;
 
-  constructor(public NavCtrl: NavController ,  private loadingController: LoadingController, private cdr: ChangeDetectorRef , private TranslateService :TranslateService
+  constructor(public NavCtrl: NavController, private loadingController: LoadingController, private cdr: ChangeDetectorRef, private TranslateService: TranslateService
   ) {
     addIcons({ arrowBack });
   }
@@ -73,11 +74,11 @@ export class ConfigurationUserPage implements OnInit {
 
   }
 
-  loading : any
+  loading: any
   async Update() {
     // utilizamos el supabase
 
-    this.loadingController.create({ message: 'Cargando' }).then(loading => {
+    this.loadingController.create({ message: this.TranslateService.instant('loading') }).then(loading => {
       this.loading = loading;
       this.loading.present();
     });
@@ -86,11 +87,11 @@ export class ConfigurationUserPage implements OnInit {
       await this.ToDataBase();
       this.onLanguageChange(this.formData.language ? this.formData.language : 'es');
 
-    }catch {
+    } catch {
       this.loading.dismiss()
     }
-    finally{
-      this.NavCtrl.navigateForward( '/Success', {
+    finally {
+      this.NavCtrl.navigateForward('/Success', {
         state: {
           PageSucces: 'configuration',
         },
@@ -100,7 +101,7 @@ export class ConfigurationUserPage implements OnInit {
 
   }
 
-  onLanguageChange(language : any){
+  onLanguageChange(language: any) {
     this.TranslateService.use(language);
   }
 
@@ -143,8 +144,8 @@ export class ConfigurationUserPage implements OnInit {
       imgReader.readAsDataURL(selectedFile);
     } else {
       await Dialog.alert({
-        title: 'Atencion',
-        message: 'el tipo de archivo no es valido'
+        title: this.TranslateService.instant('attention'),
+        message: this.TranslateService.instant('file_type_invalid')
       });
     }
   }

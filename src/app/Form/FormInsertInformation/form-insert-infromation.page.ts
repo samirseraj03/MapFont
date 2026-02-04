@@ -1,37 +1,39 @@
-import { Component ,OnInit,ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {  NavController } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
 import GeolocationService from '../../Globals/Geolocation';
 import { arrowBack } from 'ionicons/icons';
 import { addIcons } from 'ionicons';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import DatabaseService from 'src/app/Types/SupabaseService';
-import {Forms} from 'src/app/Types/SupabaseService';
-import { IonSelectOption , IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonIcon, IonContent, IonCard, IonCardHeader, IonCardTitle, IonList, IonLabel } from "@ionic/angular/standalone";
+import { Forms } from 'src/app/Types/SupabaseService';
+import { IonSelectOption, IonHeader, IonToolbar, IonButtons, IonButton, IonTitle, IonIcon, IonContent, IonCard, IonCardHeader, IonCardTitle, IonList, IonLabel, IonInput, IonSelect } from "@ionic/angular/standalone";
 import { Dialog } from '@capacitor/dialog';
 import { Services } from 'src/app/services.service';
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-form-insert-infromation',
   templateUrl: './form-insert-infromation.page.html',
   styleUrls: ['./form-insert-infromation.page.scss'],
   standalone: true,
-  imports: [ IonSelectOption, IonLabel, IonList, IonCardTitle, IonCardHeader, IonCard, IonContent, IonIcon, IonTitle, IonButton, IonButtons, IonToolbar, IonHeader,  CommonModule, FormsModule]
+  imports: [IonSelectOption, IonLabel, IonList, IonCardTitle, IonCardHeader, IonCard, IonContent, IonIcon, IonTitle, IonButton, IonButtons, IonToolbar, IonHeader, CommonModule, FormsModule, IonInput, IonSelect, TranslateModule]
 })
-export class FormInsertInfromationPage implements OnInit  {
+export class FormInsertInfromationPage implements OnInit {
 
   @ViewChild('myForm') myForm!: NgForm; // Obtén una referencia al formulario usando ViewChild
   formData: any = {}; // Variable para almacenar los datos del formulario en formato JSON
-  lnglat : any ;
-  image : any;
+  lnglat: any;
+  image: any;
   Adress: any;
 
 
-  constructor(public NavCtrl: NavController , private route : ActivatedRoute ,  private Service : Services) {
+  constructor(public NavCtrl: NavController, private route: ActivatedRoute, private Service: Services) {
     addIcons({ arrowBack });
   }
-  
+
   GeolocationService = new GeolocationService();
   DatabaseService = new DatabaseService()
 
@@ -55,7 +57,7 @@ export class FormInsertInfromationPage implements OnInit  {
     // if (this.myForm && this.myForm.form) {
     //   const formControls = this.myForm.form.controls;
     //   let isValid = true;
-    
+
     //   console.log(formControls)
     //   // Verifica cada campo individualmente
     //   Object.keys(formControls).forEach(key => {
@@ -63,7 +65,7 @@ export class FormInsertInfromationPage implements OnInit  {
     //       isValid = false;
     //     }
     //   });
-    
+
     //   if (isValid) {
     //     this.formData = this.myForm.value;
     //     // this.ToDataBase();
@@ -83,44 +85,44 @@ export class FormInsertInfromationPage implements OnInit  {
     // }
   }
 
-  async ToDataBase(){
+  async ToDataBase() {
 
 
     // preparamos las variables a insertar para el forumulario
 
-    let user_id =  await this.GeolocationService.getUserID()
+    let user_id = await this.GeolocationService.getUserID()
     let data_user = await this.DatabaseService.getUser(user_id)
     this.lnglat = {
       "latitude": this.lnglat[1],
       "longitude": this.lnglat[0],
     }
     let image = await this.DatabaseService.InsertToStoarge(this.image)
-    let form : Forms = {
-      username : data_user[0].username,
-      watersourcesname: this.formData.watersourcesname ,
+    let form: Forms = {
+      username: data_user[0].username,
+      watersourcesname: this.formData.watersourcesname,
       created_at: new Date(),
-      location: this.lnglat ,
+      location: this.lnglat,
       photo: image,
-      address: this.Adress ,
+      address: this.Adress,
       description: this.formData.description,
       is_potable: this.formData.is_potable,
-      watersourcetype: this.formData.watersourcetype ,
-      approved: null , 
-      autencationUserID : user_id
+      watersourcetype: this.formData.watersourcetype,
+      approved: null,
+      autencationUserID: user_id
     }
 
     // insertamos los datos a la base de datos
     this.DatabaseService.insertForm(form)
-    
+
   }
   // para mostarar al usuario pagina completada y ir al inicio
-  GoSuccess(){
+  GoSuccess() {
     // eliminamos la variable imgRef service y la ponemos a null
     this.Service.img_ref = null
 
-    this.NavCtrl.navigateForward( '/Success', {
+    this.NavCtrl.navigateForward('/Success', {
       queryParams: {
-        page : 'form',
+        page: 'form',
         Success: true,
       },
     });

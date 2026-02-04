@@ -1,18 +1,20 @@
 import { Component, Injectable, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {   NavController  } from '@ionic/angular';
+import { NavController } from '@ionic/angular';
 import { LoadingController } from '@ionic/angular';
 import { AuthenticationService } from '../../authentication.service';
 import { ActivatedRoute } from '@angular/router';
 import { TabsPage } from 'src/app/tabs/tabs.page';
 import { Services } from 'src/app/services.service';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 
 import {
   IonHeader,
   IonToolbar,
   IonTitle,
-  IonContent, IonButton, IonInput, IonItem, IonButtons, IonCardContent, IonCard ,IonCardTitle , IonRow , IonCol , IonCardHeader} from '@ionic/angular/standalone';
+  IonContent, IonButton, IonInput, IonItem, IonButtons, IonCardContent, IonCard, IonCardTitle, IonRow, IonCol, IonCardHeader
+} from '@ionic/angular/standalone';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +24,7 @@ import {
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonCard, CommonModule, FormsModule ,IonButton , IonCardContent ,IonHeader , IonToolbar , IonButtons ,IonCardTitle , IonRow, IonCol ,IonItem , IonTitle , IonContent , IonCardHeader , IonInput],
+  imports: [IonCard, CommonModule, FormsModule, IonButton, IonCardContent, IonHeader, IonToolbar, IonButtons, IonCardTitle, IonRow, IonCol, IonItem, IonTitle, IonContent, IonCardHeader, IonInput, TranslateModule],
 })
 export class LoginPage implements OnInit {
 
@@ -43,9 +45,10 @@ export class LoginPage implements OnInit {
     public loadingController: LoadingController,
     public NavCtrl: NavController,
     private route: ActivatedRoute,
-    private TabsPage : TabsPage,
-    private Service : Services
-  ) {}
+    private TabsPage: TabsPage,
+    private Service: Services,
+    public translate: TranslateService
+  ) { }
 
   ngOnInit() {
     let email: string | undefined = ""; // Declara 'email' como string o undefined
@@ -72,12 +75,12 @@ export class LoginPage implements OnInit {
     try {
 
 
-      this.loadingController.create({ message: 'Cargando' }).then(loading => {
+      this.loadingController.create({ message: this.translate.instant('loading') }).then(loading => {
         this.loading = loading;
         this.loading.present();
       });
 
-      console.log("loading" , this.loading )
+      console.log("loading", this.loading)
 
 
       const response = await this.authService.signIn(this.email, this.password);
@@ -166,7 +169,7 @@ export class LoginPage implements OnInit {
   async Logout() {
     try {
       await this.authService.signOut();
-    } catch {}
+    } catch { }
     this.clearAccessToken();
     this.TabsPage.isLogin = false
   }

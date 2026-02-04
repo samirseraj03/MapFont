@@ -6,17 +6,18 @@ import { arrowBack, arrowForward } from 'ionicons/icons';
 import GeolocationService from 'src/app/Globals/Geolocation';
 import { addIcons } from 'ionicons';
 import { LoginPage } from 'src/app/authentication/login/login.page';
-import {  IonMenu   ,IonButton , IonCardContent ,IonHeader , IonToolbar , IonButtons ,IonCardTitle , IonRow, IonCol ,IonItem , IonTitle , IonContent , IonCardHeader , IonInput, IonRouterOutlet, IonList } from '@ionic/angular/standalone';
+import { IonMenu, IonButton, IonCardContent, IonHeader, IonToolbar, IonButtons, IonCardTitle, IonRow, IonCol, IonItem, IonTitle, IonContent, IonCardHeader, IonInput, IonRouterOutlet, IonList } from '@ionic/angular/standalone';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-configuration-tab',
   templateUrl: './configuration-tab.page.html',
   styleUrls: ['./configuration-tab.page.scss'],
   standalone: true,
-  imports: [IonList, IonRouterOutlet,  IonMenu , CommonModule, FormsModule , CommonModule, FormsModule ,IonButton , IonCardContent ,IonHeader , IonToolbar , IonButtons ,IonCardTitle , IonRow, IonCol ,IonItem , IonTitle , IonContent , IonCardHeader , IonInput],
+  imports: [IonList, IonRouterOutlet, IonMenu, CommonModule, FormsModule, CommonModule, FormsModule, IonButton, IonCardContent, IonHeader, IonToolbar, IonButtons, IonCardTitle, IonRow, IonCol, IonItem, IonTitle, IonContent, IonCardHeader, IonInput, TranslateModule],
 })
 export class ConfigurationTabPage {
-  constructor(public NavCtrl: NavController, private menuCtrl: MenuController , private loginPage : LoginPage) {
+  constructor(public NavCtrl: NavController, private menuCtrl: MenuController, private loginPage: LoginPage) {
     addIcons({ arrowBack, arrowForward });
   }
 

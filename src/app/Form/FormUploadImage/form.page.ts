@@ -28,6 +28,7 @@ import { Dialog } from '@capacitor/dialog';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
 import { Capacitor } from '@capacitor/core';
 import { Services } from 'src/app/services.service';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-form',
@@ -55,6 +56,7 @@ import { Services } from 'src/app/services.service';
     CommonModule,
     IonIcon,
     IonLabel,
+    TranslateModule
   ],
 })
 export class FormPage {
@@ -62,9 +64,9 @@ export class FormPage {
   image_push: any;
   GeolocationService = new GeolocationService();
 
-  constructor(public NavCtrl: NavController, private actionSheetController: ActionSheetController , public Service : Services) {
+  constructor(public NavCtrl: NavController, private actionSheetController: ActionSheetController, public Service: Services, public translate: TranslateService) {
     addIcons({ arrowBack });
-    this.Service.img_ref =  null;
+    this.Service.img_ref = null;
   }
 
 
@@ -89,8 +91,8 @@ export class FormPage {
       imgReader.readAsDataURL(selectedFile);
     } else {
       await Dialog.alert({
-        title: 'Atencion',
-        message: 'el tipo de archivo no es valido'
+        title: this.translate.instant('attention'),
+        message: this.translate.instant('file_type_invalid')
       });
     }
   }
@@ -105,8 +107,8 @@ export class FormPage {
       });
     } else {
       await Dialog.alert({
-        title: 'Atencion',
-        message: 'Sube una foto para poder continuar'
+        title: this.translate.instant('attention'),
+        message: this.translate.instant('upload_photo_to_continue')
       });
     }
   }
@@ -129,12 +131,19 @@ export class FormPage {
       // Crear una URL de la imagen
       this.Service.img_ref = image.webPath; // Usar webPath para mostrar en el navegador
 
+      // Fix: Convertir la imagen capturada a un objeto File para subirlo
+      if (image.webPath) {
+        const response = await fetch(image.webPath);
+        const blob = await response.blob();
+        const filename = `camera_capture_${new Date().getTime()}.${image.format}`;
+        this.image_push = new File([blob], filename, { type: blob.type });
+      }
 
     } catch (error) {
       console.error(error)
       await Dialog.alert({
-        title: 'Atencion',
-        message: 'el tipo de archivo no es valido , no se pudo subir el archivo'
+        title: this.translate.instant('attention'),
+        message: this.translate.instant('file_type_invalid_upload')
       });
 
 
@@ -143,28 +152,28 @@ export class FormPage {
 
 
 
-// dejar que decida el usuario si quiere tomar una foto o elegir desde su galeria 
+  // dejar que decida el usuario si quiere tomar una foto o elegir desde su galeria 
   async SelectInput() {
 
 
     if (Capacitor.isNativePlatform() === true) {
       const actionSheet = await this.actionSheetController.create({
-        header: 'Selecciona una opción',
+        header: this.translate.instant('select_option'),
         buttons: [
           {
-            text: 'Tomar Foto',
+            text: this.translate.instant('take_photo'),
             handler: () => {
               this.takePicture();
             }
           },
           {
-            text: 'Subir desde Galería',
+            text: this.translate.instant('upload_from_gallery'),
             handler: () => {
               this.selectImage();
             }
           },
           {
-            text: 'Cancelar',
+            text: this.translate.instant('cancel'),
             role: 'cancel'
           }
         ]
@@ -174,16 +183,16 @@ export class FormPage {
     else {
 
       const actionSheet = await this.actionSheetController.create({
-        header: 'Selecciona una opción',
+        header: this.translate.instant('select_option'),
         buttons: [
           {
-            text: 'Subir desde Galería',
+            text: this.translate.instant('upload_from_gallery'),
             handler: () => {
               this.selectImage();
             }
           },
           {
-            text: 'Cancelar',
+            text: this.translate.instant('cancel'),
             role: 'cancel'
           }
         ]
@@ -192,7 +201,5 @@ export class FormPage {
 
     }
   }
-
-
 
 }
