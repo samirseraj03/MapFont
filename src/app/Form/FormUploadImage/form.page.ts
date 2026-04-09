@@ -1,34 +1,21 @@
 import { Component } from '@angular/core';
-import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonCardHeader,
-  IonCard,
-  IonCardTitle,
-  IonCardSubtitle,
-  IonList,
-  IonCardContent,
-  IonItem,
-  IonLabel,
-  IonThumbnail,
-  IonButton,
-  IonIcon,
-  IonButtons,
-} from '@ionic/angular/standalone';
-import { ExploreContainerComponent } from '../../explore-container/explore-container.component';
 import { CommonModule } from '@angular/common';
-import GeolocationService from '../../Globals/Geolocation';
 import { NavController, ActionSheetController } from '@ionic/angular';
-import { arrowBack } from 'ionicons/icons';
-import { addIcons } from 'ionicons';
-import { FormSelectLocationPage } from '../FormSelectLocation/formselectlocation.page';
+
+// Ionic Standalone & Modulos
+import { IonContent, IonIcon } from '@ionic/angular/standalone';
+import { TranslateService, TranslateModule } from '@ngx-translate/core';
+
+// Lógica y Servicios
+import GeolocationService from '../../Globals/Geolocation';
 import { Dialog } from '@capacitor/dialog';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
 import { Capacitor } from '@capacitor/core';
 import { Services } from 'src/app/services.service';
-import { TranslateService, TranslateModule } from '@ngx-translate/core';
+
+// Iconos necesarios para el nuevo diseño
+import { addIcons } from 'ionicons';
+import { arrowBackOutline, cameraOutline, cloudUploadOutline, trashOutline, arrowForwardOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-form',
@@ -36,26 +23,9 @@ import { TranslateService, TranslateModule } from '@ngx-translate/core';
   styleUrls: ['form.page.scss'],
   standalone: true,
   imports: [
-    IonButtons,
-    IonIcon,
-    IonButton,
-    IonLabel,
-    IonItem,
-    IonCardContent,
-    IonList,
-    IonCardSubtitle,
-    IonCardTitle,
-    IonCard,
-    IonCardHeader,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
     IonContent,
-    ExploreContainerComponent,
-    IonThumbnail,
-    CommonModule,
     IonIcon,
-    IonLabel,
+    CommonModule,
     TranslateModule
   ],
 })
@@ -64,17 +34,20 @@ export class FormPage {
   image_push: any;
   GeolocationService = new GeolocationService();
 
-  constructor(public NavCtrl: NavController, private actionSheetController: ActionSheetController, public Service: Services, public translate: TranslateService) {
-    addIcons({ arrowBack });
+  constructor(
+    public NavCtrl: NavController,
+    private actionSheetController: ActionSheetController,
+    public Service: Services,
+    public translate: TranslateService
+  ) {
+    // Registramos los iconos para la UI
+    addIcons({ arrowBackOutline, cameraOutline, cloudUploadOutline, trashOutline, arrowForwardOutline });
     this.Service.img_ref = null;
   }
-
-
 
   // para hacer click al input cuando se hace click al boton
   selectImage() {
     const fileInput = document.getElementById('fileItem') as HTMLInputElement;
-
     // cuando se clicka el boton se haga click al inputfile
     fileInput.click();
   }
@@ -83,7 +56,8 @@ export class FormPage {
   async handleFileInput(event: any) {
     const selectedFile = event.target.files[0];
     this.image_push = event.target.files[0];
-    if (selectedFile.type.startsWith('image/')) {
+
+    if (selectedFile && selectedFile.type.startsWith('image/')) {
       const imgReader = new FileReader();
       imgReader.onload = () => {
         this.Service.img_ref = imgReader.result as string; // Asigna la URL de datos de la imagen a imgUrl
@@ -112,16 +86,20 @@ export class FormPage {
       });
     }
   }
+
   // para eliminar la foto y poder subir otra
   Delete() {
     this.Service.img_ref = null;
+    this.image_push = null; // También limpiamos el archivo a subir por seguridad
+
+    // Limpiamos el valor del input para que permita subir la misma foto de nuevo si el usuario quiere
+    const fileInput = document.getElementById('fileItem') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
   }
 
 
   async takePicture() {
     try {
-
-
       const image = await Camera.getPhoto({
         quality: 100,
         resultType: CameraResultType.Uri,
@@ -140,22 +118,19 @@ export class FormPage {
       }
 
     } catch (error) {
-      console.error(error)
-      await Dialog.alert({
-        title: this.translate.instant('attention'),
-        message: this.translate.instant('file_type_invalid_upload')
-      });
-
-
+      console.error(error);
+      // Solo mostramos el error si el usuario NO canceló la cámara
+      if (String(error).indexOf('User cancelled photos app') === -1) {
+        await Dialog.alert({
+          title: this.translate.instant('attention'),
+          message: this.translate.instant('file_type_invalid_upload')
+        });
+      }
     }
   }
 
-
-
   // dejar que decida el usuario si quiere tomar una foto o elegir desde su galeria 
   async SelectInput() {
-
-
     if (Capacitor.isNativePlatform() === true) {
       const actionSheet = await this.actionSheetController.create({
         header: this.translate.instant('select_option'),
@@ -181,7 +156,6 @@ export class FormPage {
       await actionSheet.present();
     }
     else {
-
       const actionSheet = await this.actionSheetController.create({
         header: this.translate.instant('select_option'),
         buttons: [
@@ -198,8 +172,6 @@ export class FormPage {
         ]
       });
       await actionSheet.present();
-
     }
   }
-
 }

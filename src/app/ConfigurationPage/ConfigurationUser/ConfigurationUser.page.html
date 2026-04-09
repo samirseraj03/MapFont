@@ -1,114 +1,187 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title> {{ 'menu' | translate }} </ion-title>
-    <div class="ion-page" id="main-content">
-      <ion-header>
-        <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-menu-button></ion-menu-button>
-          </ion-buttons>
-          <ion-title>{{ 'config' | translate }}:</ion-title>
-        </ion-toolbar>
-      </ion-header>
-    </div>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="custom-bg">
 
-<ion-content [fullscreen]="true" class="content">
-  <!-- Contenido de la página -->
-  <ion-card class="z-index-dropdown">
-    <ion-card-header class="text-start">
-      <div class="row">
-        <div class="col">
-          <ion-card-title class="d-flex">
-            {{ 'config' | translate }}:
-          </ion-card-title>
+  <input id="fileItemConfig" type="file" style="display: none" (change)="handleFileInput($event)" accept="image/*" />
+
+  <div class="overlay"></div>
+
+  <header class="glass-header">
+    <div class="header-left">
+      <ion-icon name="water-outline" class="brand-icon"></ion-icon>
+      <h1>{{ 'profile' | translate }}</h1>
+    </div>
+    <div class="header-right">
+      <button class="save-btn" (click)="Update()">
+        <ion-icon name="save-outline"></ion-icon>
+      </button>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <section class="glass-panel profile-hero" id="open-avatar-modal">
+      <div class="avatar-container">
+        <div class="avatar-glow"></div>
+        <div class="avatar-wrapper">
+          <img *ngIf="img_ref_config" [src]="img_ref_config" alt="Profile photo" />
+          <img *ngIf="!img_ref_config" src="https://ionicframework.com/docs/img/demos/card-media.png"
+            alt="Placeholder" />
         </div>
-        <div class="col d-flex justify-content-end">
-          <ion-button (click)="Update()" class="btn btn-success" fill="Clear">
-            {{ 'next' | translate }}
-          </ion-button>
-        </div>
+        <button class="edit-photo-btn">
+          <ion-icon name="expand-outline"></ion-icon>
+        </button>
       </div>
 
-      <form #myForm="ngForm">
-        <!-- div row col Grande  -->
-        <div class="row">
-          <div class=" col-md-6 col-lg-6">
-            <div class="row">
-              <div class="col-12 d-flex justify-content-center" style="height: 200px">
-                <img *ngIf="!img_ref_config" class="mt-3 w-100 h-50" alt="Silhouette of mountains"
-                  src="https://ionicframework.com/docs/img/demos/card-media.png" style="
-                    border-radius: 50%;
-                    max-width: 120px;
-                    max-height: 200px;
-                  " />
+      <div class="user-info">
+        <h2>{{ formData.name || ('name' | translate) }}</h2>
+        <p>{{ formData.email || 'Cargando email...' }}</p>
+      </div>
+    </section>
 
-                <img *ngIf="img_ref_config" class="ms-3 w-50" alt="Silhouette of mountains" [src]="img_ref_config"
-                  style="max-height: 200px; max-width: 120px" style="border-radius: 50%" />
-              </div>
+    <ion-modal #avatarModal trigger="open-avatar-modal" class="glass-modal">
+      <ng-template>
+        <div class="modal-wrapper">
+          <div class="modal-header">
+            <button class="close-modal-btn" (click)="closeAvatarModal()">
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+          </div>
 
-              <div class="col-12 d-flex justify-content-center">
-                <input id="fileItemConfig" type="file" style="display: none" (change)="handleFileInput($event)" />
+          <div class="modal-body">
+            <div class="large-image-container">
+              <img *ngIf="img_ref_config" [src]="img_ref_config" />
+              <img *ngIf="!img_ref_config" src="https://ionicframework.com/docs/img/demos/card-media.png" />
+            </div>
 
-                <div class="row me-4">
-                  <!-- upload -->
-                  <div class="col">
-                    <ion-button class="btn btn-secondary mt-4 ms-3 mb-0 w-100" fill="clear" (click)="SelectInput()">
-                      {{ 'upload_photo' | translate }}
-                    </ion-button>
-                  </div>
-                  <!-- delete -->
-                  <div class="col">
-                    <ion-button class="btn btn-danger mt-4 ms-3 mb-0 w-100 me-auto" fill="clear" (click)="Delete()">
-                      {{ 'delete_photo' | translate }}
-                    </ion-button>
-                  </div>
-                </div>
-              </div>
-              <!-- cerrar col grande  -->
+            <div class="modal-actions">
+              <button class="action-btn cyan-btn" (click)="SelectInput()">
+                <ion-icon name="camera-outline"></ion-icon>
+                Cambiar Foto
+              </button>
+
+              <button class="action-btn red-btn" *ngIf="img_ref_config" (click)="Delete()">
+                <ion-icon name="trash-outline"></ion-icon>
+                Eliminar Foto
+              </button>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+    </ion-modal>
+
+    <section class="settings-section">
+      <h3 class="section-title">{{ 'config' | translate }}</h3>
+      <div class="glass-panel">
+        <form #myForm="ngForm">
+          <div class="form-group">
+            <label>{{ 'name' | translate }}</label>
+            <div class="input-wrapper">
+              <ion-icon name="person-outline"></ion-icon>
+              <ion-input [placeholder]="'name_placeholder' | translate" name="name"
+                [(ngModel)]="formData.name"></ion-input>
             </div>
           </div>
 
+          <div class="form-group">
+            <label>{{ 'username' | translate }}</label>
+            <div class="input-wrapper">
+              <ion-icon name="at-outline"></ion-icon>
+              <ion-input [placeholder]="'username_placeholder' | translate" name="username"
+                [(ngModel)]="formData.username"></ion-input>
+            </div>
+          </div>
 
-          <div class=" col ms-3">
-            <ion-list class="mt-3 ">
-              <div class="mb-4 ">
-                <ion-label> {{ 'name' | translate }} </ion-label>
-                <ion-input [placeholder]="'name_placeholder' | translate" name="name" [value]="formData.name"
-                  [(ngModel)]="formData.name"></ion-input>
-              </div>
+          <div class="form-group">
+            <label>{{ 'language' | translate }}</label>
+            <div class="input-wrapper">
+              <ion-icon name="language-outline"></ion-icon>
+              <ion-select interface="popover" name="language" [(ngModel)]="formData.language" required>
+                <ion-select-option value="es">{{ 'spanish' | translate }}</ion-select-option>
+                <ion-select-option value="ca">{{ 'catalan' | translate }}</ion-select-option>
+                <ion-select-option value="en">{{ 'english' | translate }}</ion-select-option>
+              </ion-select>
+            </div>
+          </div>
+        </form>
+      </div>
+    </section>
 
-              <div class="mb-4">
-                <ion-label> {{ 'username' | translate }}</ion-label>
-                <ion-input [placeholder]="'username_placeholder' | translate" name="username"
-                  [value]="formData.username" [(ngModel)]="formData.username"></ion-input>
-              </div>
+    <section class="settings-section">
+      <h3 class="section-title">Comunidad y Seguridad</h3>
 
-              <div class="mb-4">
-                <ion-label> {{ 'email_label' | translate }} </ion-label>
-                <ion-input [placeholder]="'email_placeholder' | translate" name="email" [value]="formData.email"
-                  [(ngModel)]="formData.email"></ion-input>
-              </div>
-
-              <div class="">
-                <ion-select label=" {{ 'language' | translate }}" label-placement="floating" name="language"
-                  [value]="formData.language" [(ngModel)]="formData.language" required>
-                  <ion-select-option value="es">{{ 'spanish' | translate }}</ion-select-option>
-                  <ion-select-option value="ca">{{ 'catalan' | translate }}</ion-select-option>
-                  <ion-select-option value="en">{{ 'english' | translate }}</ion-select-option>
-                </ion-select>
-              </div>
-            </ion-list>
+      <div class="grid-menu">
+        <div class="menu-card" (click)="navigateTo('formularios')">
+          <div class="icon-box cyan-box"><ion-icon name="document-text-outline"></ion-icon></div>
+          <div class="menu-text">
+            <h4>{{ 'my_forms' | translate }}</h4>
+            <p>Gestiona tus aportes</p>
           </div>
         </div>
-      </form>
-    </ion-card-header>
-  </ion-card>
+        <div class="menu-card" (click)="navigateTo('guardados')">
+          <div class="icon-box blue-box"><ion-icon name="bookmark-outline"></ion-icon></div>
+          <div class="menu-text">
+            <h4>{{ 'saved' | translate }}</h4>
+            <p>Tus fuentes favoritas</p>
+          </div>
+        </div>
+        <div class="menu-card" (click)="navigateTo('seguridad')">
+          <div class="icon-box green-box"><ion-icon name="lock-closed-outline"></ion-icon></div>
+          <div class="menu-text">
+            <h4>{{ 'security' | translate }}</h4>
+            <p>Contraseña y accesos</p>
+          </div>
+        </div>
+      </div>
 
+      <div class="support-card glass-panel" id="open-qr-modal">
+        <div class="support-info">
+          <div class="icon-box primary-box">
+            <ion-icon name="heart-outline"></ion-icon>
+          </div>
+          <div class="support-text">
+            <h4>Support Our Servers</h4>
+            <p>Keep AquaPath flowing</p>
+          </div>
+        </div>
+        <div class="qr-box">
+          <img src="assets/icon/qrcode.png" alt="QR PayPal" />
+        </div>
+      </div>
 
-  <ion-header collapse="condense">
-    <ion-toolbar>
-    </ion-toolbar>
-  </ion-header>
+    </section>
+
+    <ion-modal #qrModal trigger="open-qr-modal" class="glass-modal">
+      <ng-template>
+        <div class="modal-wrapper">
+          <div class="modal-header">
+            <button class="close-modal-btn" (click)="closeQrModal()">
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+          </div>
+
+          <div class="modal-body">
+
+            <div class="qr-large-container">
+              <div class="qr-white-bg">
+                <img src="assets/icon/qrcode.png" alt="Donate QR Code" />
+              </div>
+            </div>
+
+            <div class="qr-text-info">
+              <h2>¡Apoya a AquaPath!</h2>
+              <p>Escanea este código desde tu app bancaria o PayPal para ayudarnos a mantener los servidores vivos.</p>
+            </div>
+
+          </div>
+        </div>
+      </ng-template>
+    </ion-modal>
+
+    <div class="danger-actions">
+      <button class="logout-btn" (click)="navigateTo('CerrarSession')">
+        <ion-icon name="log-out-outline"></ion-icon>
+        {{ 'logout' | translate }}
+      </button>
+    </div>
+
+  </main>
 </ion-content>

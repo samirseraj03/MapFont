@@ -1,35 +1,40 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavController } from '@ionic/angular';
-import { LoadingController } from '@ionic/angular';
+import { NavController, LoadingController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
+
+// Tus servicios
 import { AuthenticationService } from '../../authentication.service';
 import DatabaseService from '../../Types/SupabaseService';
 import { LoginPage } from '../login/login.page';
 import GeolocationService from '../../Globals/Geolocation';
-import { IonHeader, IonRow, IonToolbar, IonTitle, IonCard, IonContent, IonCardTitle, IonCol, IonCardHeader, IonItem, IonCardContent, IonButton, IonInput } from "@ionic/angular/standalone";
 import { TabsPage } from 'src/app/tabs/tabs.page';
 import { Services } from 'src/app/services.service';
+
+// Ionic Standalone & Translate
+import { IonContent, IonInput, IonButton, IonIcon, IonToggle } from "@ionic/angular/standalone";
 import { TranslateModule } from '@ngx-translate/core';
+
+// Importar iconos necesarios para el registro
+import { addIcons } from 'ionicons';
+import { personOutline, mailOutline, lockClosedOutline, logoGoogle, logoApple } from 'ionicons/icons';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   standalone: true,
-  imports: [IonButton, IonCardContent, IonItem, IonCardHeader, IonCol, IonCardTitle, IonContent, IonCard, IonTitle, IonToolbar, IonRow, IonHeader, CommonModule, FormsModule, IonInput, TranslateModule],
+  imports: [IonContent, IonInput, IonButton, IonIcon, IonToggle, CommonModule, FormsModule, TranslateModule],
 })
 export class RegisterPage implements OnInit {
   email: any;
   password: any;
   username: any;
-  loading: any
-  data: any
+  loading: any;
+  data: any;
   Supabase = new DatabaseService();
-  GeolocationService: any = new GeolocationService()
-
-
+  GeolocationService: any = new GeolocationService();
 
   constructor(
     private loadingController: LoadingController,
@@ -39,29 +44,28 @@ export class RegisterPage implements OnInit {
     private loginService: LoginPage,
     private TabsPage: TabsPage,
     private Service: Services
-
-  ) { }
+  ) {
+    // Registrar los iconos para la UI
+    addIcons({ personOutline, mailOutline, lockClosedOutline, logoGoogle, logoApple });
+  }
 
   ngOnInit() {
-    let email: string | undefined = ""; // Declara 'email' como string o undefined
+    let email: string | undefined = "";
 
     this.route.queryParams.subscribe(async (params) => {
       email = await params['email'];
 
-      // Comprueba si 'email' no es null o undefined
       if (email !== null && email !== undefined) {
-        this.email = email; // Establece 'this.email' al valor recuperado
+        this.email = email;
       } else {
-        this.email = ""; // Establece 'this.email' a una cadena vacía
+        this.email = "";
       }
     });
   }
 
   async Register() {
-
     // abrimos el popoup
     try {
-
       // cogemos la localizacion del usuario previa
       let location = await this.GeolocationService.getGeolocation()
       // registramos el usuario con la funcion de supabase y obtenemos los datos
@@ -94,16 +98,16 @@ export class RegisterPage implements OnInit {
         this.loginService.data_user = user;
         this.loginService.access_token = session;
         this.TabsPage.isLogin = true
-
-
       }
     }
     catch (error) {
-      throw console.error("se ha producido un error: ", error);
+      console.error("se ha producido un error: ", error);
     }
     finally {
       // si el usuario se ha registrado correctamente , lo llevamos al inicio
-      this.OnSucces()
+      if (this.data) {
+        this.OnSucces()
+      }
     }
   }
 

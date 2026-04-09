@@ -1,5 +1,3 @@
-
-
 <app-configuration-tab></app-configuration-tab>
 
 <ion-tabs>
@@ -11,11 +9,7 @@
     </ion-tab-button>
 
     <ng-container>
-      <ion-tab-button
-        *ngIf="isLogin"
-        tab="form"
-        href="/tabs/form"
-      >
+      <ion-tab-button *ngIf="isLogin" tab="form" href="/tabs/form">
         <ion-icon aria-hidden="true" name="push"></ion-icon>
         <ion-label>Nueva Fuente</ion-label>
       </ion-tab-button>

@@ -1,59 +1,81 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>{{ 'register' | translate }}</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="bg-image">
+  <div class="overlay"></div>
 
-<ion-content [fullscreen]="true">
+  <main class="main-wrapper">
 
-  <div class="card-container">
-    <ion-card>
-      <ion-row>
-        <ion-col size-md="4" size="6" class="ion-padding ion-blue-bkg">
-          <img
-            src="https://images.prismic.io/ionicframeworkcom/ac68e1d9-9887-4e5a-9820-9290d06638de_ionic+logo+white+on+blue.png"
-            alt="Ionic logo" loading="lazy" />
-        </ion-col>
-        <ion-col size-md="9" size="12" class="welcome">
-          <ion-card-header>
-            <ion-card-title> {{ 'welcome_message' | translate }} </ion-card-title>
-          </ion-card-header>
+    <section class="glass-effect auth-card">
 
-          <ion-item>
-            <ion-input [label]="'email_label' | translate" [placeholder]="'email_placeholder' | translate"
-              [(ngModel)]="email" type="email" ngDefaultControl required></ion-input>
-          </ion-item>
+      <div class="header-text">
+        <h1>{{ 'register' | translate }}</h1>
+        <p>Únete a nuestra comunidad natural</p>
+      </div>
 
-          <ion-item>
-            <ion-input [label]="'password_label' | translate" [placeholder]="'password_placeholder' | translate"
-              [(ngModel)]="password" type="password" ngDefaultControl required></ion-input>
-          </ion-item>
+      <form class="auth-form" (submit)="Register(); $event.preventDefault()">
 
-          <ion-item>
-            <ion-input [label]="'username_label' | translate" [placeholder]="'username_placeholder' | translate"
-              [(ngModel)]="username" ngDefaultControl required></ion-input>
-          </ion-item>
+        <div class="input-group">
+          <ion-icon name="person-outline" class="input-icon"></ion-icon>
+          <ion-input [placeholder]="'username_placeholder' | translate" [(ngModel)]="username" name="username"
+            type="text" required>
+          </ion-input>
+        </div>
 
+        <div class="input-group">
+          <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+          <ion-input [placeholder]="'email_placeholder' | translate" [(ngModel)]="email" name="email" type="email"
+            required>
+          </ion-input>
+        </div>
 
-          <div class="d-flex">
-            <ion-card-content>
-              <ion-button (click)="Register()" shape="round" color="primary"> {{ 'register' | translate }} </ion-button>
-            </ion-card-content>
+        <div class="input-group">
+          <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+          <ion-input [placeholder]="'password_placeholder' | translate" [(ngModel)]="password" name="password"
+            type="password" required>
+          </ion-input>
+        </div>
 
-            <ion-card-content>
-              <ion-button (click)="GoLogin()" shape="round" color="primary"> {{ 'login' | translate }} </ion-button>
-            </ion-card-content>
-          </div>
+        <div class="toggle-container">
+          <ion-toggle justify="space-between" class="custom-toggle">
+            <span class="toggle-label">Suscribirme al boletín</span>
+          </ion-toggle>
+        </div>
 
-        </ion-col>
-      </ion-row>
-    </ion-card>
-  </div>
+        <ion-button expand="block" class="submit-btn" type="submit">
+          {{ 'register' | translate }}
+        </ion-button>
+      </form>
 
+      <div class="social-login">
+        <div class="divider">
+          <span>O regístrate con</span>
+        </div>
 
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">{{ 'login' | translate }}</ion-title>
-    </ion-toolbar>
-  </ion-header>
+        <div class="social-buttons">
+          <button class="social-btn glass-btn" aria-label="Google">
+            <ion-icon name="logo-google"></ion-icon>
+          </button>
+          <button class="social-btn glass-btn" aria-label="Apple">
+            <ion-icon name="logo-apple"></ion-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="bottom-links">
+        <span class="text-white-50">¿Ya tienes cuenta?</span>
+        <a (click)="GoLogin()" class="link">{{ 'login' | translate }}</a>
+      </div>
+    </section>
+
+    <div class="bottom-logo">
+      <svg class="custom-logo" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="1.5" viewBox="0 0 24 24">
+        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+        <path d="M12 12c-1.3 0-2.4-.7-3-1.8"></path>
+        <path d="M12 12c1.3 0 2.4.7 3 1.8"></path>
+        <path d="M12 12v6"></path>
+        <path d="M9 16c1.3 0 2.4.7 3 1.8"></path>
+        <path d="M15 16c-1.3 0-2.4-.7-3-1.8"></path>
+      </svg>
+    </div>
+
+  </main>
 </ion-content>

@@ -1,0 +1,291 @@
+/* Fondo e Imagen */
+.custom-bg {
+    --background: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCiu0oXEN_O6yoQ6d3P2a6OPFTyso2DQ1Fgaz6_n0gKJc1qbSraGiPFgFJCA2GFqpgqum1ZE5o6kpkeNJI8vQtkvTPJNGMaEMaDh_UzmpRCQ4xjU9YzoYUBGKKshFDI48br4S90S32bVk6mQUDGR6k1w9rR3SQRi_IxJ6ZdHGSMFuBjRhlfU8YL5VCnvO0GhsuxNs4C4ZgIDNOaRPbfP4br1WP31kdZBa2mkxDXfOXrCWWrVjebbvN0gcBYov8L5mNqHows50bgnZU') no-repeat center center / cover;
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(18, 20, 22, 0.4) 0%, rgba(18, 20, 22, 0.8) 50%, rgba(18, 20, 22, 1) 100%);
+    z-index: 0;
+}
+
+/* Cabecera Flotante */
+.glass-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 50;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    box-shadow: 0 10px 25px -5px rgba(8, 145, 178, 0.1);
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .back-btn {
+            background: transparent;
+            color: #22d3ee;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            padding: 4px;
+            border-radius: 50%;
+            transition: background 0.3s;
+
+            &:active {
+                background: rgba(34, 211, 238, 0.1);
+            }
+        }
+
+        h1 {
+            color: #22d3ee;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0;
+        }
+    }
+
+    .step-indicator span {
+        color: #94a3b8;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
+}
+
+/* Contenido Principal */
+.main-content {
+    position: relative;
+    z-index: 10;
+    padding: 100px 24px 80px 24px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.page-title {
+    margin-bottom: 32px;
+
+    h2 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #e2e2e5;
+        line-height: 1.2;
+        margin: 0 0 8px 0;
+    }
+
+    p {
+        font-size: 1.1rem;
+        color: #bdc9ca;
+        margin: 0;
+    }
+}
+
+/* Paneles Glassmorphism (Bento Box) */
+.glass-panel {
+    background: rgba(26, 28, 30, 0.5);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(135, 147, 149, 0.15);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.mb-6 {
+    margin-bottom: 24px;
+}
+
+/* Cabeceras de panel e Iconos */
+.panel-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+
+    h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #e2e2e5;
+        margin: 0;
+    }
+}
+
+.icon-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+
+    &.cyan-box {
+        background: rgba(128, 233, 247, 0.1);
+        color: #80e9f7;
+    }
+
+    &.green-box {
+        background: rgba(161, 212, 148, 0.1);
+        color: #a1d494;
+    }
+
+    &.blue-box {
+        background: rgba(98, 205, 218, 0.1);
+        color: #62cdda;
+    }
+}
+
+/* Inputs y Formularios */
+.form-group {
+    margin-bottom: 24px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #80e9f7;
+        margin-bottom: 8px;
+    }
+
+    .custom-input {
+        --background: rgba(51, 53, 55, 0.4);
+        --color: #e2e2e5;
+        --padding-start: 16px;
+        --padding-end: 16px;
+        --padding-top: 16px;
+        --padding-bottom: 16px;
+        --placeholder-color: rgba(189, 201, 202, 0.5);
+        border-radius: 12px;
+        font-size: 1.1rem;
+        transition: all 0.3s;
+
+        &.has-focus {
+            --background: rgba(51, 53, 55, 0.7);
+            box-shadow: 0 0 0 2px rgba(128, 233, 247, 0.4);
+        }
+    }
+}
+
+/* Grid de opciones secundarias */
+.grid-panels {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+
+    @media (min-width: 768px) {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .toggle-panel,
+    .select-panel {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 24px;
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #e2e2e5;
+            margin: 12px 0 0 0;
+        }
+    }
+
+    /* Estilos específicos del Toggle y Select interior */
+    .toggle-wrapper,
+    .select-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(18, 20, 22, 0.5);
+        padding: 8px 8px 8px 16px;
+        border-radius: 9999px;
+
+        .toggle-text {
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #bdc9ca;
+        }
+    }
+
+    .custom-toggle {
+        padding: 0;
+        margin: 0;
+
+        &.cyan-toggle {
+            --background-checked: #80e9f7;
+            --handle-background-checked: #00363c;
+        }
+
+        &.green-toggle {
+            --background-checked: #a1d494;
+            --handle-background-checked: #0a3909;
+        }
+    }
+
+    .custom-select {
+        width: 100%;
+        --padding-start: 8px;
+        --placeholder-color: #bdc9ca;
+        color: #e2e2e5;
+        font-weight: 600;
+
+        &::part(icon) {
+            color: #80e9f7;
+        }
+    }
+}
+
+/* Botón de envío */
+.action-section {
+    margin-top: 32px;
+
+    .submit-btn {
+        width: 100%;
+        background: linear-gradient(to bottom right, #80e9f7, #62cdda);
+        color: #00363c;
+        padding: 18px;
+        border-radius: 9999px;
+        font-size: 1.25rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        box-shadow: 0 10px 25px -5px rgba(128, 233, 247, 0.3);
+        transition: all 0.3s;
+        cursor: pointer;
+
+        &:active {
+            transform: scale(0.95);
+        }
+
+        &:disabled {
+            background: rgba(51, 53, 55, 0.8);
+            color: rgba(226, 226, 229, 0.4);
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        ion-icon {
+            font-size: 1.5rem;
+        }
+    }
+}

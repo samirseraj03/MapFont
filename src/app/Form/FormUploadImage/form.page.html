@@ -1,71 +1,59 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button (click)="GeolocationService.GoBack(NavCtrl)">
-        <ion-icon slot="icon-only" name="arrow-back" color="Success">
-        </ion-icon>
-        <!-- Icono del botón -->
-      </ion-button>
-    </ion-buttons>
-    <ion-title> {{ 'new_fountain' | translate }} </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="custom-bg">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">{{ 'new_fountain' | translate }}</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <input id="fileItem" type="file" style="display: none" (change)="handleFileInput($event)" accept="image/*" />
 
-  <ion-card class="">
-    <ion-card-header class="text-start">
-      <ion-card-title class="d-flex">
-        {{ 'have_you_seen_a_font_and_want_to_contribute_to_mapfont' | translate }}
-        <span class="ps-3 material-symbols-outlined"> humidity_high </span>
-      </ion-card-title>
-      <ion-card-subtitle>{{ 'upload_font_photo' | translate }}</ion-card-subtitle>
-    </ion-card-header>
+  <div class="overlay"></div>
 
-    <div class="row">
+  <header class="glass-header">
+    <div class="header-left">
+      <button class="back-btn" (click)="GeolocationService.GoBack(NavCtrl)">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <h1>{{ 'new_fountain' | translate }}</h1>
+    </div>
+    <div class="step-indicator">STEP 2</div>
+  </header>
 
-      <div class="col-md-6 col-lg-6 col-xl-6">
+  <main class="main-content">
 
-        <div class="container ms-md-0">
-          <img style="max-width: 100%;" *ngIf="!Service.img_ref" class="me-3  " alt="Silhouette of mountains"
-            src="https://ionicframework.com/docs/img/demos/card-media.png" />
-
-          <img *ngIf="Service.img_ref" class="me-1" alt="Silhouette of mountains" [src]="Service.img_ref"
-            style="max-height: 345px" />
-        </div>
-
-
-        <div class="row mx-1 mt-2">
-          <!-- upload -->
-          <div class="col  w-100">
-            <input id="fileItem" type="file" style="display: none" (change)="handleFileInput($event)" />
-
-            <ion-button class="btn btn-secondary  " fill="clear" (click)="SelectInput()">
-              {{ 'upload_photo' | translate }}
-            </ion-button>
-          </div>
-          <!-- delete -->
-          <div class="col w-sm-100 w-md-50">
-            <ion-button class="btn btn-danger " fill="clear" (click)="Delete()">
-              {{ 'delete_photo' | translate }}
-            </ion-button>
-          </div>
-
-          <div class="col">
-
-            <!-- siguente -->
-            <ion-button class="btn btn-success " fill="clear" (click)="ImageSuccess()">
-              {{ 'next_step' | translate }}
-            </ion-button>
-          </div>
-        </div>
-      </div>
+    <div class="text-center">
+      <h2>{{ 'upload_font_photo' | translate }}</h2>
+      <p>{{ 'have_you_seen_a_font_and_want_to_contribute_to_mapfont' | translate }}</p>
     </div>
 
-  </ion-card>
+    <div class="image-preview-box" (click)="SelectInput()">
+
+      <div class="placeholder-content" *ngIf="!Service.img_ref">
+        <div class="icon-circle">
+          <ion-icon name="camera-outline"></ion-icon>
+        </div>
+        <p>PREVISUALIZACIÓN DE IMAGEN</p>
+        <div class="dashed-border"></div>
+      </div>
+
+      <img *ngIf="Service.img_ref" [src]="Service.img_ref" class="uploaded-image" alt="Fuente previsualización" />
+    </div>
+
+    <div class="action-buttons">
+
+      <button class="btn-upload" (click)="SelectInput()">
+        <ion-icon name="cloud-upload-outline"></ion-icon>
+        {{ 'upload_photo' | translate }}
+      </button>
+
+      <button class="btn-delete" *ngIf="Service.img_ref" (click)="Delete()">
+        <ion-icon name="trash-outline"></ion-icon>
+        {{ 'delete_photo' | translate }}
+      </button>
+
+    </div>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="btn-next" (click)="ImageSuccess()">
+      {{ 'next_step' | translate }}
+      <ion-icon name="arrow-forward-outline"></ion-icon>
+    </button>
+  </nav>
+
 </ion-content>

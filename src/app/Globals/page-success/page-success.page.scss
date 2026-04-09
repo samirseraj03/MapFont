@@ -1,30 +1,122 @@
-.icon{
-    bottom: 50%;
-    font-size: 185px;
-
+/* Fondo de la pantalla (Mismo del Login/Registro) */
+.custom-bg {
+  --background: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAyQ3kke3lH7qhnWbw3O4ZfEWBmjjhE41299SwXVsTooPVZtDHrShU66WLyDSRYnRq0Wzy85qFUTcuPgD4dJAs9DiKwLw2K8exe9RI1XDVmKIwCVgtPDtJQpWEz7Ppr-7AE3OGQqefc8uII4rAoIX5PkPUFYSXZwGKlE6NYhffm5vtIm8FDiMu-0jN52_s_1tfEljd56LnnJeafgxNSeZcOAoZHNI90FtZsSFkONtmKcTYM2IooMq3ax_L9Vk9PS_p97SsOdsM73x4') no-repeat center center / cover;
 }
 
-.buttons {
-    bottom: 35%;
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(18, 20, 22, 0.4) 0%, rgba(18, 20, 22, 0.8) 50%, rgba(18, 20, 22, 1) 100%);
+  z-index: 0;
 }
 
-.textBottom {
-    bottom: 42%;
+.main-wrapper {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 24px;
 }
 
+/* Efecto Cristal (Glassmorphism) */
+.glass-effect {
+  background: rgba(26, 28, 30, 0.5);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(135, 147, 149, 0.15);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 400px;
+  padding: 48px 32px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
 
-@keyframes bounce {
-    0% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
-    100% {
-      transform: translateY(0);
-    }
+/* Animación del Icono de Éxito */
+.icon-glow-ring {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: rgba(161, 212, 148, 0.1);
+  /* Verde suave */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32px;
+  position: relative;
+  animation: pulse-glow 2s infinite;
+
+  ion-icon {
+    font-size: 4rem;
+    color: #a1d494;
+    /* Color verde/esmeralda de éxito */
+    z-index: 2;
+  }
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(161, 212, 148, 0.4);
   }
 
-  .icon {
-    animation: bounce 1s infinite; /* Aplica la animación */
+  70% {
+    box-shadow: 0 0 0 20px rgba(161, 212, 148, 0);
   }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(161, 212, 148, 0);
+  }
+}
+
+/* Textos */
+.text-content {
+  margin-bottom: 40px;
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #e2e2e5;
+    margin: 0 0 16px 0;
+    letter-spacing: -0.025em;
+  }
+
+  p {
+    font-size: 1.1rem;
+    color: #bdc9ca;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+/* Botón de Acción */
+.action-btn {
+  width: 100%;
+  background: linear-gradient(to bottom right, #80e9f7, #62cdda);
+  color: #00363c;
+  padding: 18px;
+  border-radius: 9999px;
+  font-size: 1.125rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  box-shadow: 0 10px 25px -5px rgba(128, 233, 247, 0.3);
+  transition: all 0.3s;
+  cursor: pointer;
+  border: none;
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  ion-icon {
+    font-size: 1.5rem;
+  }
+}

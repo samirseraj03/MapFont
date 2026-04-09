@@ -1,83 +1,105 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>{{ 'complete_information' | translate }}</ion-title>
-    <ion-buttons slot="start">
-      <ion-button (click)="GeolocationService.GoBack(NavCtrl)">
-        <ion-icon slot="icon-only" name="arrow-back" color="Success">
-        </ion-icon>
-        <!-- Icono del botón -->
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="custom-bg">
+  <div class="overlay"></div>
 
-<ion-content [fullscreen]="true">
-  <ion-card class="z-index-dropdown">
-    <ion-card-header class="text-start">
-      <div class="row">
-        <div class="col">
-          <ion-card-title class="d-flex">
-            {{ 'complete_last_steps' | translate }}
-          </ion-card-title>
+  <header class="glass-header">
+    <div class="header-left">
+      <button class="back-btn" (click)="GeolocationService.GoBack(NavCtrl)">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <h1>AquaPath</h1>
+    </div>
+    <div class="step-indicator">
+      <span>Paso 2 de 2</span>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <section class="page-title">
+      <h2>{{ 'complete_information' | translate }}</h2>
+      <p>{{ 'complete_last_steps' | translate }}</p>
+    </section>
+
+    <form #myForm="ngForm" (ngSubmit)="onSubmit()">
+
+      <div class="glass-panel mb-6">
+        <div class="panel-header">
+          <div class="icon-box cyan-box">
+            <ion-icon name="create-outline"></ion-icon>
+          </div>
+          <h3>Detalles Básicos</h3>
         </div>
 
+        <div class="form-group">
+          <label>{{ 'font_name' | translate }}</label>
+          <ion-input class="custom-input" [placeholder]="'name' | translate" name="watersourcesname"
+            [(ngModel)]="formData.watersourcesname" required>
+          </ion-input>
+        </div>
+
+        <div class="form-group">
+          <label>{{ 'font_description' | translate }}</label>
+          <ion-textarea class="custom-input" [placeholder]="'description' | translate" name="description" rows="4"
+            [(ngModel)]="formData.description" required>
+          </ion-textarea>
+        </div>
       </div>
 
+      <div class="grid-panels">
 
-
-      <form #myForm="ngForm">
-
-        <ion-list>
-          <div class="mb-3 mt-4">
-            <ion-label>{{ 'font_name' | translate }} </ion-label>
-            <ion-input [placeholder]="'name' | translate" name="watersourcesname" ngDefaultControl
-              [(ngModel)]="formData.watersourcesname" required></ion-input>
+        <div class="glass-panel toggle-panel">
+          <div>
+            <div class="icon-box green-box">
+              <ion-icon name="water-outline"></ion-icon>
+            </div>
+            <h3>{{ 'font_potable_question' | translate }}</h3>
           </div>
-
-          <div class="mb-3">
-            <ion-label>{{ 'font_description' | translate }} </ion-label>
-            <ion-input [placeholder]="'description' | translate" name="description" ngDefaultControl
-              [(ngModel)]="formData.description" required></ion-input>
+          <div class="toggle-wrapper">
+            <span class="toggle-text">{{ formData.is_potable ? ('yes' | translate) : ('no' | translate) }}</span>
+            <ion-toggle class="custom-toggle green-toggle" name="is_potable" [(ngModel)]="formData.is_potable">
+            </ion-toggle>
           </div>
+        </div>
 
-          <div class="mb-3">
-            <ion-select [label]="'font_potable_question' | translate" label-placement="floating" ngDefaultControl
-              name="is_potable" [(ngModel)]="formData.is_potable" required>
-              <ion-select-option value="true">{{ 'yes' | translate }}</ion-select-option>
-              <ion-select-option value="false">{{ 'no' | translate }}</ion-select-option>
-            </ion-select>
+        <div class="glass-panel toggle-panel">
+          <div>
+            <div class="icon-box cyan-box">
+              <ion-icon name="calendar-outline"></ion-icon>
+            </div>
+            <h3>{{ 'font_available_question' | translate }}</h3>
           </div>
-
-          <div class="mb-3">
-            <ion-select [label]="'font_available_question' | translate" label-placement="floating" ngDefaultControl
-              name="enabled" [(ngModel)]="formData.enabled" required>
-              <ion-select-option value="true">{{ 'yes' | translate }}</ion-select-option>
-              <ion-select-option value="false">{{ 'no' | translate }}</ion-select-option>
-            </ion-select>
+          <div class="toggle-wrapper">
+            <span class="toggle-text">{{ formData.enabled ? ('yes' | translate) : ('no' | translate) }}</span>
+            <ion-toggle class="custom-toggle cyan-toggle" name="enabled" [(ngModel)]="formData.enabled">
+            </ion-toggle>
           </div>
+        </div>
 
-          <div class="mb-3">
-            <ion-select [label]="'is_font_available_to_the_public_or_private' | translate" label-placement="floating"
-              ngDefaultControl name="watersourcetype" [(ngModel)]="formData.watersourcetype" required>
+        <div class="glass-panel select-panel">
+          <div>
+            <div class="icon-box blue-box">
+              <ion-icon name="earth-outline"></ion-icon>
+            </div>
+            <h3>{{ 'is_font_available_to_the_public_or_private' | translate }}</h3>
+          </div>
+          <div class="select-wrapper">
+            <ion-select interface="popover" class="custom-select" name="watersourcetype"
+              [(ngModel)]="formData.watersourcetype" required>
               <ion-select-option value="public">{{ 'public' | translate }}</ion-select-option>
               <ion-select-option value="private">{{ 'private' | translate }}</ion-select-option>
             </ion-select>
           </div>
-        </ion-list>
-
-
-        <div class=" w-100 ">
-          <ion-button (click)="onSubmit()" class="btn btn-success" fill="Clear">
-            {{ 'next_step' | translate }}
-          </ion-button>
         </div>
-      </form>
-    </ion-card-header>
-  </ion-card>
 
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">FormInsertInfromation</ion-title>
-    </ion-toolbar>
-  </ion-header>
+      </div>
+
+      <div class="action-section">
+        <button type="submit" class="submit-btn" [disabled]="!myForm.form.valid">
+          {{ 'next_step' | translate }}
+          <ion-icon name="checkmark-done-outline"></ion-icon>
+        </button>
+      </div>
+
+    </form>
+  </main>
 </ion-content>

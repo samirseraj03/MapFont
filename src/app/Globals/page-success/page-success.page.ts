@@ -1,34 +1,38 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import {   NavController} from '@ionic/angular';
-import { IonHeader, IonToolbar, IonTitle, IonButton, IonContent, IonLabel, IonText } from "@ionic/angular/standalone";
+import { NavController } from '@ionic/angular';
+
+// Standalone Components
+import { IonContent, IonIcon } from "@ionic/angular/standalone";
+
+// Iconos
+import { addIcons } from 'ionicons';
+import { checkmarkCircleOutline, mapOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-page-success',
   templateUrl: './page-success.page.html',
   styleUrls: ['./page-success.page.scss'],
   standalone: true,
-  imports: [ CommonModule, FormsModule , IonHeader , IonToolbar , IonTitle , IonContent , IonLabel , IonButton , IonText ]
+  imports: [CommonModule, IonContent, IonIcon]
 })
 export class PageSuccessPage implements OnInit {
 
-  constructor( public NavCtrl : NavController) { }
+  constructor(public NavCtrl: NavController) {
+    // Registramos los iconos de éxito y mapa
+    addIcons({ checkmarkCircleOutline, mapOutline });
+  }
 
   ngOnInit() {
   }
 
-
-  
-
-  GoToMap(){
-
-    this.NavCtrl.navigateRoot( '/', {
+  GoToMap() {
+    // Te devuelve al inicio (mapa) reiniciando el historial de navegación
+    this.NavCtrl.navigateRoot('/tabs/fonts', {
       queryParams: {
         Success: true,
       },
     });
-
   }
 
 }

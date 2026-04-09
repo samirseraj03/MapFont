@@ -1,3 +1,267 @@
-ion-button {
-    width: 100% !important;
+/* Fondo de la pantalla */
+.custom-bg {
+    --background: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBx_KIzXzhGh_bC0LrO4qMunjXRJ8ClV7e8SqEys6AoQks0Ic9hR9nvRyYbN03Bq5sybQ16K7hHvVbUNVhGA7GNm70oDOySMyFQr5Ia80jnJY3uPTz7nmyhM3ktLUPvOin_VSQByDtModfs0xzZLiGmUb2eXxOYhtJctVU49Pcyq5kObj-z3XGJIgSLuFl4WKtL7L3uuR4vOS4RtcECFS0kSatPWzTtxw1-9J2RTxN0IbglrFQ7VhG3wwiQKDMXmUg4E-IhW_2c9Hc') no-repeat center center / cover;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(18, 20, 22, 0.7), rgba(18, 20, 22, 0.95));
+    z-index: 0;
+}
+
+/* Cabecera Flotante Glassmorphism */
+.glass-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 50;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    box-shadow: 0 10px 25px -5px rgba(8, 145, 178, 0.1);
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .back-btn {
+            background: transparent;
+            color: #22d3ee;
+            /* cyan-400 */
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+
+            &:active {
+                background: rgba(34, 211, 238, 0.1);
+                transform: scale(0.95);
+            }
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #22d3ee;
+            margin: 0;
+            letter-spacing: -0.025em;
+        }
+    }
+
+    .step-indicator {
+        color: #94a3b8;
+        /* slate-400 */
+        font-size: 0.875rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+    }
+}
+
+/* Contenido Principal */
+.main-content {
+    position: relative;
+    z-index: 10;
+    padding: 100px 24px 120px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.text-center {
+    text-align: center;
+    margin-bottom: 40px;
+
+    h2 {
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: #e2e2e5;
+        margin-bottom: 8px;
+    }
+
+    p {
+        font-size: 1rem;
+        color: #bdc9ca;
+        line-height: 1.5;
+    }
+}
+
+/* Caja de Imagen Interactiva */
+.image-preview-box {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 24px;
+    background: rgba(26, 28, 30, 0.4);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(135, 147, 149, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.5s;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    margin-bottom: 32px;
+
+    &:hover {
+        background: rgba(26, 28, 30, 0.6);
+    }
+
+    .placeholder-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: transform 0.5s;
+
+        &:hover {
+            transform: scale(1.05);
+        }
+
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(34, 211, 238, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+
+            ion-icon {
+                font-size: 2.5rem;
+                color: #22d3ee;
+            }
+        }
+
+        p {
+            color: #bdc9ca;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            margin: 0;
+        }
+
+        .dashed-border {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            right: 16px;
+            bottom: 16px;
+            border: 2px dashed rgba(135, 147, 149, 0.2);
+            border-radius: 16px;
+            pointer-events: none;
+        }
+    }
+
+    .uploaded-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        /* Asegura que la foto llene la caja sin deformarse */
+    }
+}
+
+/* Botones debajo de la imagen */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 16px;
+
+    button {
+        width: 100%;
+        padding: 16px;
+        border-radius: 9999px;
+        font-size: 1.125rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        transition: all 0.3s;
+        cursor: pointer;
+
+        &:active {
+            transform: scale(0.95);
+        }
+
+        ion-icon {
+            font-size: 1.5rem;
+        }
+    }
+
+    .btn-upload {
+        background: linear-gradient(to right, #80e9f7, #62cdda);
+        color: #00363c;
+        box-shadow: 0 10px 15px -3px rgba(34, 211, 238, 0.2);
+    }
+
+    .btn-delete {
+        background: rgba(51, 53, 55, 0.2);
+        backdrop-filter: blur(12px);
+        color: #ffb4ab;
+        border: 1px solid rgba(255, 180, 171, 0.1);
+
+        &:hover {
+            background: rgba(255, 180, 171, 0.1);
+        }
+    }
+}
+
+/* Botón flotante Siguiente */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 24px;
+    z-index: 50;
+    display: flex;
+    justify-content: flex-end;
+
+    .btn-next {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(34, 211, 238, 0.2);
+        color: #22d3ee;
+        padding: 16px 32px;
+        border-radius: 9999px;
+        font-weight: 700;
+        font-size: 1.125rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        transition: all 0.3s;
+
+        &:hover {
+            background: #22d3ee;
+            color: #0f172a;
+        }
+
+        &:active {
+            transform: scale(0.95);
+        }
+
+        ion-icon {
+            font-size: 1.5rem;
+        }
+    }
 }

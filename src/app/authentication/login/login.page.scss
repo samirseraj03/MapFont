@@ -1,0 +1,141 @@
+/* Fondo de la pantalla */
+.bg-image {
+    --background: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAyQ3kke3lH7qhnWbw3O4ZfEWBmjjhE41299SwXVsTooPVZtDHrShU66WLyDSRYnRq0Wzy85qFUTcuPgD4dJAs9DiKwLw2K8exe9RI1XDVmKIwCVgtPDtJQpWEz7Ppr-7AE3OGQqefc8uII4rAoIX5PkPUFYSXZwGKlE6NYhffm5vtIm8FDiMu-0jN52_s_1tfEljd56LnnJeafgxNSeZcOAoZHNI90FtZsSFkONtmKcTYM2IooMq3ax_L9Vk9PS_p97SsOdsM73x4') no-repeat center center / cover;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    z-index: 0;
+}
+
+.main-wrapper {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 48px 24px 32px 24px;
+}
+
+/* Efecto Cristal (Glassmorphism) */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 400px;
+    padding: 32px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    margin-bottom: 48px;
+}
+
+.header-text {
+    text-align: center;
+    margin-bottom: 32px;
+    color: white;
+
+    h1 {
+        font-size: 2.25rem;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        letter-spacing: 0.025em;
+    }
+
+    p {
+        font-size: 1.125rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+/* Inputs personalizados */
+.input-group {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+    padding: 8px 16px;
+    transition: all 0.3s ease;
+
+    &:focus-within {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .input-icon {
+        font-size: 1.25rem;
+        color: white;
+        margin-right: 12px;
+    }
+
+    ion-input {
+        --padding-start: 0;
+        --color: white;
+        --placeholder-color: rgba(255, 255, 255, 0.8);
+        --placeholder-opacity: 1;
+        font-size: 1rem;
+    }
+}
+
+/* Botón Principal */
+.submit-btn {
+    --background: #5BC8D8;
+    --background-hover: #4AB8C8;
+    --border-radius: 9999px;
+    --box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    margin: 16px 0 24px 0;
+    height: 56px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    text-transform: none;
+    /* Evita que el texto se ponga en mayúsculas por defecto */
+}
+
+/* Enlaces Inferiores */
+.bottom-links {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 8px;
+
+    .link {
+        color: white;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: underline;
+        text-underline-offset: 4px;
+        cursor: pointer;
+
+        &:hover {
+            color: #e5e7eb;
+            /* gray-200 */
+        }
+    }
+}
+
+.bottom-logo {
+    margin-top: auto;
+
+    .custom-logo {
+        width: 48px;
+        height: 48px;
+        color: #9FE5E8;
+    }
+}
