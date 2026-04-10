@@ -7,11 +7,10 @@ import DatabaseService from '../app/Types/SupabaseService';
 })
 export class Services {
 
-  constructor() { }
+  constructor(private Supabase: DatabaseService) { }
 
   // para obtener img ref y poder eliminarla en otras paginas
   img_ref: any;
-  Supabase = new DatabaseService();
 
   // para guardar en storage y en andoroid y ios informacion temportal
   async setStorage(key: string, value: any) {

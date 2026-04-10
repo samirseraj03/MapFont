@@ -25,8 +25,10 @@ import {
   waterOutline, saveOutline, cameraOutline, personOutline,
   atOutline, languageOutline, documentTextOutline, bookmarkOutline,
   lockClosedOutline, heartOutline, trashOutline, logOutOutline,
-  qrCodeOutline, closeOutline, expandOutline
+  qrCodeOutline, closeOutline, expandOutline,
+  mailOutline
 } from 'ionicons/icons';
+import { LoginPage } from 'src/app/authentication/login/login.page';
 
 @Component({
   selector: 'app-configuration-user',
@@ -55,7 +57,6 @@ export class ConfigurationUserPage implements OnInit {
   image_ref_upload_config: any;
 
   GeolocationService = new GeolocationService();
-  Supabase = new DatabaseService();
 
   constructor(
     public NavCtrl: NavController,
@@ -63,14 +64,16 @@ export class ConfigurationUserPage implements OnInit {
     private cdr: ChangeDetectorRef,
     private TranslateService: TranslateService,
     private authService: AuthenticationService,
-    private Service: Services
+    private Service: Services,
+    private loginPage: LoginPage,
+    private Supabase: DatabaseService
   ) {
     // Registramos todos los iconos utilizados en la UI
     addIcons({
       waterOutline, saveOutline, cameraOutline, personOutline,
       atOutline, languageOutline, documentTextOutline, bookmarkOutline,
       lockClosedOutline, heartOutline, trashOutline, logOutOutline,
-      qrCodeOutline, closeOutline, expandOutline
+      qrCodeOutline, closeOutline, expandOutline, mailOutline
     });
   }
 
@@ -206,8 +209,8 @@ export class ConfigurationUserPage implements OnInit {
         } catch (e) {
           console.error("Error al cerrar sesión", e);
         }
-        this.Service.removeStorage('user');
-        this.Service.removeStorage('session');
+
+        this.loginPage.Logout()
         this.NavCtrl.navigateRoot('tabs/fonts');
         break;
       default:

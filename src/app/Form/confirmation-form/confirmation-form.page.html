@@ -1,84 +1,93 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>ConfirmationForm</ion-title>
-    <ion-buttons slot="start">
-      <ion-button (click)="GeolocationService.GoBack(NavCtrl)">
-        <ion-icon slot="icon-only" name="arrow-back" color="Success">
-        </ion-icon>
-        <!-- Icono del botón -->
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" class="custom-bg">
 
-<ion-content [fullscreen]="true">
+  <div class="overlay"></div>
 
-  <ion-card class="z-index-dropdown">
-    <ion-card-header class="text-start">
-  
-  <ion-card-title class="d-flex mb-3">
-    Formularios para Confirmar:
-  </ion-card-title>
+  <header class="glass-header">
+    <div class="header-left">
+      <button class="back-btn" (click)="NavCtrl.back()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <h1>Panel de Administración</h1>
+    </div>
+  </header>
 
+  <main class="main-content">
 
-  <ag-grid-angular
- class="ag-theme-quartz"
- style="height: 500px;" 
- [rowData]="results"
- [columnDefs]="colDefs">
-</ag-grid-angular>
+    <section class="stats-section">
+      <div class="stat-card pending-card">
+        <div class="stat-icon">
+          <ion-icon name="time-outline"></ion-icon>
+        </div>
+        <h2>Pendientes</h2>
+        <p class="stat-number">{{ resultsNotAproved.length }}</p>
+      </div>
 
+      <div class="stat-card validated-card">
+        <div class="stat-icon">
+          <ion-icon name="checkmark-done-outline"></ion-icon>
+        </div>
+        <h2>Aprovados</h2>
+        <p class="stat-number">{{ resultsAproved.length }}</p>
+      </div>
+    </section>
 
-   <!--body de la lista  -->
-  <!-- <ion-list>
-    <ion-item>
-          <ion-label>Usuario:</ion-label>
-          <ion-label>Nombre:</ion-label>
-          <ion-label>Creado:</ion-label>
-          <ion-label>lng:</ion-label>
-          <ion-label>Lat:</ion-label>
-          <ion-label>dirrecion:</ion-label>
+    <div class="section-heading">
+      <h3>Subidas Recientes</h3>
+      <span class="badge">{{ resultsNotAproved.length }} nuevas</span>
+    </div>
 
-          <ion-label></ion-label>
+    <div class="empty-state" *ngIf="resultsNotAproved.length === 0">
+      <ion-icon name="shield-checkmark-outline"></ion-icon>
+      <p>No hay formularios pendientes de revisión. ¡Todo está al día!</p>
+    </div>
 
-    </ion-item>
-  </ion-list> -->
-<!-- elementos de la lista -->
-    <!-- <ion-list>
-      <ion-item *ngFor="let result of results" >
-        <ion-label (click)="OnSelect(result)">{{ result['username'] }}</ion-label>
-        <ion-label (click)="OnSelect(result)">{{ result['watersourcesname'] }}</ion-label>   
-        <ion-label  (click)="OnSelect(result)"> {{  this.GeolocationService.formatDate(result['created_at'])   }}</ion-label>
-        <ion-label  (click)="OnSelect(result)">{{ result['location'].latitude }}/</ion-label>
-        <ion-label (click)="OnSelect(result)">{{result['location'].longitude}}</ion-label>
-        <ion-label  (click)="OnSelect(result)">{{ result['address'] }}</ion-label>
-      
-      <ion-label> 
-        <ion-buttons class="d-flex justify-content-end">
-          <ion-button (click)="OnSelectNavigate(result)">
-            <ion-icon  name="navigate"></ion-icon>
-          </ion-button>
+    <div class="submissions-list">
 
-          <ion-button (click)="OnConfirm(result)">
-            <ion-icon name="checkmark"></ion-icon>
-          </ion-button>
+      <article class="submission-card" *ngFor="let result of resultsNotAproved">
 
-          <ion-button (click)="OnSelect(result)">
-            <ion-icon  name="chevron-forward"></ion-icon>
-         </ion-button>
+        <div class="submission-info" (click)="OnSelect(result)">
+          <div class="icon-placeholder">
+            <ion-icon name="water-outline"></ion-icon>
+          </div>
 
-      </ion-buttons>
-    </ion-label>
+          <div class="text-content">
+            <h4>{{ result.watersourcesname || 'Fuente sin nombre' }}</h4>
+            <p class="address">
+              <ion-icon name="location-outline"></ion-icon>
+              {{ result.address || 'Sin dirección' }}
+            </p>
+            <p class="user-meta">
+              Subido por <strong>{{ result.username }}</strong> el {{ GeolocationService.formatDate(result.created_at)
+              }}
+            </p>
+          </div>
+        </div>
 
-      </ion-item>
-    </ion-list> -->
-</ion-card-header>
-</ion-card>
+        <div class="action-buttons">
 
+          <button class="action-btn map-btn" (click)="OnSelectNavigate(result)">
+            <ion-icon name="navigate-outline"></ion-icon>
+            <span>Mapa</span>
+          </button>
 
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">ConfirmationForm</ion-title>
-    </ion-toolbar>
-  </ion-header>
+          <button class="action-btn approve-btn" (click)="OnConfirm(result)">
+            <div class="icon-circle">
+              <ion-icon name="checkmark-outline"></ion-icon>
+            </div>
+            <span>Aprobar</span>
+          </button>
+
+          <button class="action-btn reject-btn" (click)="OnReject(result)">
+            <div class="icon-circle">
+              <ion-icon name="close-outline"></ion-icon>
+            </div>
+            <span>Rechazar</span>
+          </button>
+
+        </div>
+      </article>
+
+    </div>
+
+  </main>
 </ion-content>

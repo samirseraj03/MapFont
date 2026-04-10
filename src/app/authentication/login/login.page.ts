@@ -164,7 +164,7 @@ export class LoginPage implements OnInit {
     this.expirationTime = Date.now() + expiresIn;
   }
 
-  private clearAccessToken() {
+  public clearAccessToken() {
     this.access_token = null;
     this.expirationTime = undefined;
     this.data_user = null;

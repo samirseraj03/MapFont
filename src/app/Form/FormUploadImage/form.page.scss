@@ -177,6 +177,7 @@
     }
 }
 
+
 /* Botones debajo de la imagen */
 .action-buttons {
     display: flex;
@@ -206,7 +207,8 @@
         }
     }
 
-    .btn-upload {
+    /* Hemos renombrado .btn-upload a .btn-primary para que sirva para Subir y para Siguiente */
+    .btn-primary {
         background: linear-gradient(to right, #80e9f7, #62cdda);
         color: #00363c;
         box-shadow: 0 10px 15px -3px rgba(34, 211, 238, 0.2);
@@ -224,44 +226,4 @@
     }
 }
 
-/* Botón flotante Siguiente */
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 24px;
-    z-index: 50;
-    display: flex;
-    justify-content: flex-end;
-
-    .btn-next {
-        background: rgba(15, 23, 42, 0.6);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        border: 1px solid rgba(34, 211, 238, 0.2);
-        color: #22d3ee;
-        padding: 16px 32px;
-        border-radius: 9999px;
-        font-weight: 700;
-        font-size: 1.125rem;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        transition: all 0.3s;
-
-        &:hover {
-            background: #22d3ee;
-            color: #0f172a;
-        }
-
-        &:active {
-            transform: scale(0.95);
-        }
-
-        ion-icon {
-            font-size: 1.5rem;
-        }
-    }
-}
+/* ⚠️ ASEGÚRATE DE BORRAR EL BLOQUE .bottom-nav QUE TENÍAS AQUÍ ABAJO ⚠️ */

@@ -1,125 +1,117 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavController , AlertController , LoadingController } from '@ionic/angular';
+import { NavController, AlertController, LoadingController } from '@ionic/angular';
+import { Browser } from '@capacitor/browser';
+
+// Standalone Components limpios
+import {
+  IonHeader, IonContent, IonIcon
+} from "@ionic/angular/standalone";
+
+import { Dialog } from '@capacitor/dialog';
+
+// Servicios
 import GeolocationService from '../../Globals/Geolocation';
 import DatabaseService from '../../Types/SupabaseService';
-import {WaterSources} from '../../Types/SupabaseService';
-import { AgGridAngular } from 'ag-grid-angular'; // Angular Data Grid Component
-import { ColDef } from 'ag-grid-community'; // Column Definition Type Interface
-import { arrowBack, heartDislike, navigate ,checkmark , chevronForward , close} from 'ionicons/icons';
+import { WaterSources } from '../../Types/SupabaseService';
+
+// Iconos
 import { addIcons } from 'ionicons';
-import { Browser } from '@capacitor/browser';
-import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, IonCardHeader, IonCard, IonCardTitle, IonList, IonLabel, IonItem } from "@ionic/angular/standalone";
-import { Dialog } from '@capacitor/dialog';
+import {
+  arrowBackOutline, timeOutline, checkmarkDoneOutline, shieldCheckmarkOutline,
+  waterOutline, locationOutline, navigateOutline, checkmarkOutline, closeOutline
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-confirmation-form',
   templateUrl: './confirmation-form.page.html',
   styleUrls: ['./confirmation-form.page.scss'],
   standalone: true,
-  imports: [AgGridAngular ,IonItem, IonLabel, IonList, IonCardTitle, IonCard, IonCardHeader, IonContent, IonIcon, IonButton, IonButtons, IonTitle, IonToolbar, IonHeader,  CommonModule, FormsModule]
+  imports: [
+    IonHeader, IonContent, IonIcon, CommonModule, FormsModule
+  ]
 })
 export class ConfirmationFormPage implements OnInit {
 
-  results : any = []
+  resultsNotAproved: any[] = []; // Array nativo, sin ag-grid
+  resultsAproved: any[] = []; // Array nativo, sin ag-grid
+
+  loading: any;
+
   GeolocationService = new GeolocationService();
-  Supabase = new DatabaseService();
 
-
-  loading : any 
-  alert : any
-
-
-  // Column Definitions: Defines the columns to be displayed.
-  colDefs: ColDef[] = [
-    { field: "username", headerName: "Usuario:" },
-    { field: "watersourcesname", headerName: "Nombre fuente:" },
-    { field: "created_at", headerName: "Creado:" },
-    { field: "location.latitude", headerName: "latitude:" },
-    { field: "location.longitude", headerName: "longitude:" },
-    { field: "address", headerName: "adreça:" },
-    {
-      field: "",
-      headerName: "",
-      cellRenderer: (params: any) => {
-        const rowData = params.data;
-  
-        const onSelectNavigate = () => this.OnSelectNavigate(rowData);
-        const onConfirm = () => this.OnConfirm(rowData);
-        const onSelect = () => this.OnSelect(rowData);
-        const onReject = () => this.OnReject(rowData);
-  
-        const buttonsHTML = `
-          <ion-buttons class="d-flex justify-content-end">
-            <ion-button id="rejectBtn">
-              <ion-icon name="close"></ion-icon>
-            </ion-button>
-            <ion-button id="navigateBtn">
-              <ion-icon name="navigate"></ion-icon>
-            </ion-button>
-            <ion-button id="confirmBtn">
-              <ion-icon name="checkmark"></ion-icon>
-            </ion-button>
-            <ion-button id="selectBtn">
-              <ion-icon name="chevron-forward"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        `;
-  
-        // Crear un elemento div temporal para contener los botones y registrar los eventos de clic
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = buttonsHTML;
-  
-        // Agregar los eventos de clic a los botones solo si existen
-        const navigateBtn = tempDiv.querySelector('#navigateBtn');
-        const confirmBtn = tempDiv.querySelector('#confirmBtn');
-        const selectBtn = tempDiv.querySelector('#selectBtn');
-        const rejectBtn = tempDiv.querySelector('#rejectBtn');
-  
-        if (navigateBtn) {
-          navigateBtn.addEventListener('click', onSelectNavigate);
-        }
-  
-        if (confirmBtn) {
-          confirmBtn.addEventListener('click', onConfirm);
-        }
-  
-        if (selectBtn) {
-          selectBtn.addEventListener('click', onSelect);
-        }
-        if ( rejectBtn) {
-          rejectBtn.addEventListener('click', onReject);
-        }
-  
-        return tempDiv;
-      },
-    },
-  ];
-  
-
-
-  constructor(public NavCtrl: NavController , public alertController : AlertController ,  private loadingController: LoadingController,
+  constructor(
+    public NavCtrl: NavController,
+    public alertController: AlertController,
+    private loadingController: LoadingController,
+    private Supabase: DatabaseService
   ) {
-    addIcons({ arrowBack , heartDislike, navigate , checkmark ,chevronForward ,close });
+    // Registramos iconos
+    addIcons({
+      arrowBackOutline, timeOutline, checkmarkDoneOutline, shieldCheckmarkOutline,
+      waterOutline, locationOutline, navigateOutline, checkmarkOutline, closeOutline
+    });
   }
 
-  ngOnInit() {
-    this.GetFormsDataBase();
+  async ngOnInit() {
+    // Lanza ambas peticiones al mismo tiempo y espera a que las dos terminen
+    await Promise.all([
+      this.getFormsNotAproved(),
+      this.getFormsAproved()
+    ]);
   }
 
-  // cuando se confirma el formulario por
-  async OnConfirm(result : any){
+  async getFormsNotAproved() {
+    // Supabase devuelve el array, nosotros solo lo guardamos en la variable local
+    this.resultsNotAproved = await this.Supabase.getFormsNotAproved();
+  }
+
+
+  async getFormsAproved() {
+    // Supabase devuelve el array, nosotros solo lo guardamos en la variable local
+    this.resultsAproved = await this.Supabase.getFormsAproved();
+  }
 
 
 
-    this.loadingController.create({ message: 'Cargando' }).then(loading => {
+  // --- NAVEGACIÓN ---
+
+  // Para ver el formulario antes de aprobar/rechazar
+  OnSelect(result: any) {
+    this.ViewForm(result);
+  }
+
+  ViewForm(data: any) {
+    this.NavCtrl.navigateForward('/viewForm', {
+      queryParams: {
+        id: data.id,
+        data: JSON.stringify(data),
+        username: data.username,
+      },
+    });
+  }
+
+  // Ver en Google Maps
+  async OnSelectNavigate(result: any) {
+    let latitude = await result.location.latitude;
+    let longitude = await result.location.longitude;
+
+    let link = await this.GeolocationService.generateGoogleMapsLink(latitude, longitude) as string;
+    await Browser.open({ url: link });
+  }
+
+  // --- ADMINISTRACIÓN ---
+
+  // Aprobar
+  async OnConfirm(result: any) {
+    this.loadingController.create({ message: 'Aprobando fuente...' }).then(loading => {
       this.loading = loading;
       this.loading.present();
     });
 
     const waterSource: WaterSources = {
-      location: { // Ejemplo de objeto anidado, asegúrate de que el tipo sea correcto
+      location: {
         latitude: result.location.latitude,
         longitude: result.location.longitude,
       },
@@ -130,105 +122,69 @@ export class ConfirmationFormPage implements OnInit {
       created_at: new Date(),
       photo: result.photo,
       description: result.description,
-      watersourcetype : result.watersourcetype,
-      updated_at : result.updated_at
+      watersourcetype: result.watersourcetype,
+      updated_at: result.updated_at
     };
-    // cambaiamos la variable y ponemos que se ha aprbado correctamente
-    let ApprovedUpdated = {
-      approved : true
-    }
+
+    let ApprovedUpdated = { approved: true };
+
     try {
-     
-      let insert = await this.Supabase.insertWaterSource(waterSource)
-      if (insert){
-        let query = await this.Supabase.updateForm(result.id , ApprovedUpdated)
+      let insert = await this.Supabase.insertWaterSource(waterSource);
 
-        if (query.length > 0){
-          const indexToRemove = this.results.findIndex(
-            (form: { id: any; }) => form.id === result.id
-          );
+      if (insert) {
+        let query = await this.Supabase.updateForm(result.id, ApprovedUpdated);
 
-          if (indexToRemove !== -1 ){
-            console.log(indexToRemove)
-            this.results.splice(indexToRemove , 1);
-            this.results = [...this.results]
-          }  
-        }  else {
-          throw Error
+        if (query && query.length > 0) {
+          // 1. Lo quitamos de la lista de PENDIENTES
+          this.resultsNotAproved = this.resultsNotAproved.filter(form => form.id !== result.id);
+
+          // 2. Actualizamos su estado localmente para que la interfaz sepa que ya está aprobado
+          result.approved = true;
+
+          // 3. Lo AÑADIMOS a la lista de APROBADOS (unshift lo pone al principio de la lista)
+          this.resultsAproved.unshift(result);
+        } else {
+          throw new Error("Fallo al actualizar el estado");
         }
-      } 
+      }
+
       await Dialog.alert({
-        title: 'Atencion',
-        message: 'SE HA CREADO LA FUENTE CORRECTAMENTE A LA BASE DE DATOS'
+        title: 'Éxito',
+        message: 'La fuente ha sido aprobada y publicada en la base de datos oficial.'
       });
 
-    }
-    catch {
-      await this.loading.dismiss();
+    } catch (error) {
       await Dialog.alert({
-        title: 'Atencion',
-        message: 'NO SE HA CREADO LA FUENTE'
+        title: 'Atención',
+        message: 'Hubo un error de conexión, no se ha podido aprobar la fuente.'
       });
-    }
-    finally {
-      await this.loading.dismiss();
-
+    } finally {
+      if (this.loading) this.loading.dismiss();
     }
   }
 
-  // lo llevamos para mirar el forumulario
-  OnSelect(result : any){
-    console.log("result" , result)
-    this.ViewForm(result);
+  // Rechazar
+  async OnReject(result: any) {
+    this.loadingController.create({ message: 'Rechazando fuente...' }).then(loading => {
+      this.loading = loading;
+      this.loading.present();
+    });
+
+    try {
+      let ApprovedUpdated = { approved: false };
+      let query = await this.Supabase.updateForm(result.id, ApprovedUpdated);
+
+      if (query && query.length > 0) {
+        // Removemos de la lista local
+        this.resultsNotAproved = this.resultsNotAproved.filter(form => form.id !== result.id);
+      }
+    } catch (error) {
+      await Dialog.alert({
+        title: 'Atención',
+        message: 'No se pudo actualizar el estado a rechazado.'
+      });
+    } finally {
+      if (this.loading) this.loading.dismiss();
+    }
   }
- // obtener todos los elementos de forms
- async GetFormsDataBase(){
-   this.results = await this.Supabase.getForms();
-}
-
-async OnSelectNavigate(result: any) {
-
-  let latitude = await result.location.latitude
-  let longitude = await result.location.longitude
-
-  // preparamos el enalce de google maps
-  let link = await this.GeolocationService.generateGoogleMapsLink(latitude , longitude) as string
-  // abrimos el enlace desde capacitor
-  await Browser.open({ url: link });
-}
-
-// para rechazar el formulario
-  async OnReject(result : any){
-
-  let ApprovedUpdated = {
-    approved : false
-  }
-
-  let query = await this.Supabase.updateForm(result.id , ApprovedUpdated)
-
-  if (query.length > 0){
-    const indexToRemove = this.results.findIndex(
-      (form: { id: any; }) => form.id === result.id
-    );
-
-    if (indexToRemove !== -1 ){
-      this.results.splice(indexToRemove , 1);
-      this.results = [...this.results]
-    }  
-  }
-}
-
-ViewForm(data : any){
-  this.NavCtrl.navigateForward( '/viewForm', {
-    queryParams: {
-      id : data.id,
-      data : JSON.stringify(data),
-      username : data.username,
-    },
-  });
-}
-
-
-
-
 }

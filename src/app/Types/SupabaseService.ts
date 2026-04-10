@@ -3,6 +3,7 @@ import { environment } from './../../environments/environment';
 import { AuthenticationService } from '../authentication.service';
 import { PostgrestQueryBuilder } from '@supabase/postgrest-js';
 import GeolocationService from '../Globals/Geolocation';
+import { Injectable } from '@angular/core';
 
 export interface User {
   id?: number;
@@ -16,7 +17,7 @@ export interface User {
   photo?: any;
   password: string;
   autencationUserID: string;
-  language : string;
+  language: string;
 }
 
 export interface WaterSources {
@@ -29,8 +30,8 @@ export interface WaterSources {
   created_at: any;
   photo: string;
   description: string;
-  watersourcetype : string
-  updated_at : Date
+  watersourcetype: string
+  updated_at: Date
 
 }
 
@@ -46,7 +47,7 @@ export interface Forms {
   is_potable: boolean;
   watersourcetype: string;
   approved: boolean | null;
-  autencationUserID : string;
+  autencationUserID: string;
 }
 
 export interface UserType {
@@ -55,10 +56,17 @@ export interface UserType {
   user_role: boolean;
 }
 
+@Injectable({
+  providedIn: 'root'
+})
+
 export default class DatabaseService {
   private supabase: SupabaseClient;
   private SUPABASE_URL = environment.SUPABASE_URL;
   private SUPABASE_KEY = environment.SUPABASE_KEY;
+
+  // Nota rápida: Funciona, pero en Angular es mejor evitar usar "new" dentro de los servicios.
+  // Lo ideal sería inyectarlo en el constructor, pero déjalo así por ahora para no romper tu app.
   private GeolocationService = new GeolocationService
 
   constructor() {
@@ -71,7 +79,7 @@ export default class DatabaseService {
       );
     }
 
-    this.supabase = createClient(supabaseUrl, supabaseKey , {auth : {autoRefreshToken: false,persistSession: true}});
+    this.supabase = createClient(supabaseUrl, supabaseKey, { auth: { autoRefreshToken: false, persistSession: true } });
   }
 
   async insertUser(newUser: User): Promise<any> {
@@ -221,11 +229,11 @@ export default class DatabaseService {
       if (updateError) {
         throw updateError;
       }
-      
+
       return updatedFormData;
     } catch (error) {
       console.error('Error updating form:', error);
-      return null; 
+      return null;
 
     }
   }
@@ -333,17 +341,17 @@ export default class DatabaseService {
     return user; // Trust Supabase types
   }
 
-  async getUserName (user_id : any){
+  async getUserName(user_id: any) {
 
     const { data: username, error } = await this.supabase
-    .from('users')
-    .select('username')
-    .eq('autencationUserID', user_id);
+      .from('users')
+      .select('username')
+      .eq('autencationUserID', user_id);
 
-  if (error) {
-    throw error;
-  }
-  return username; // Trust Supabase types
+    if (error) {
+      throw error;
+    }
+    return username; // Trust Supabase types
 
   }
 
@@ -363,7 +371,7 @@ export default class DatabaseService {
     }
   }
 
-  async getForms() {
+  async getFormsNotAproved(): Promise<any[]> {
     try {
       const { data: forms, error } = await this.supabase
         .from('forms')
@@ -373,12 +381,39 @@ export default class DatabaseService {
       if (error) {
         throw error;
       }
-    
+
       console.log('Forms retrieved:', forms);
-      return forms;
+      // Retornamos 'forms', pero si por alguna razón es null, retornamos un array vacío
+      return forms || [];
+
     } catch (error) {
       console.error('Error retrieving forms:', error);
-      return error;
+      // En lugar de devolver el error (unknown), devolvemos un array vacío 
+      // para no romper la interfaz de usuario ni el tipado estricto
+      return [];
+    }
+  }
+
+  async getFormsAproved(): Promise<any[]> {
+    try {
+      const { data: forms, error } = await this.supabase
+        .from('forms')
+        .select('*')
+        .is('approved', true);
+
+      if (error) {
+        throw error;
+      }
+
+      console.log('Forms retrieved:', forms);
+      // Retornamos 'forms', pero si por alguna razón es null, retornamos un array vacío
+      return forms || [];
+
+    } catch (error) {
+      console.error('Error retrieving forms:', error);
+      // En lugar de devolver el error (unknown), devolvemos un array vacío 
+      // para no romper la interfaz de usuario ni el tipado estricto
+      return [];
     }
   }
 
@@ -417,7 +452,7 @@ export default class DatabaseService {
             return null;
           } else {
             if ('fullPath' in data) return data.fullPath;
-            else return data.path;
+            else return (data as any).path;
           }
         } else {
           // retornamos que no ha sido possible subir el archivo
@@ -425,7 +460,7 @@ export default class DatabaseService {
         }
       } else {
         if ('fullPath' in data) return data.fullPath;
-        else return data.path;
+        else return (data as any).path;
       }
       // si es string retoranmos como esta el file
     } else {
@@ -434,8 +469,8 @@ export default class DatabaseService {
   }
 
   // para obtener de la storage
-  GetStorage(url_image: string) {  
-     
+  GetStorage(url_image: string) {
+
     return `https://xcperzkujymdzvhfuqgi.supabase.co/storage/v1/object/public/${url_image.replace(/ /g, "%20")}`;
   }
 
@@ -509,42 +544,42 @@ export default class DatabaseService {
     }
   }
 
-  async deleteSavedFoutain(savedFountain_id : any){
+  async deleteSavedFoutain(savedFountain_id: any) {
 
-   const { data: savedFountainsData, error: fountainsError } = await this.supabase
-          .from('savedfountains')
-          .delete()
-          .eq('id', savedFountain_id);
+    const { data: savedFountainsData, error: fountainsError } = await this.supabase
+      .from('savedfountains')
+      .delete()
+      .eq('id', savedFountain_id);
 
-          if (fountainsError){
-            return null
-          }else{
-            return 'Success'
-          }
+    if (fountainsError) {
+      return null
+    } else {
+      return 'Success'
+    }
   }
 
 
-  async insertSavedFoutainWithUser(user_id : any , idFountain : any){
+  async insertSavedFoutainWithUser(user_id: any, idFountain: any) {
 
     // prepramos las variables para insertar
     let SavedFountain = {
-      autencationUserID : user_id ,
-      waterSource_id :idFountain,
-      created_at : new Date()
+      autencationUserID: user_id,
+      waterSource_id: idFountain,
+      created_at: new Date()
 
     }
 
     try {
-    const { data: insertedSavedFountain, error: savedFountainError } = await this.supabase
-    .from('savedfountains')
-    .insert(SavedFountain)
-    .select();
+      const { data: insertedSavedFountain, error: savedFountainError } = await this.supabase
+        .from('savedfountains')
+        .insert(SavedFountain)
+        .select();
 
-    if (savedFountainError) {
-      throw savedFountainError;
-    } 
-    return insertedSavedFountain
-    }catch (error) {
+      if (savedFountainError) {
+        throw savedFountainError;
+      }
+      return insertedSavedFountain
+    } catch (error) {
       console.error('Error al obtener los datos:', error);
       return error;
     }
@@ -552,7 +587,7 @@ export default class DatabaseService {
   }
 
   // buscamos el fontain con el existente user , solo debe devolver un dato
-  async getSavedFoutainWithUser(user_id : any , idFountain : any){
+  async getSavedFoutainWithUser(user_id: any, idFountain: any) {
 
     try {
       // Consulta para obtener los datos de public.savedfountains
@@ -561,16 +596,16 @@ export default class DatabaseService {
           .from('savedfountains')
           .select('*')
           .eq('autencationUserID', user_id)
-          .eq ( 'waterSource_id' ,idFountain);
+          .eq('waterSource_id', idFountain);
 
       if (fountainsError) {
         throw fountainsError;
-      } 
+      }
       return savedFountainsData
-  }  catch (error) {
-    console.error('Error al obtener los datos:', error);
-    return error;
-  }
+    } catch (error) {
+      console.error('Error al obtener los datos:', error);
+      return error;
+    }
   }
 
 
@@ -606,7 +641,7 @@ export default class DatabaseService {
           const matchedWaterSources = FountainsData.filter(
             (waterSource) => waterSource.id === fountain.waterSource_id
           );
-        
+
           // Agregar todas las coincidencias al array matchedFountains
           for (const matchedWaterSource of matchedWaterSources) {
             matchedFountains.push({
@@ -630,14 +665,14 @@ export default class DatabaseService {
   }
 
   // obtener el ultimo update de watersources
-  async getUpdateDateFountains(){
+  async getUpdateDateFountains() {
     try {
-        const { data : waterSources, error } = await this.supabase
+      const { data: waterSources, error } = await this.supabase
         .from('watersources')
         .select('updated_at')
         .order('updated_at', { ascending: false })
         .limit(1);
-      
+
       if (error) {
         throw error;
       }

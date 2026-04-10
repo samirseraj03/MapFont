@@ -33,7 +33,6 @@ export class RegisterPage implements OnInit {
   username: any;
   loading: any;
   data: any;
-  Supabase = new DatabaseService();
   GeolocationService: any = new GeolocationService();
 
   constructor(
@@ -43,7 +42,8 @@ export class RegisterPage implements OnInit {
     private authService: AuthenticationService,
     private loginService: LoginPage,
     private TabsPage: TabsPage,
-    private Service: Services
+    private Service: Services,
+    private Supabase: DatabaseService
   ) {
     // Registrar los iconos para la UI
     addIcons({ personOutline, mailOutline, lockClosedOutline, logoGoogle, logoApple });

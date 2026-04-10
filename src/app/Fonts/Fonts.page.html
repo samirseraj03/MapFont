@@ -1,48 +1,87 @@
-<ion-header [translucent]="true">
-  <!-- mapbox import -->
-  <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.1/mapbox-gl.js"></script>
-  <link href='https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.css' rel='stylesheet' />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="mobile-web-app-capable" content="yes">
-  <ion-toolbar>
-    <ion-title>
-      {{ 'fountains' | translate }}
-    </ion-title>
-  </ion-toolbar>
-  <style>
-    #marker {
-      background-size: cover;
-      width: 50px;
-      height: 30px;
-      border-radius: 50%;
-      cursor: pointer;
-    }
-  </style>
-</ion-header>
+<ion-content [fullscreen]="true" [scrollY]="false">
 
-<!-- content -->
-<ion-content [fullscreen]="true">
+  <div id="Mapa-de-box"></div>
 
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">{{ 'fountains' | translate }}</ion-title>
+  <header class="glass-header">
+    <div class="header-left">
+      <ion-icon name="water-outline" class="brand-icon"></ion-icon>
+      <h1>{{ 'fountains' | translate }}</h1>
+    </div>
+  </header>
 
-    </ion-toolbar>
-  </ion-header>
+  <button *ngIf="!UpdatedMap" class="refresh-btn" (click)="UpdateMap()">
+    <ion-icon name="refresh-outline"></ion-icon>
+    <span>Actualizar Mapa</span>
+  </button>
 
+  <ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()" [initialBreakpoint]="0.45"
+    [breakpoints]="[0, 0.45, 0.85]" class="glass-bottom-sheet">
 
-  <!-- map -->
-  <div id="Mapa-de-box" class="w-100 h-100 m-0 position-relative z-index-dropdown" style="min-width: 100% !important;">
+    <ng-template>
+      <div class="drag-handle-container">
+        <div class="drag-handle"></div>
+      </div>
 
-  </div>
+      <ion-content class="modal-scroll-area custom-scrollbar">
+        <div style="padding-left: 24px; padding-right: 24px; padding-bottom: 32px; padding-top: 16px;"
+          *ngIf="selectedFountain">
 
+          <div class="hero-image-container" style="margin-bottom: 24px;">
+            <img [src]="selectedFountain.photo_url" alt="Foto de la fuente" />
+            <div class="image-overlay"></div>
+            <h2 class="source-name">{{ selectedFountain.name }}</h2>
+          </div>
 
-  <!-- buttton to refresh page and update geojson from database -->
-  <div id="button__refresh" class="position-absolute" *ngIf="!UpdatedMap">
-    <ion-button (click)="UpdateMap()">
-      <ion-icon slot="icon-only" ios="refresh-circle" md="refresh-circle"></ion-icon>
-    </ion-button>
-  </div>
+          <div class="status-row" style="margin-bottom: 24px;">
+            <div class="status-item">
+              <div class="icon-circle" [class.is-true]="selectedFountain.ispotable"
+                [class.is-false]="!selectedFountain.ispotable">
+                <ion-icon name="water"></ion-icon>
+              </div>
+              <span>{{ selectedFountain.ispotable ? ('potable' | translate) : ('not_potable' | translate) }}</span>
+            </div>
 
+            <div class="status-item">
+              <div class="icon-circle" [class.is-true]="selectedFountain.available"
+                [class.is-false]="!selectedFountain.available">
+                <ion-icon name="checkmark"></ion-icon>
+              </div>
+              <span>{{ selectedFountain.available ? ('available' | translate) : ('not_available' | translate) }}</span>
+            </div>
+
+            <div class="status-item clickable-card" (click)="SaveFountain()" [class.active-saved]="isSaved">
+              <div class="icon-circle save-icon">
+                <ion-icon [name]="isSaved ? 'bookmark' : 'bookmark-outline'"></ion-icon>
+              </div>
+              <span>{{ isSaved ? 'Guardado' : 'Guardar' }}</span>
+            </div>
+          </div>
+
+          <hr class="border-t border-white/10" style="margin-top: 24px; margin-bottom: 24px;" />
+
+          <div class="info-section nav-card" (click)="NavigateToFountain()" style="margin-bottom: 32px;">
+            <div class="nav-content">
+              <div>
+                <h3 style="margin-bottom: 12px;">DIRECCIÓN</h3>
+                <p><ion-icon name="location-outline"></ion-icon> {{ selectedFountain.address || 'Ubicación desconocida'
+                  }}</p>
+              </div>
+              <div class="nav-arrow">
+                <ion-icon name="chevron-forward"></ion-icon>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-section">
+            <h3 style="margin-bottom: 12px;">{{ 'font_description' | translate | uppercase }}</h3>
+            <p>{{ selectedFountain.description || 'Sin descripción disponible.' }}</p>
+          </div>
+
+        </div>
+      </ion-content>
+
+    </ng-template>
+
+  </ion-modal>
 
 </ion-content>

@@ -1,1 +1,90 @@
+/* Contenedor de la barra de pestañas */
+ion-tab-bar.glass-tab-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 75px;
+    /* Ligeramente más alta para dar espacio */
+    --background: rgba(15, 23, 42, 0.85);
+    /* Tono Slate oscuro */
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-top-left-radius: 35px;
+    border-top-right-radius: 35px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.4);
 
+    /* Ocultar el borde nativo de Ionic */
+    --border: 0;
+}
+
+/* Estilo general de los botones */
+ion-tab-button {
+    --color: #94a3b8;
+    /* Gris azulado (Inactivo) */
+    --color-selected: #22d3ee;
+    /* Cian AquaPath (Activo) */
+    transition: all 0.3s ease;
+    background: transparent;
+
+    ion-icon {
+        font-size: 1.6rem;
+        margin-bottom: 4px;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    ion-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* Animación al seleccionar */
+    &.tab-selected ion-icon {
+        transform: scale(1.15) translateY(-2px);
+    }
+}
+
+/* --- EL BOTÓN CENTRAL FLOTANTE --- */
+.center-tab {
+    overflow: visible;
+    /* Permite que el botón sobresalga de la barra */
+    opacity: 1 !important;
+    /* Fuerza a que no se atenúe */
+
+    .fab-button {
+        width: 56px;
+        height: 56px;
+        background: linear-gradient(to bottom right, #22d3ee, #0891b2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* Sube el botón por encima de la barra */
+        box-shadow: 0 10px 20px rgba(8, 145, 178, 0.4);
+        border: 5px solid #0f172a;
+        /* Anillo oscuro alrededor para separarlo del fondo */
+        transition: all 0.3s ease;
+
+        ion-icon {
+            color: #0f172a;
+            /* Icono oscuro para contrastar con el cian */
+            font-size: 2.2rem;
+            margin: 0;
+        }
+    }
+
+    /* Animación al hacer click/seleccionar el botón central */
+    &.tab-selected .fab-button {
+        transform: scale(1.05);
+        background: linear-gradient(to bottom right, #67e8f9, #06b6d4);
+        box-shadow: 0 12px 25px rgba(8, 145, 178, 0.6);
+    }
+
+    /* El label del botón central no cambia de color al activarse */
+    &.tab-selected ion-label {
+        color: #94a3b8;
+    }
+}

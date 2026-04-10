@@ -1,28 +1,14 @@
 import { Component, EnvironmentInjector, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  IonTabs,
-  IonTabBar,
-  IonTabButton,
-  IonIcon,
-  IonLabel,
-  IonSpinner,
-  IonContent,
-  IonButtons,
+  IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel
 } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  triangle,
-  ellipse,
-  square,
-  home,
-  water,
-  person,
-  push,
-} from 'ionicons/icons';
-import { ConfigurationTabPage } from '../ConfigurationPage/configuration-tab/configuration-tab.page';
-import { LoginPage } from '../authentication/login/login.page';
 import { Preferences } from '@capacitor/preferences';
+import { TranslateModule } from '@ngx-translate/core';
+
+// Iconos minimalistas para la navegación
+import { addIcons } from 'ionicons';
+import { mapOutline, addOutline, personOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-tabs',
@@ -30,38 +16,27 @@ import { Preferences } from '@capacitor/preferences';
   styleUrls: ['tabs.page.scss'],
   standalone: true,
   imports: [
-    IonButtons,
-    IonContent,
-    IonSpinner,
-    IonTabs,
-    IonTabBar,
-    IonTabButton,
-    IonIcon,
-    IonLabel,
-    ConfigurationTabPage,
-    CommonModule,  
+    IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel,
+    CommonModule, TranslateModule
   ],
 })
 export class TabsPage implements OnInit {
   public environmentInjector = inject(EnvironmentInjector);
-  public isLogin : any
+  public isLogin: boolean = false; // Tipado correcto
 
   constructor() {
-    addIcons({ triangle, ellipse, square, home, water, person, push });
+    // Solo cargamos los iconos que realmente usamos
+    addIcons({ mapOutline, addOutline, personOutline });
   }
 
-  
   async ngOnInit() {
-    this.isLogin = await this.checkLoggedIn()
+    this.isLogin = await this.checkLoggedIn();
   }
 
-  async checkLoggedIn() {
+  async checkLoggedIn(): Promise<boolean> {
     const token = await this.getStorage('session');
-    if (token && token) {
-      return true;
-    } else {
-      return false;
-    }
+    // Si hay token devuelve true, si no, false. Mucho más limpio.
+    return !!token;
   }
 
   async getStorage(key: string) {
@@ -72,5 +47,4 @@ export class TabsPage implements OnInit {
       return JSON.parse(ret.value);
     }
   }
-
 }

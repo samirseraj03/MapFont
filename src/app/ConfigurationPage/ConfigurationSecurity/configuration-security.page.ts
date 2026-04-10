@@ -1,89 +1,102 @@
-import { Component, OnInit, ViewChild , NgModule    } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, NgForm , ReactiveFormsModule } from '@angular/forms';
-import { NavController , LoadingController } from '@ionic/angular';
-import { ConfigurationTabPage } from '../configuration-tab/configuration-tab.page';
-import { arrowBack } from 'ionicons/icons';
-import { addIcons } from 'ionicons';
-import GeolocationService from 'src/app/Globals/Geolocation';
-import { LoginPage } from 'src/app/authentication/login/login.page';
-import DatabaseService from 'src/app/Types/SupabaseService';
-import { IonHeader, IonToolbar, IonTitle, IonButtons, IonContent, IonCardHeader, IonCard, IonCardTitle, IonCardSubtitle, IonButton, IonList, IonLabel ,  IonMenu , IonMenuButton, IonInput } from "@ionic/angular/standalone";
+import { FormsModule } from '@angular/forms';
+import { NavController, LoadingController } from '@ionic/angular';
+
+// Standalone Components
+import {
+  IonHeader, IonContent, IonIcon, IonInput
+} from "@ionic/angular/standalone";
+
 import { Dialog } from '@capacitor/dialog';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
+// Servicios Propios
+import GeolocationService from 'src/app/Globals/Geolocation';
+import DatabaseService from 'src/app/Types/SupabaseService';
+import { AuthenticationService } from 'src/app/authentication.service'; // Usamos este en lugar de LoginPage
+
+// Iconos
+import { addIcons } from 'ionicons';
+import { arrowBackOutline, lockClosedOutline, shieldCheckmarkOutline, keyOutline, saveOutline, checkmarkDoneOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-configuration-security',
   templateUrl: './configuration-security.page.html',
   styleUrls: ['./configuration-security.page.scss'],
   standalone: true,
-  imports: [IonInput, ReactiveFormsModule , CommonModule, FormsModule,  IonMenu , IonMenuButton, IonLabel, IonList, IonButton, IonCardSubtitle, IonCardTitle, IonCard, IonCardHeader, IonContent, IonButtons, IonTitle, IonToolbar, IonHeader,  ConfigurationTabPage],
-  providers: [ConfigurationTabPage], // Agrega ConfigurationTabPage como un proveedor
+  imports: [
+    CommonModule, FormsModule, IonHeader, IonContent, IonIcon, IonInput, TranslateModule
+  ]
 })
-
 export class ConfigurationSecurityPage implements OnInit {
-  @ViewChild('myForm') myForm!: NgForm; // Obtén una referencia al formulario usando ViewChild
 
-  OldPassword : any 
-  NewPassword : any 
-  NewConfirmPassword : any 
-
-
-  img_ref_config: any = null;
+  OldPassword: any;
+  NewPassword: any;
+  NewConfirmPassword: any;
   loading: any;
 
-  constructor(public NavCtrl: NavController, private LoginService: LoginPage ,     private loadingController: LoadingController,
-  ) {
-    addIcons({ arrowBack });
-  }
   GeolocationService = new GeolocationService();
-  Supabase = new DatabaseService();
 
-  ngOnInit() {}
+  constructor(
+    public NavCtrl: NavController,
+    private loadingController: LoadingController,
+    private authService: AuthenticationService, // <-- Inyectamos directamente el servicio
+    private TranslateService: TranslateService,
+    private Supabase: DatabaseService
+  ) {
+    addIcons({ arrowBackOutline, lockClosedOutline, shieldCheckmarkOutline, keyOutline, saveOutline, checkmarkDoneOutline });
+  }
 
-  // para hacer el update
+  ngOnInit() { }
+
   async Update() {
-
-
-    this.loadingController.create({ message: 'Cargando' }).then(loading => {
+    this.loadingController.create({ message: this.TranslateService.instant('loading') || 'Cargando...' }).then(loading => {
       this.loading = loading;
       this.loading.present();
     });
 
-
-    // comprovamos que coindicen las nuevas contrasenyas :
+    // 1. Comprobamos que las contraseñas nuevas coinciden
     if (this.NewPassword === this.NewConfirmPassword) {
-      // pasamos la funcion donde comprueba la antigua contrasenya y hace la nueva
       try {
         let email = await this.GeolocationService.getUserEmail();
-        let data = await this.LoginService.UpdatePassword(
-          email,
-          this.OldPassword,
-          this.NewPassword
-        );
-        console.log(data)
-        if (data === 'Success') {
-          await this.ToDataBase();
-          this.Success();
+
+        // 2. Iniciamos sesión con la antigua para verificar (Reemplaza a this.LoginService.UpdatePassword)
+        const response = await this.authService.signIn(email, this.OldPassword);
+
+        if (response && response.user) {
+
+          // 3. Si la vieja es correcta, actualizamos a la nueva
+          const error = await this.authService.updateUser({
+            password: this.NewPassword,
+          });
+
+          if (!error) {
+            await this.ToDataBase();
+            this.Success();
+          } else {
+            throw new Error("No se pudo actualizar la contraseña");
+          }
+        } else {
+          throw new Error("Credenciales inválidas");
         }
       } catch (error) {
         await Dialog.alert({
-          title: 'Atencion',
-          message: 'tu contrasenya no se ha podido cambiar , comporuba las credentciales'
+          title: 'Atención',
+          message: 'Tu contraseña actual es incorrecta o hubo un problema de red.'
         });
-      
-      }
-      finally {
-        this.loading.dismiss();
+      } finally {
+        if (this.loading) this.loading.dismiss();
       }
     } else {
-      await this.loading.dismiss();
+      if (this.loading) this.loading.dismiss();
       await Dialog.alert({
-        title: 'Atencion',
-        message: 'las contrasenyas no coinciden'
+        title: 'Atención',
+        message: 'Las contraseñas nuevas no coinciden.'
       });
     }
   }
-  // llevamos el guardado a succes
+
   async Success() {
     this.NavCtrl.navigateForward('/Success', {
       state: {
@@ -92,7 +105,6 @@ export class ConfigurationSecurityPage implements OnInit {
     });
   }
 
-  // subimos la contrsenya a la base de datos del usuario
   async ToDataBase() {
     let password = { password: this.NewPassword } as any;
     await this.Supabase.updateUser(

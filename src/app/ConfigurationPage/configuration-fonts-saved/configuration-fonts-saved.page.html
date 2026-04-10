@@ -1,91 +1,72 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title> Menu </ion-title>
-    <div class="ion-page" id="main-content">
-      <ion-header>
-        <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-menu-button></ion-menu-button>
-          </ion-buttons>
-          <ion-title>Formularios</ion-title>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content class="ion-padding">
-        Tap the button in the toolbar to open the menu.
-      </ion-content>
+<ion-content [fullscreen]="true" class="custom-bg">
+
+  <div class="overlay"></div>
+
+  <header class="glass-header">
+    <div class="header-left">
+      <button class="back-btn" (click)="NavCtrl.back()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <h1>Fuentes Guardadas</h1>
     </div>
-  </ion-toolbar>
-</ion-header>
+    <div class="header-right">
+      <ion-icon name="bookmark" class="title-icon"></ion-icon>
+    </div>
+  </header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">ConfigurationLookForms</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <main class="main-content">
 
-  <ion-card class="z-index-dropdown">
-    <ion-card-header class="text-start">
-  
-  <ion-card-title class="d-flex mb-3">
-    Tus Fuentes Favoritos:
-  </ion-card-title>
+    <div class="search-container">
+      <div class="glass-search-box">
+        <ion-icon name="search-outline" class="search-icon"></ion-icon>
+        <input type="text" placeholder="Buscar en favoritos..." (input)="SearchElement($event)" class="search-input" />
+      </div>
+    </div>
 
+    <div class="empty-state" *ngIf="results.length === 0">
+      <ion-icon name="water-outline"></ion-icon>
+      <p>No tienes fuentes guardadas o no coinciden con tu búsqueda.</p>
+    </div>
 
-    <ion-searchbar
-      class="mb-5"
-      color="light"
-      show-clear-button="always"
-      animated="true"
-      placeholder="SerachPlace"
-      value="Custom Clear Icon"
-      [debounce]="400"
-      [value]="ToSearch()"
-      (ionInput)="SearchElement($event)"
-    ></ion-searchbar>
+    <div class="cards-grid">
 
+      <div class="glass-card" *ngFor="let result of results">
 
+        <div class="card-info" (click)="OnSelect(result)">
+          <div class="card-header">
+            <div class="icon-box cyan-box">
+              <ion-icon name="water"></ion-icon>
+            </div>
+            <h3>{{ result['matchedWaterSource']['name'] }}</h3>
+          </div>
 
-    <ag-grid-angular
-    class="ag-theme-quartz"
-    style="height: 500px;" 
-    [rowData]="results"
-    [columnDefs]="colDefs">
-   </ag-grid-angular>
-   
+          <div class="card-body">
+            <p class="address">
+              <ion-icon name="location-outline"></ion-icon>
+              {{ result['matchedWaterSource']['address'] || 'Sin dirección registrada' }}
+            </p>
+            <p class="date">
+              <ion-icon name="calendar-outline"></ion-icon>
+              Guardado el: {{ GeolocationService.formatDate(result['savedFountain']['created_at']) }}
+            </p>
+          </div>
+        </div>
 
-   <!--body de la lista  -->
-  <!-- <ion-list>
-    <ion-item>
-          <ion-label>Nombre:</ion-label>
-          <ion-label>Dirección</ion-label>
-          <ion-label>Favorito desde:</ion-label>
-          <ion-label></ion-label>
+        <div class="card-actions">
+          <button class="action-btn map-btn" (click)="OnSelectNavigate(result)">
+            <ion-icon name="navigate-outline"></ion-icon>
+            <span>Ir</span>
+          </button>
 
-    </ion-item>
-  </ion-list> -->
-<!-- elementos de la lista -->
-    <!-- <ion-list>
-      <ion-item *ngFor="let result of results" >
-        <ion-label (click)="OnSelect(result)">{{ result['matchedWaterSource']['name'] }}</ion-label>
-        <ion-label (click)="OnSelect(result)">{{ result['matchedWaterSource']['address'] }}</ion-label>   
-        <ion-label  (click)="OnSelect(result)">{{ GeolocationService.formatDate(result['savedFountain']['created_at'])  }}</ion-label>
-      <ion-label> 
-        <ion-buttons class="d-flex justify-content-end">
-          <ion-button (click)="OnSelectNavigate(result)">
-            <ion-icon name="navigate" ></ion-icon>
-          </ion-button>
+          <button class="action-btn delete-btn" (click)="OnSelectDislike(result)">
+            <ion-icon name="heart-dislike-outline"></ion-icon>
+            <span>Quitar</span>
+          </button>
+        </div>
 
-          <ion-button (click)="OnSelectDislike(result)">
-            <ion-icon name="heart-dislike" ></ion-icon>
-          </ion-button>
-      </ion-buttons>
-    </ion-label>
+      </div>
 
-      </ion-item>
-    </ion-list> -->
-</ion-card-header>
-</ion-card>
+    </div>
 
+  </main>
 </ion-content>
-

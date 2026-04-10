@@ -1,97 +1,77 @@
-<ion-header [translucent]="true">
+<ion-content [fullscreen]="true" class="custom-bg">
 
-  <ion-toolbar>
-    <ion-title> {{'forms' | translate}} </ion-title>
-    <div class="ion-page" id="main-content">
-      <ion-header>
-        <ion-toolbar>
-            <ion-menu-button slot="start"></ion-menu-button>
-          <ion-title>{{'forms' | translate}}</ion-title>
-        </ion-toolbar>
-      </ion-header>
-      
-      
+  <div class="overlay"></div>
+
+  <header class="glass-header">
+    <div class="header-left">
+      <button class="back-btn" (click)="NavCtrl.back()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <h1>{{ 'my_forms' | translate }}</h1>
     </div>
-  </ion-toolbar>
-</ion-header>
+    <div class="header-right">
+      <ion-icon name="document-text" class="title-icon"></ion-icon>
+    </div>
+  </header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    
-    <ion-toolbar>
-      <ion-title size="large">{{'forms' | translate}}</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <main class="main-content">
 
-  <ion-card class="z-index-dropdown">
-    <ion-card-header class="text-start">
-  <ion-card-title class="d-flex mb-5">
-    {{'your_contributed_forms_to_mapfont' | translate}}
-  </ion-card-title>
+    <div class="search-container">
+      <div class="glass-search-box">
+        <ion-icon name="search-outline" class="search-icon"></ion-icon>
+        <input type="text" [placeholder]="'search' | translate" (input)="SearchElement($event)" class="search-input" />
+      </div>
+    </div>
 
+    <div class="section-heading">
+      <h2>{{ 'your_contributed_forms_to_mapfont' | translate }}</h2>
+      <p>Tus aportaciones a la comunidad de AquaPath</p>
+    </div>
 
-  <ion-searchbar
-  class="mb-5"
-  color="light"
-  show-clear-button="always"
-  animated="true"
-  placeholder="{{'search' | translate}}"
-  value="Custom Clear Icon"
-  [debounce]="400"
-  [value]="ToSearch()"
-  (ionInput)="SearchElement($event)"
-></ion-searchbar>
+    <div class="empty-state" *ngIf="results.length === 0">
+      <ion-icon name="document-outline"></ion-icon>
+      <p>No tienes formularios creados o no coinciden con tu búsqueda.</p>
+    </div>
 
-<ag-grid-angular
-class="ag-theme-quartz"
-style="height: 500px;" 
-[rowData]="results"
-[columnDefs]="colDefs">
-</ag-grid-angular>
+    <div class="cards-grid">
 
+      <article class="glass-card" *ngFor="let result of results" (click)="OnSelect(result)">
 
-   <!--body de la lista  -->
-  <!-- <ion-list>
-    <ion-item>
-      
-          <ion-label>id:</ion-label>
-          <ion-label >Nombre:</ion-label>
-          <ion-label  class="text-center" >Estado:</ion-label>
-          <ion-label class="text-center">Creado:</ion-label>
-          <ion-label></ion-label>
-          
+        <div class="card-content">
+          <h3 class="source-name">{{ result['watersourcesname'] || 'Fuente sin nombre' }}</h3>
 
-    </ion-item>
-  </ion-list> -->
-<!-- elementos de la lista -->
-    <!-- <ion-list>
-      <ion-item *ngFor="let result of results" (click)="OnSelect(result)">
-        <ion-label >{{ result['id'] }}</ion-label>
-        <ion-label>{{ result['watersourcesname'] }}</ion-label> 
-        <ion-label *ngIf="result.approved == true" class="text-success text-center">Aprobado</ion-label>
-        <ion-label *ngIf="result.approved == false" class="text-danger text-center">Rechazado</ion-label>
-        <ion-label *ngIf="result.approved == null" class="text-danger text-center">Pendiente</ion-label>
+          <div class="card-footer">
 
-        <ion-label  class="text-center">{{  GeolocationService.formatDate(result.created_at) }}</ion-label>
-        <ion-label> 
-          <ion-buttons class="d-flex justify-content-end" (click)="OnSelect(result)">
-            <ion-button>
-              <ion-icon name="arrow-forward">
-            </ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-label>
-      </ion-item>
-    </ion-list> -->
-</ion-card-header>
-</ion-card>
+            <span class="status-badge badge-approved" *ngIf="result.approved === true">
+              Aprobado
+              <ion-icon name="checkmark-circle"></ion-icon>
+            </span>
 
+            <span class="status-badge badge-rejected" *ngIf="result.approved === false">
+              Rechazado
+              <ion-icon name="close-circle"></ion-icon>
+            </span>
 
+            <span class="status-badge badge-pending" *ngIf="result.approved === null">
+              Pendiente
+              <ion-icon name="time"></ion-icon>
+            </span>
 
+            <div class="date-info">
+              <ion-icon name="calendar-clear-outline"></ion-icon>
+              {{ GeolocationService.formatDate(result.created_at) }}
+            </div>
 
+          </div>
+        </div>
 
+        <div class="card-arrow">
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </div>
+
+      </article>
+
+    </div>
+
+  </main>
 </ion-content>
-
-
-
-

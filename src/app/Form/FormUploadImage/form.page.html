@@ -22,7 +22,6 @@
     </div>
 
     <div class="image-preview-box" (click)="SelectInput()">
-
       <div class="placeholder-content" *ngIf="!Service.img_ref">
         <div class="icon-circle">
           <ion-icon name="camera-outline"></ion-icon>
@@ -30,15 +29,19 @@
         <p>PREVISUALIZACIÓN DE IMAGEN</p>
         <div class="dashed-border"></div>
       </div>
-
       <img *ngIf="Service.img_ref" [src]="Service.img_ref" class="uploaded-image" alt="Fuente previsualización" />
     </div>
 
     <div class="action-buttons">
 
-      <button class="btn-upload" (click)="SelectInput()">
+      <button class="btn-primary" *ngIf="!Service.img_ref" (click)="SelectInput()">
         <ion-icon name="cloud-upload-outline"></ion-icon>
         {{ 'upload_photo' | translate }}
+      </button>
+
+      <button class="btn-primary" *ngIf="Service.img_ref" (click)="ImageSuccess()">
+        {{ 'next_step' | translate }}
+        <ion-icon name="arrow-forward-outline"></ion-icon>
       </button>
 
       <button class="btn-delete" *ngIf="Service.img_ref" (click)="Delete()">
@@ -48,12 +51,5 @@
 
     </div>
   </main>
-
-  <nav class="bottom-nav">
-    <button class="btn-next" (click)="ImageSuccess()">
-      {{ 'next_step' | translate }}
-      <ion-icon name="arrow-forward-outline"></ion-icon>
-    </button>
-  </nav>
 
 </ion-content>

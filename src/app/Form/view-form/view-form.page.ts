@@ -1,4 +1,4 @@
-import { Component, OnInit , ChangeDetectorRef} from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavController } from '@ionic/angular';
@@ -55,26 +55,25 @@ import { firstValueFrom } from 'rxjs';
 })
 export class ViewFormPage implements OnInit {
   GeolocationService = new GeolocationService();
-  Supabase = new DatabaseService();
 
-  data: any ;
+  data: any;
   img_ref_view_form: any = null;
   map_view_form: any;
   LastMarker: any;
   email: any;
   id_form: any;
   username: any;
-  longitude : any
-  latitude : any
+  longitude: any
+  latitude: any
 
-  constructor(public NavCtrl: NavController, private route: ActivatedRoute , private ChangeDetectorRef : ChangeDetectorRef) {
+  constructor(public NavCtrl: NavController, private route: ActivatedRoute, private ChangeDetectorRef: ChangeDetectorRef, private Supabase: DatabaseService) {
     addIcons({ arrowBack });
   }
 
   async ngOnInit() {
     // Usamos pipe, take(1) y toPromise() para obtener el primer valor emitido por el observable y desuscribirnos automáticamente
     const params = await firstValueFrom(this.route.queryParams);
-  
+
     // Extraemos los valores de los parámetros
     this.id_form = params['id'] || null;
     this.data = JSON.parse(params['data']) || null;
@@ -82,7 +81,7 @@ export class ViewFormPage implements OnInit {
 
     // Utilizamos this.data directamente sin necesidad de almacenar el resultado de la suscripción
     this.img_ref_view_form = this.Supabase.GetStorage(this.data.photo);
-  
+
     console.log(this.img_ref_view_form)
 
     // desplegamos el mapa de mapBox
@@ -90,9 +89,9 @@ export class ViewFormPage implements OnInit {
 
     this.ChangeDetectorRef.detectChanges()
   }
-  
 
-  getMap(data : any) {
+
+  getMap(data: any) {
     // desplegar el map
     this.map_view_form = new mapboxgl.Map({
       // importamos el accessTokenMapbox para desplegar el mapa

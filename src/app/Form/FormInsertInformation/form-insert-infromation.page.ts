@@ -53,12 +53,12 @@ export class FormInsertInfromationPage implements OnInit {
   Adress: any;
 
   GeolocationService = new GeolocationService();
-  DatabaseService = new DatabaseService();
 
   constructor(
     public NavCtrl: NavController,
     private route: ActivatedRoute,
-    private Service: Services
+    private Service: Services,
+    private Supabase: DatabaseService
   ) {
     // Registrar los iconos del diseño
     addIcons({ arrowBackOutline, createOutline, waterOutline, calendarOutline, earthOutline, checkmarkDoneOutline });
@@ -81,14 +81,14 @@ export class FormInsertInfromationPage implements OnInit {
   async ToDataBase() {
     // preparamos las variables a insertar para el formulario
     let user_id = await this.GeolocationService.getUserID();
-    let data_user = await this.DatabaseService.getUser(user_id);
+    let data_user = await this.Supabase.getUser(user_id);
 
     this.lnglat = {
       "latitude": this.lnglat[1],
       "longitude": this.lnglat[0],
     };
 
-    let image = await this.DatabaseService.InsertToStoarge(this.image);
+    let image = await this.Supabase.InsertToStoarge(this.image);
 
     let form: Forms = {
       username: data_user[0].username,
@@ -105,7 +105,7 @@ export class FormInsertInfromationPage implements OnInit {
     };
 
     // insertamos los datos a la base de datos
-    this.DatabaseService.insertForm(form);
+    this.Supabase.insertForm(form);
   }
 
   // para mostrar al usuario pagina completada e ir al inicio

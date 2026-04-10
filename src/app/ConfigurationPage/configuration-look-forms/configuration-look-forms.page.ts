@@ -2,34 +2,24 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavController } from '@ionic/angular';
-import { ConfigurationTabPage } from '../configuration-tab/configuration-tab.page';
-import { arrowBack, chevronForward } from 'ionicons/icons';
-import { addIcons } from 'ionicons';
-import GeolocationService from 'src/app/Globals/Geolocation';
-import { TabsPage } from 'src/app/tabs/tabs.page';
-import DatabaseService from '../../Types/SupabaseService';
-import { LoginPage } from '../../authentication/login/login.page';
+
+// Standalone Components limpios
 import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonMenu,
-  IonMenuButton,
-  IonContent,
-  IonCard,
-  IonCardTitle,
-  IonCardHeader,
-  IonSearchbar,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonButtons,
-  IonIcon,
-  IonButton,
+  IonHeader, IonContent, IonIcon
 } from '@ionic/angular/standalone';
-import { AgGridAngular } from 'ag-grid-angular'; // Angular Data Grid Component
-import { ColDef } from 'ag-grid-community'; // Column Definition Type Interface
-import { TranslateModule , TranslateService } from '@ngx-translate/core';
+
+// Lógica y Servicios
+import GeolocationService from 'src/app/Globals/Geolocation';
+import DatabaseService from '../../Types/SupabaseService';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+
+// Iconos necesarios para el nuevo diseño de tarjetas
+import { addIcons } from 'ionicons';
+import {
+  arrowBackOutline, searchOutline, documentText, water,
+  locationOutline, calendarClearOutline, chevronForwardOutline,
+  checkmarkCircle, closeCircle, time, documentOutline
+} from 'ionicons/icons';
 
 @Component({
   selector: 'app-configuration-look-forms',
@@ -37,119 +27,45 @@ import { TranslateModule , TranslateService } from '@ngx-translate/core';
   styleUrls: ['./configuration-look-forms.page.scss'],
   standalone: true,
   imports: [
-    AgGridAngular,
-    IonButton,
-    IonIcon,
-    IonButtons,
-    IonLabel,
-    IonItem,
-    IonList,
-    IonSearchbar,
-    IonCardHeader,
-    IonCardTitle,
-    IonCard,
-    IonContent,
-    IonTitle,
-    IonToolbar,
-    IonHeader,
-    CommonModule,
-    FormsModule,
-    ConfigurationTabPage,
-    TabsPage,
-    IonMenu,
-    IonMenuButton,
-    TranslateModule
+    IonHeader, IonContent, IonIcon, CommonModule, FormsModule, TranslateModule
   ],
 })
 export class ConfigurationLookFormsPage implements OnInit {
+
   data: any[] = [];
-  GeolocationService = new GeolocationService();
-  Supabase = new DatabaseService();
+  public results: any[] = [];
+
   user_data: any;
   username: any;
 
-  constructor(public NavCtrl: NavController, private AuthService: LoginPage , private Transalte : TranslateService) {
-    addIcons({ arrowBack, chevronForward });
+  GeolocationService = new GeolocationService();
+
+  constructor(
+    public NavCtrl: NavController,
+    private Transalte: TranslateService,
+    private Supabase: DatabaseService
+  ) {
+    // Registramos todos los iconos utilizados
+    addIcons({
+      arrowBackOutline, searchOutline, documentText, water,
+      locationOutline, calendarClearOutline, chevronForwardOutline,
+      checkmarkCircle, closeCircle, time, documentOutline
+    });
   }
 
-  // para ponerlo en el html
-  public results = [...this.data];
-  // imports
-
-  // Column Definitions: Defines the columns to be displayed.
-  colDefs: ColDef[] = [
-    { field: 'id', headerName: 'id:' },
-    { field: 'watersourcesname', headerName: 'Nombre:' },
-    {
-      field: 'approved',
-      headerName: 'Estado:',
-
-      cellRenderer: (params: any) => {
-        const rowData = params.data;
-        var buttonsHTML;
-
-        if (rowData.approved == true) {
-          buttonsHTML = `
-        <ion-label " class="text-success text-center">${this.Transalte.instant('approved')}</ion-label>
-     `;
-        } else if (rowData.approved == false) {
-          buttonsHTML = `
-         <ion-label  class="text-danger text-center">${this.Transalte.instant('rejected')}</ion-label>
-     `;
-        } else if (rowData.approved == null) {
-          buttonsHTML = `
-         <ion-label  class="text-danger text-center">${this.Transalte.instant('pending')}</ion-label>
-     `;
-        }
-        return buttonsHTML;
-      },
-    },
-    { field: 'created_at', headerName: 'Creado:' },
-    {
-      field: '',
-      headerName: '',
-      cellRenderer: (params: any) => {
-        const rowData = params.data;
-
-        const onSelect = () => this.OnSelect(rowData);
-
-        const buttonsHTML = `
-          <ion-buttons class="d-flex justify-content-end">
-            <ion-button id="selectBtn">
-              <ion-icon name="chevron-forward"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        `;
-
-        // Crear un elemento div temporal para contener los botones y registrar los eventos de clic
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = buttonsHTML;
-
-        // Agregar los eventos de clic a los botones solo si existen
-        const selectBtn = tempDiv.querySelector('#selectBtn');
-
-        if (selectBtn) {
-          selectBtn.addEventListener('click', onSelect);
-        }
-
-        return tempDiv;
-      },
-    },
-  ];
-
   async ngOnInit() {
-    // cogemos el user_id del usuario
+    // Obtenemos la ID y el nombre de usuario
     this.user_data = await this.GeolocationService.getUserID();
     this.username = await this.Supabase.getUserName(this.user_data);
-    // cogemos lo datos
+
+    // Obtenemos los formularios de la base de datos
     this.data = (await this.Supabase.getFormsUser(this.user_data)) as any[];
-    // aseguramos que se importen los datos a la tabla
+
+    // Asignamos a la variable que se muestra en el HTML
     this.results = [...this.data];
   }
 
-  ToSearch() {}
-
-  // llevamos
+  // Navegación al seleccionar una tarjeta
   OnSelect(result: any) {
     this.NavCtrl.navigateForward('/viewForm', {
       queryParams: {
@@ -160,19 +76,26 @@ export class ConfigurationLookFormsPage implements OnInit {
     });
   }
 
-  // para buscar de la lista que estara creada
+  // Buscador local
   SearchElement(event: any) {
     const query = event.target.value.trim().toLocaleLowerCase();
+
+    if (!query) {
+      this.results = [...this.data];
+      return;
+    }
+
     this.results = this.data.filter((item) => {
       const values = Object.values(item).map((value) => {
         if (typeof value === 'string') {
           return value.trim().toLocaleLowerCase();
         } else if (typeof value === 'number') {
-          return value.toString(); // Convertir el número a string
+          return value.toString();
         } else if (typeof value === 'boolean') {
-          return value ? 'aprobado' : 'rechazado'; // Convertir booleano a texto
+          // Si el usuario busca "aprobado" o "rechazado", lo filtramos también
+          return value ? 'aprobado' : 'rechazado';
         }
-        return ''; // Otros tipos de datos
+        return '';
       });
       return values.some((value) => value.includes(query));
     });
