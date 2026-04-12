@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
-import DatabaseService from '../app/Types/SupabaseService';
+import DatabaseService from '../Types/SupabaseService';
 
 @Injectable({
   providedIn: 'root'
@@ -10,12 +10,21 @@ export class Services {
   constructor(private Supabase: DatabaseService) { }
 
   // para obtener img ref y poder eliminarla en otras paginas
-  img_ref: any;
+  public img_ref: any = null;
+  public file_to_upload: any = null;
 
   // para guardar en storage y en andoroid y ios informacion temportal
   async setStorage(key: string, value: any) {
     await Preferences.set({ key: key, value: JSON.stringify(value) });
   }
+
+
+  public clearUploadData() {
+    this.img_ref = null;
+    this.file_to_upload = null;
+  }
+
+
   // para obtener en storage y en andoroid y ios informacion temportal
   async getStorage(key: string) {
     const ret = await Preferences.get({ key: key });
@@ -31,6 +40,8 @@ export class Services {
     await Preferences.remove({ key: key });
     return 0;
   }
+
+
 
 
   // comprovar la ultima actulizacion del usuario

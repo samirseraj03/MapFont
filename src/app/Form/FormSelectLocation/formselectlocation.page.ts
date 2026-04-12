@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core'; // <-- Añadido ChangeDetectorRef
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavController } from '@ionic/angular';
@@ -26,9 +26,9 @@ import { arrowBackOutline, searchOutline, locateOutline, locationOutline, arrowF
   standalone: true,
   imports: [IonContent, IonIcon, CommonModule, FormsModule, ExploreContainerComponent, TranslateModule],
 })
-export class FormSelectLocationPage implements OnInit {
+export class FormSelectLocationPage { // Quitamos el OnInit, usaremos la lógica de Ionic
   map_location: any;
-  public data = [];
+  public data: any[] = [];
   public results = [...this.data];
   public query: string = "";
   LastMarker: any;
@@ -38,33 +38,48 @@ export class FormSelectLocationPage implements OnInit {
 
   GeolocationService = new GeolocationService();
 
-  constructor(public NavCtrl: NavController, private route: ActivatedRoute, public translate: TranslateService) {
-    // Registramos los iconos para el HTML
+  constructor(
+    public NavCtrl: NavController,
+    private route: ActivatedRoute,
+    public translate: TranslateService,
+    private cdr: ChangeDetectorRef // <-- Ayuda a que el input de texto se actualice rápido
+  ) {
     addIcons({ arrowBackOutline, searchOutline, locateOutline, locationOutline, arrowForwardOutline });
   }
 
-  async ngOnInit() {
-    this.route.queryParams.subscribe(async (params) => {
-      this.image = await params['image'];
+  // ESTA ES LA CLAVE: Se ejecuta justo cuando la página ya es visible y tiene tamaño real
+  async ionViewDidEnter() {
+    this.route.queryParams.subscribe((params) => {
+      this.image = params['image'];
     });
 
-    // cogemos las primeras localizacion para poder desplegar el mapa y obtener posicion
-    await this.GeolocationService.getGeolocation();
-    // desplegamos el mapa de mapBox
+    // 1. Desplegamos el mapa INMEDIATAMENTE para no hacer esperar al usuario
     this.getMap();
+
+    // 2. Forzamos un redibujado de Mapbox para evitar el "mapa invisible"
+    setTimeout(() => {
+      if (this.map_location) {
+        this.map_location.resize();
+      }
+    }, 200);
+
+    // 3. Obtenemos la ubicación y ponemos el marcador AUTOMÁTICAMENTE
+    // Al no poner un 'await' delante de todo el bloque, la app no se congela
+    await this.SerachWithGps();
   }
 
   // obtenemos el mapa
   getMap() {
+    // Si el servicio no tiene coordenadas aún, le damos unas por defecto temporales (ej: [0,0])
+    const startLng = this.GeolocationService.longitude || -3.703790; // Madrid por defecto, pon lo que quieras
+    const startLat = this.GeolocationService.latitude || 40.416775;
+
     // desplegar el map
     this.map_location = new mapboxgl.Map({
       accessToken: environment.accessToken,
       container: 'MapaLocation',
-      style: 'mapbox://styles/mapbox/dark-v11', // Mantenemos tu estilo dark
-      center: [
-        this.GeolocationService.longitude,
-        this.GeolocationService.latitude,
-      ],
+      style: 'mapbox://styles/mapbox/dark-v11',
+      center: [startLng, startLat],
       zoom: 15.15,
     });
   }
@@ -89,6 +104,8 @@ export class FormSelectLocationPage implements OnInit {
 
   // Función para sugerir resultados
   async suggestPlaces(query: string): Promise<string[]> {
+    if (!query) return []; // Prevención de errores si el input está vacío
+
     const response: AxiosResponse = await axios.get(
       `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?access_token=${environment.accessToken}`
     );
@@ -103,7 +120,7 @@ export class FormSelectLocationPage implements OnInit {
 
   async OnSelect(event: any) {
     this.query = event.place_name;
-    this.map_location.setCenter([event.center[0], event.center[1]]);
+    this.map_location.flyTo({ center: [event.center[0], event.center[1]], essential: true }); // flyTo queda más bonito que setCenter
 
     //Guardamos lnglat
     this.lnglat = [event.center[0], event.center[1]];
@@ -113,47 +130,51 @@ export class FormSelectLocationPage implements OnInit {
       this.LastMarker.remove();
     }
     // añadir el marcador del usuario
-    this.LastMarker = new mapboxgl.Marker()
+    this.LastMarker = new mapboxgl.Marker({ color: '#22d3ee' }) // Mismo color cyan que tus botones
       .setLngLat([event.center[0], event.center[1]])
       .addTo(this.map_location);
 
     // habiltamos el boton que esta confiramado la dirrecion
     this.LocationNotIsSelected = false;
     this.data = [];
+    this.cdr.detectChanges(); // <-- Forzamos a Angular a actualizar la UI
   }
 
-  // busacar por Gps La dirrecion
+  // busacar por Gps La dirrecion (AHORA SE LLAMA AUTOMÁTICAMENTE AL INICIO)
   async SerachWithGps() {
     this.data = [];
-    await this.GeolocationService.getGeolocation();
     try {
+      await this.GeolocationService.getGeolocation();
+
+      const lng = this.GeolocationService.longitude;
+      const lat = this.GeolocationService.latitude;
+
       const response: AxiosResponse = await axios.get(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${this.GeolocationService.longitude},${this.GeolocationService.latitude}.json?access_token=${environment.accessToken}`
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${environment.accessToken}`
       );
 
-      this.query = await response.data.features[0].place_name;
-      this.map_location.setCenter([
-        this.GeolocationService.longitude,
-        this.GeolocationService.latitude,
-      ]);
+      this.query = response.data.features[0].place_name;
+
+      // Movemos el mapa a tu ubicación real
+      this.map_location.flyTo({ center: [lng, lat], essential: true });
 
       //Guardamos lnglat
-      this.lnglat = [this.GeolocationService.longitude, this.GeolocationService.latitude];
+      this.lnglat = [lng, lat];
 
       // elimnamos el marcador anterior:
       if (this.LastMarker) {
         this.LastMarker.remove();
       }
-      this.LastMarker = new mapboxgl.Marker()
-        .setLngLat([
-          this.GeolocationService.longitude,
-          this.GeolocationService.latitude,
-        ])
+      this.LastMarker = new mapboxgl.Marker({ color: '#22d3ee' }) // Color bonito
+        .setLngLat([lng, lat])
         .addTo(this.map_location);
 
       // habiltamos el boton que esta confiramado la dirrecion
       this.LocationNotIsSelected = false;
+      this.cdr.detectChanges(); // <-- Actualizamos el input con tu calle real
+
     } catch (error) {
+      console.log("Error de GPS:", error);
       await Dialog.alert({
         title: this.translate.instant('attention'),
         message: this.translate.instant('location_error_gps')
@@ -163,6 +184,8 @@ export class FormSelectLocationPage implements OnInit {
 
   // pasamos a la siguente para completar el forumulario
   LocationSuccess() {
+    (document.activeElement as HTMLElement)?.blur(); // Limpiamos el foco fantasma
+
     this.NavCtrl.navigateForward('/FormInformation', {
       queryParams: {
         Adress: this.query,

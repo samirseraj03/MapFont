@@ -14,7 +14,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 // Servicios Propios
 import GeolocationService from 'src/app/Globals/Geolocation';
 import DatabaseService from 'src/app/Types/SupabaseService';
-import { AuthenticationService } from 'src/app/authentication.service'; // Usamos este en lugar de LoginPage
+import { AuthenticationService } from 'src/app/Services/authentication.service'; // Usamos este en lugar de LoginPage
 
 // Iconos
 import { addIcons } from 'ionicons';

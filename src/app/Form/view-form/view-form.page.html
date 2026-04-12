@@ -1,107 +1,110 @@
-<ion-header [translucent]="true">
-  <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.1/mapbox-gl.js"></script>
-  <link href="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.css" rel="stylesheet" />
+<ion-header class="ion-no-border bg-white">
+  <ion-toolbar class="transparent-toolbar">
 
-  <script
-    src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
-  <link rel="stylesheet"
-    href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css"
-    type="text/css" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <ion-toolbar>
-    <ion-title>viewForm</ion-title>
     <ion-buttons slot="start">
-      <ion-button (click)="GeolocationService.GoBack(NavCtrl)">
-        <ion-icon slot="icon-only" name="arrow-back" color="Success">
-        </ion-icon>
-        <!-- Icono del botón -->
+      <ion-button (click)="GeolocationService.GoBack(NavCtrl)" class="back-button">
+        <ion-icon name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
+
+    <ion-title class="header-title">Detalles de la Fuente</ion-title>
+
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-card class="z-index-dropdown">
-    <ion-card-header class="text-start">
-      <ion-card-title class="d-flex mb-3">
-        {{ data?.watersourcesname }}
-      </ion-card-title>
+<ion-content [fullscreen]="true" class="bg-light">
 
-      <div class="row">
-        <!-- left -->
-        <div class="col">
-          <ion-list>
-            <ion-item>
-              <ion-label>
-                <h2>Id</h2>
-                <p>{{id_form}}</p>
-              </ion-label>
-            </ion-item>
+  <section class="hero-section">
+    <img *ngIf="img_ref_view_form" [src]="img_ref_view_form" alt="Foto de la fuente" class="hero-img" />
+    <img *ngIf="!img_ref_view_form" src="assets/icon/agua-potable.png" alt="Placeholder" class="hero-img placeholder" />
+    <div class="hero-gradient"></div>
+    <h1 class="hero-title">{{ data?.watersourcesname || 'Fuente sin nombre' }}</h1>
+  </section>
 
-            <ion-item>
-              <ion-label>
-                <h2>Usuario</h2>
-                <p>{{username}}</p>
-              </ion-label>
-            </ion-item>
+  <main class="content-body">
 
-            <ion-item>
-              <ion-label>
-                <h2>Nombre / descripcion Fuente</h2>
-                <p>{{data?.watersourcesname}}</p>
-                <p>{{data?.description}}</p>
-              </ion-label>
-            </ion-item>
-
-            <ion-item>
-              <ion-label>
-                <h2>LngLat / adress</h2>
-                <p>{{data?.location?.longitude}}</p>
-                <p>{{data?.location?.latitude}}</p>
-              </ion-label>
-            </ion-item>
-
-
-            <ion-label class="ion-padding">
-              <h2>Creado:</h2>
-              <p>{{GeolocationService.formatDate(data?.created_at)}}</p>
-            </ion-label>
-          </ion-list>
+    <div class="info-card">
+      <div class="info-row">
+        <div class="icon-wrapper"><ion-icon name="person-outline"></ion-icon></div>
+        <div class="info-text">
+          <p class="label">Subido por</p>
+          <p class="value">{{ username || 'Usuario Anónimo' }}</p>
         </div>
-
-        <!-- right -->
-        <div class="col-md-6">
-
-          <div class="container ">
-            <ion-item class="" style="min-width: 300px; max-width: 300px;">
-              <img *ngIf="!img_ref_view_form" class="ms-3 mt-2 d-block mw-75 h-75" alt="Silhouette of mountains"
-                src="https://ionicframework.com/docs/img/demos/card-media.png" />
-         
-
-                <img *ngIf="img_ref_view_form" class="ms-3 mt-2 d-block mw-75" alt="img"
-                  [src]="img_ref_view_form"  />
-
-          
-            </ion-item>
-          </div>
-
-          <div id="mapViewForm" class="mx-auto my-auto z-index-sticky " style="position: relative;">
-            <div id="mapViewForm" class="me-5 w-100 h-100"></div>
-          </div>
-
-          <!-- col -->
-        </div>
-
-        <!-- row -->
       </div>
-    </ion-card-header>
-  </ion-card>
 
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">viewForm</ion-title>
-    </ion-toolbar>
-  </ion-header>
+      <div class="info-row">
+        <div class="icon-wrapper"><ion-icon name="calendar-outline"></ion-icon></div>
+        <div class="info-text">
+          <p class="label">Fecha de registro</p>
+          <p class="value">{{ GeolocationService.formatDate(data?.created_at) }}</p>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <div class="icon-wrapper"><ion-icon name="location-outline"></ion-icon></div>
+        <div class="info-text">
+          <p class="label">Coordenadas</p>
+          <p class="value">{{ data?.location?.latitude | number:'1.4-4' }}, {{ data?.location?.longitude |
+            number:'1.4-4' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="map-preview-container">
+      <div id="mapViewForm" class="map-box"></div>
+
+      <div class="map-badge">
+        <ion-icon name="pin"></ion-icon> {{ data?.address ? (data?.address | slice:0:15) + '...' : 'Ubicación' }}
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="status-grid">
+      <div class="status-block">
+        <h2 class="section-subtitle">ESTADO:</h2>
+        <div class="status-item">
+          <div class="status-icon" [class.is-potable]="data?.ispotable || data?.is_potable"
+            [class.not-potable]="!(data?.ispotable || data?.is_potable)">
+            <ion-icon name="water"></ion-icon>
+          </div>
+          <span class="status-text">{{ (data?.ispotable || data?.is_potable) ? 'Potable' : 'No potable' }}</span>
+        </div>
+      </div>
+
+      <div class="status-block">
+        <h2 class="section-subtitle">ACCESIBILIDAD:</h2>
+        <div class="status-item">
+          <div class="status-icon" [class.is-available]="data?.available" [class.not-available]="!data?.available">
+            <ion-icon name="checkmark-circle-outline" *ngIf="data?.available"></ion-icon>
+            <ion-icon name="close-circle-outline" *ngIf="!data?.available"></ion-icon>
+          </div>
+          <span class="status-text">{{ data?.available ? 'Disponible' : 'No disponible' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="description-section">
+      <h2 class="section-subtitle">DESCRIPCIÓN:</h2>
+      <p class="description-text">
+        {{ data?.description || 'El usuario no proporcionó una descripción para esta fuente de agua.' }}
+      </p>
+    </div>
+
+  </main>
 </ion-content>
+
+<ion-footer class="ion-no-border bg-white">
+  <div class="bottom-actions">
+    <button class="action-btn primary-btn" (click)="NavigateTo()">
+      <ion-icon name="navigate-outline"></ion-icon>
+      NAVEGAR
+    </button>
+    <button class="action-btn secondary-btn" (click)="SaveFountain()">
+      <ion-icon name="bookmark-outline"></ion-icon>
+      GUARDAR
+    </button>
+  </div>
+</ion-footer>

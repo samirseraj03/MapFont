@@ -1,6 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from './../../environments/environment';
-import { AuthenticationService } from '../authentication.service';
+import { AuthenticationService } from '../Services/authentication.service';
 import { PostgrestQueryBuilder } from '@supabase/postgrest-js';
 import GeolocationService from '../Globals/Geolocation';
 import { Injectable } from '@angular/core';
@@ -61,7 +61,7 @@ export interface UserType {
 })
 
 export default class DatabaseService {
-  private supabase: SupabaseClient;
+  public supabase: SupabaseClient;
   private SUPABASE_URL = environment.SUPABASE_URL;
   private SUPABASE_KEY = environment.SUPABASE_KEY;
 
@@ -81,6 +81,8 @@ export default class DatabaseService {
 
     this.supabase = createClient(supabaseUrl, supabaseKey, { auth: { autoRefreshToken: false, persistSession: true } });
   }
+
+
 
   async insertUser(newUser: User): Promise<any> {
     try {
@@ -371,6 +373,8 @@ export default class DatabaseService {
     }
   }
 
+
+
   async getFormsNotAproved(): Promise<any[]> {
     try {
       const { data: forms, error } = await this.supabase
@@ -609,6 +613,9 @@ export default class DatabaseService {
   }
 
 
+
+
+
   async getSavedFoutains(user_id: any) {
     let fountains_id = [];
     let matchedFountains = [];
@@ -684,5 +691,72 @@ export default class DatabaseService {
 
   }
 
+  // Comprobar zona (Ya no es estrictamente necesario si usas solo el upsert, pero lo dejamos por seguridad)
+  async isZoneScanned(zoneId: string): Promise<boolean> {
+    try {
+      const { data, error } = await this.supabase
+        .from('scraped_zones')
+        .select('zone_id')
+        .eq('zone_id', zoneId)
+        .limit(1);
+
+      if (error) {
+        return false;
+      }
+      return data && data.length > 0;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  // Marca una zona como escaneada de forma segura (Usa Upsert para no duplicar)
+  async markZoneAsScanned(zoneId: string) {
+    try {
+      const { error } = await this.supabase
+        .from('scraped_zones')
+        .upsert([{ zone_id: zoneId }], { onConflict: 'zone_id' });
+
+      if (error) {
+        console.error('Error silencioso al guardar zona:', error);
+      }
+    } catch (error) {
+      console.error('Error guardando zona:', error);
+    }
+  }
+
+  // Inserta de forma múltiple y DEVUELVE LA DATA para que el mapa se pinte
+  async insertMultipleForms(forms: any[]) {
+    if (forms.length === 0) return null;
+
+    try {
+      const { data, error } = await this.supabase
+        .from('watersources')
+        .insert(forms)
+        .select();
+
+      if (error) {
+        console.error('Error insertando en BD (Revisa si faltan columnas):', error);
+        return null;
+      }
+      return data;
+    } catch (error) {
+      console.error('Error masivo:', error);
+      return null;
+    }
+  }
+
+  // EL SALVAVIDAS: Libera la zona si el escaneo falló a la mitad
+  async unclaimZone(zoneId: string) {
+    try {
+      await this.supabase
+        .from('scraped_zones')
+        .delete()
+        .eq('zone_id', zoneId);
+
+      console.log(`Zona ${zoneId} liberada por error en el proceso.`);
+    } catch (error) {
+      console.error('Error al liberar la zona:', error);
+    }
+  }
 
 }

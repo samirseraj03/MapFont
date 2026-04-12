@@ -13,8 +13,8 @@ import {
 // Lógica y Servicios
 import GeolocationService from 'src/app/Globals/Geolocation';
 import DatabaseService from '../../Types/SupabaseService';
-import { Services } from 'src/app/services.service';
-import { AuthenticationService } from 'src/app/authentication.service';
+import { Services } from 'src/app/Services/services.service';
+import { AuthenticationService } from 'src/app/Services/authentication.service';
 
 import { Dialog } from '@capacitor/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';

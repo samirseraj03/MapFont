@@ -5,12 +5,12 @@ import { NavController, LoadingController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 
 // Tus servicios
-import { AuthenticationService } from '../../authentication.service';
+import { AuthenticationService } from '../../Services/authentication.service';
 import DatabaseService from '../../Types/SupabaseService';
 import { LoginPage } from '../login/login.page';
 import GeolocationService from '../../Globals/Geolocation';
 import { TabsPage } from 'src/app/tabs/tabs.page';
-import { Services } from 'src/app/services.service';
+import { Services } from 'src/app/Services/services.service';
 
 // Ionic Standalone & Translate
 import { IonContent, IonInput, IonButton, IonIcon, IonToggle } from "@ionic/angular/standalone";

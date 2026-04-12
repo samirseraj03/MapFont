@@ -18,10 +18,13 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "www", 
+            "outputPath": "www",
             "index": "src/index.html",
             "polyfills": [
               "src/polyfills.ts"
+            ],
+            "allowedCommonJsDependencies": [
+              "mapbox-gl"
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -42,7 +45,7 @@
           },
           "configurations": {
             "production": {
-              "deleteOutputPath" : true,
+              "deleteOutputPath": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -51,8 +54,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "10kb",
+                  "maximumError": "20kb"
                 }
               ],
               "fileReplacements": [

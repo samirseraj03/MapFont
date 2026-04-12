@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NavController, ActionSheetController } from '@ionic/angular';
+import { NavController, ActionSheetController, LoadingController } from '@ionic/angular';
 
 // Ionic Standalone & Modulos
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
@@ -11,9 +11,10 @@ import GeolocationService from '../../Globals/Geolocation';
 import { Dialog } from '@capacitor/dialog';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
 import { Capacitor } from '@capacitor/core';
-import { Services } from 'src/app/services.service';
+import { Services } from 'src/app/Services/services.service';
+import DatabaseService from 'src/app/Types/SupabaseService'; // <-- IMPORTANTE INYECTAR ESTO
 
-// Iconos necesarios para el nuevo diseño
+// Iconos necesarios
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, cameraOutline, cloudUploadOutline, trashOutline, arrowForwardOutline } from 'ionicons/icons';
 
@@ -37,32 +38,83 @@ export class FormPage {
   constructor(
     public NavCtrl: NavController,
     private actionSheetController: ActionSheetController,
+    private loadingController: LoadingController, // <-- INYECTADO
     public Service: Services,
-    public translate: TranslateService
+    public translate: TranslateService,
+    private Supabase: DatabaseService, // <-- INYECTADO
+    private cdr: ChangeDetectorRef
   ) {
-    // Registramos los iconos para la UI
     addIcons({ arrowBackOutline, cameraOutline, cloudUploadOutline, trashOutline, arrowForwardOutline });
     this.Service.img_ref = null;
   }
 
-  // para hacer click al input cuando se hace click al boton
+  // FUNCIÓN NUEVA: Comprime la imagen usando Canvas (Solo para galería)
+  compressImage(file: File, maxWidth = 800, maxHeight = 800, quality = 0.7): Promise<File> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxWidth) {
+              height = Math.round((height *= maxWidth / width));
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width = Math.round((width *= maxHeight / height));
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name, {
+                type: 'image/jpeg',
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            } else {
+              reject(new Error('No se pudo comprimir la imagen'));
+            }
+          }, 'image/jpeg', quality);
+        };
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  }
+
   selectImage() {
     const fileInput = document.getElementById('fileItem') as HTMLInputElement;
-    // cuando se clicka el boton se haga click al inputfile
     fileInput.click();
   }
 
-  // para obtener el archivo del input
   async handleFileInput(event: any) {
     const selectedFile = event.target.files[0];
-    this.image_push = event.target.files[0];
 
     if (selectedFile && selectedFile.type.startsWith('image/')) {
-      const imgReader = new FileReader();
-      imgReader.onload = () => {
-        this.Service.img_ref = imgReader.result as string; // Asigna la URL de datos de la imagen a imgUrl
-      };
-      imgReader.readAsDataURL(selectedFile);
+      try {
+        this.image_push = await this.compressImage(selectedFile, 800, 800, 0.7);
+
+        const imgReader = new FileReader();
+        imgReader.onload = () => {
+          this.Service.img_ref = imgReader.result as string;
+        };
+        imgReader.readAsDataURL(this.image_push);
+      } catch (error) {
+        console.error('Error al comprimir:', error);
+      }
     } else {
       await Dialog.alert({
         title: this.translate.instant('attention'),
@@ -71,55 +123,29 @@ export class FormPage {
     }
   }
 
-  // cunado la imagen esta succesed , ya se puede subir
-  async ImageSuccess() {
-    if (this.Service.img_ref) {
-      this.NavCtrl.navigateForward('/location', {
-        queryParams: {
-          image: this.image_push,
-        },
-      });
-    } else {
-      await Dialog.alert({
-        title: this.translate.instant('attention'),
-        message: this.translate.instant('upload_photo_to_continue')
-      });
-    }
-  }
-
-  // para eliminar la foto y poder subir otra
-  Delete() {
-    this.Service.img_ref = null;
-    this.image_push = null; // También limpiamos el archivo a subir por seguridad
-
-    // Limpiamos el valor del input para que permita subir la misma foto de nuevo si el usuario quiere
-    const fileInput = document.getElementById('fileItem') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
-  }
-
-
   async takePicture() {
     try {
       const image = await Camera.getPhoto({
-        quality: 100,
+        quality: 60, // Nativo = Cero gasto extra de memoria
+        width: 800,
+        allowEditing: false, // <-- Ayuda a evitar cuelgues en Android
         resultType: CameraResultType.Uri,
-        source: CameraSource.Camera, // Abrir la cámara
+        source: CameraSource.Camera,
       });
 
-      // Crear una URL de la imagen
-      this.Service.img_ref = image.webPath; // Usar webPath para mostrar en el navegador
+      this.Service.img_ref = image.webPath;
 
-      // Fix: Convertir la imagen capturada a un objeto File para subirlo
       if (image.webPath) {
         const response = await fetch(image.webPath);
         const blob = await response.blob();
-        const filename = `camera_capture_${new Date().getTime()}.${image.format}`;
-        this.image_push = new File([blob], filename, { type: blob.type });
+        const filename = `camera_capture_${new Date().getTime()}.jpeg`;
+
+        // 👇 CLAVE: Guardamos el archivo directo SIN pasar por compressImage
+        this.image_push = new File([blob], filename, { type: blob.type || 'image/jpeg' });
       }
 
     } catch (error) {
       console.error(error);
-      // Solo mostramos el error si el usuario NO canceló la cámara
       if (String(error).indexOf('User cancelled photos app') === -1) {
         await Dialog.alert({
           title: this.translate.instant('attention'),
@@ -129,46 +155,93 @@ export class FormPage {
     }
   }
 
-  // dejar que decida el usuario si quiere tomar una foto o elegir desde su galeria 
+  async ImageSuccess() {
+    (document.activeElement as HTMLElement)?.blur();
+
+    if (!this.image_push) {
+      await Dialog.alert({
+        title: this.translate.instant('attention'),
+        message: this.translate.instant('upload_photo_to_continue')
+      });
+      return;
+    }
+
+    // 1. Creamos una variable segura para el loader
+    let loadingElement: HTMLIonLoadingElement | null = null;
+
+    try {
+      // 2. Creamos y mostramos el loader
+      loadingElement = await this.loadingController.create({
+        message: this.translate.instant('uploading_photo') || 'Subiendo imagen...',
+        spinner: 'circles',
+        backdropDismiss: false // Evita que el usuario lo cierre tocando fuera
+      });
+      await loadingElement.present();
+
+      // 3. TRUCO VISUAL: Obligamos a la app a esperar medio segundo (500ms).
+      // Esto asegura que la animación del loader termine y el usuario vea que está cargando.
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // 4. Subimos a Supabase
+      const imagePath = await this.Supabase.InsertToStoarge(this.image_push);
+
+      if (imagePath) {
+        // 5. CERRAMOS el loader ANTES de navegar
+        if (loadingElement) {
+          await loadingElement.dismiss();
+          loadingElement = null; // Lo vaciamos por seguridad
+        }
+
+        // 6. Navegamos pasando el nombre
+        this.NavCtrl.navigateForward('/location', {
+          queryParams: {
+            image: imagePath
+          }
+        });
+      } else {
+        throw new Error("No se pudo subir la imagen a Supabase");
+      }
+
+    } catch (error) {
+      console.error("Error subiendo foto:", error);
+
+      // Si hay error, también debemos cerrar el loader
+      if (loadingElement) {
+        await loadingElement.dismiss();
+      }
+
+      await Dialog.alert({
+        title: 'Error',
+        message: 'No se pudo subir la foto. Inténtalo de nuevo.'
+      });
+    }
+    // Nota: He quitado el bloque "finally" porque a veces choca con la navegación de Ionic.
+  }
+
+  Delete() {
+    this.Service.img_ref = null;
+    this.image_push = null;
+    const fileInput = document.getElementById('fileItem') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+  }
+
   async SelectInput() {
     if (Capacitor.isNativePlatform() === true) {
       const actionSheet = await this.actionSheetController.create({
         header: this.translate.instant('select_option'),
         buttons: [
-          {
-            text: this.translate.instant('take_photo'),
-            handler: () => {
-              this.takePicture();
-            }
-          },
-          {
-            text: this.translate.instant('upload_from_gallery'),
-            handler: () => {
-              this.selectImage();
-            }
-          },
-          {
-            text: this.translate.instant('cancel'),
-            role: 'cancel'
-          }
+          { text: this.translate.instant('take_photo'), handler: () => { this.takePicture(); } },
+          { text: this.translate.instant('upload_from_gallery'), handler: () => { this.selectImage(); } },
+          { text: this.translate.instant('cancel'), role: 'cancel' }
         ]
       });
       await actionSheet.present();
-    }
-    else {
+    } else {
       const actionSheet = await this.actionSheetController.create({
         header: this.translate.instant('select_option'),
         buttons: [
-          {
-            text: this.translate.instant('upload_from_gallery'),
-            handler: () => {
-              this.selectImage();
-            }
-          },
-          {
-            text: this.translate.instant('cancel'),
-            role: 'cancel'
-          }
+          { text: this.translate.instant('upload_from_gallery'), handler: () => { this.selectImage(); } },
+          { text: this.translate.instant('cancel'), role: 'cancel' }
         ]
       });
       await actionSheet.present();

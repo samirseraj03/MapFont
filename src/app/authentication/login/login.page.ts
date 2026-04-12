@@ -2,10 +2,10 @@ import { Component, Injectable, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavController, LoadingController, ToastController } from '@ionic/angular'; // <-- Añadido ToastController
-import { AuthenticationService } from '../../authentication.service';
+import { AuthenticationService } from '../../Services/authentication.service';
 import { ActivatedRoute } from '@angular/router';
 import { TabsPage } from 'src/app/tabs/tabs.page';
-import { Services } from 'src/app/services.service';
+import { Services } from 'src/app/Services/services.service';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
 
 import {

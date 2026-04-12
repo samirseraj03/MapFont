@@ -8,7 +8,7 @@ import { ActivatedRoute } from '@angular/router';
 import GeolocationService from '../../Globals/Geolocation';
 import DatabaseService from 'src/app/Types/SupabaseService';
 import { Forms } from 'src/app/Types/SupabaseService';
-import { Services } from 'src/app/services.service';
+import { Services } from 'src/app/Services/services.service';
 
 // Ionic Standalone Imports actualizados
 import {
@@ -42,14 +42,13 @@ export class FormInsertInfromationPage implements OnInit {
 
   @ViewChild('myForm') myForm!: NgForm;
 
-  // Al inicializar predefinimos booleanos para los Toggles
   formData: any = {
     is_potable: false,
     enabled: true
   };
 
   lnglat: any;
-  image: any;
+  image: string = ''; // <-- Ahora es un string (el path devuelto por Supabase)
   Adress: any;
 
   GeolocationService = new GeolocationService();
@@ -60,26 +59,24 @@ export class FormInsertInfromationPage implements OnInit {
     private Service: Services,
     private Supabase: DatabaseService
   ) {
-    // Registrar los iconos del diseño
     addIcons({ arrowBackOutline, createOutline, waterOutline, calendarOutline, earthOutline, checkmarkDoneOutline });
   }
 
   ngOnInit() {
     this.route.queryParams.subscribe(async (params) => {
+      // Recogemos el texto con el path/nombre de la imagen
       this.image = await params['image'];
       this.lnglat = await params['lnglat'];
       this.Adress = await params['Adress'];
     });
   }
 
-  // Método para recopilar la información del formulario
   async onSubmit() {
-    this.ToDataBase();
+    await this.ToDataBase();
     this.GoSuccess();
   }
 
   async ToDataBase() {
-    // preparamos las variables a insertar para el formulario
     let user_id = await this.GeolocationService.getUserID();
     let data_user = await this.Supabase.getUser(user_id);
 
@@ -88,29 +85,26 @@ export class FormInsertInfromationPage implements OnInit {
       "longitude": this.lnglat[0],
     };
 
-    let image = await this.Supabase.InsertToStoarge(this.image);
-
+    // 👇 LA IMAGEN YA ESTÁ EN STORAGE, SOLO GUARDAMOS LOS DATOS 👇
     let form: Forms = {
       username: data_user[0].username,
       watersourcesname: this.formData.watersourcesname,
       created_at: new Date(),
       location: this.lnglat,
-      photo: image,
+      photo: this.image, // Asignamos directamente la ruta/nombre
       address: this.Adress,
       description: this.formData.description,
-      is_potable: this.formData.is_potable, // Ahora se pasa como boolean directamente (true/false) gracias al Toggle
+      is_potable: this.formData.is_potable === true || this.formData.is_potable === 'true',
       watersourcetype: this.formData.watersourcetype,
       approved: null,
       autencationUserID: user_id
     };
 
-    // insertamos los datos a la base de datos
-    this.Supabase.insertForm(form);
+    await this.Supabase.insertForm(form);
   }
 
-  // para mostrar al usuario pagina completada e ir al inicio
   GoSuccess() {
-    // eliminamos la variable imgRef service y la ponemos a null
+    // Si tenías variables en el servicio, las limpias
     this.Service.img_ref = null;
 
     this.NavCtrl.navigateForward('/Success', {
