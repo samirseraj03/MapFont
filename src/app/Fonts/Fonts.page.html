@@ -9,6 +9,11 @@
     </div>
   </header>
 
+  <div class="loading-badge" *ngIf="isFetchingOSM">
+    <ion-spinner name="crescent"></ion-spinner>
+    <span>Buscando fuentes...</span>
+  </div>
+
   <button *ngIf="!UpdatedMap" class="refresh-btn" (click)="UpdateMap()">
     <ion-icon name="refresh-outline"></ion-icon>
     <span>Actualizar Mapa</span>

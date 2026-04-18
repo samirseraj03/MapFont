@@ -48,6 +48,48 @@
   }
 }
 
+/* 🚀 Píldora de Carga (Spinner) */
+.loading-badge {
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(22, 24, 28, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(108, 214, 227, 0.2);
+  color: #e2e2e5;
+  padding: 10px 20px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  pointer-events: none;
+  animation: fadeInDown 0.3s ease-out;
+}
+
+.loading-badge ion-spinner {
+  width: 20px;
+  height: 20px;
+  color: #6cd6e3;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
 /* Botón de actualizar */
 .refresh-btn {
   position: absolute;
@@ -86,7 +128,6 @@ ion-modal.glass-bottom-sheet {
   -webkit-backdrop-filter: blur(20px);
 }
 
-/* Permite que el CSS alcance el interior del modal inyectado por Angular */
 ::ng-deep {
 
   .drag-handle-container {
@@ -103,12 +144,10 @@ ion-modal.glass-bottom-sheet {
     }
   }
 
-  /* Fondo transparente para el área de scroll nativa */
   .modal-scroll-area {
     --background: transparent;
   }
 
-  /* Footer transparente sin bordes nativos */
   ion-footer.transparent-footer {
     background: linear-gradient(to top, rgba(22, 24, 28, 1) 50%, rgba(22, 24, 28, 0) 100%);
     border: none;
@@ -155,8 +194,6 @@ ion-modal.glass-bottom-sheet {
     }
   }
 
-  /* Ajustamos la fila para que soporte 3 tarjetas. 
-     Usamos auto-fit para que se adapten al ancho de la pantalla sin romperse */
   .status-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
@@ -165,7 +202,6 @@ ion-modal.glass-bottom-sheet {
     .status-item {
       display: flex;
       flex-direction: column;
-      /* Apilamos el icono y el texto para que quepan mejor */
       align-items: center;
       justify-content: center;
       gap: 8px;
@@ -180,11 +216,9 @@ ion-modal.glass-bottom-sheet {
         color: #e2e2e5;
         font-weight: 600;
         font-size: 0.75rem;
-        /* Letra un poco más pequeña para que no se corte */
         line-height: 1.1;
       }
 
-      /* Estilos nativos para los círculos de iconos */
       .icon-circle {
         width: 32px;
         height: 32px;
@@ -205,7 +239,6 @@ ion-modal.glass-bottom-sheet {
           color: #690005;
         }
 
-        /* Estilo base para el botón de guardar */
         &.save-icon {
           background: rgba(255, 255, 255, 0.1);
           color: white;
@@ -213,7 +246,6 @@ ion-modal.glass-bottom-sheet {
         }
       }
 
-      /* Efecto táctil para la tarjeta de guardar */
       &.clickable-card {
         cursor: pointer;
 
@@ -222,17 +254,13 @@ ion-modal.glass-bottom-sheet {
         }
       }
 
-      /* ESTADO: CUANDO YA ESTÁ GUARDADA */
       &.active-saved {
         background: rgba(108, 214, 227, 0.05);
-        /* Fondo azulado muy tenue */
         border-color: rgba(108, 214, 227, 0.3);
 
         .save-icon {
           background: #6cd6e3;
-          /* Cian vibrante */
           color: #00363c;
-          /* Letra oscura para contraste */
           box-shadow: 0 0 15px rgba(108, 214, 227, 0.4);
         }
 
@@ -243,7 +271,6 @@ ion-modal.glass-bottom-sheet {
     }
   }
 
-  /* ESTILOS PARA LA NUEVA TARJETA DE DIRECCIÓN NAVEGABLE */
   .nav-card {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -276,7 +303,6 @@ ion-modal.glass-bottom-sheet {
     }
   }
 
-  /* Márgenes para separar secciones y dar "respiro" al diseño */
   .divider {
     border-color: rgba(255, 255, 255, 0.05);
     margin: 32px 0;

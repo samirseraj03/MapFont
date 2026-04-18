@@ -1,9 +1,9 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  IonHeader, IonContent, IonButton, IonIcon, IonModal, IonFooter
+  IonHeader, IonContent, IonButton, IonIcon, IonModal, IonFooter, IonSpinner
 } from '@ionic/angular/standalone';
-import { NavController, ActionSheetController } from '@ionic/angular';
+import { NavController, ActionSheetController, ToastController } from '@ionic/angular';
 import { Browser } from '@capacitor/browser';
 import { Preferences } from '@capacitor/preferences';
 import { TranslateService, TranslateModule } from '@ngx-translate/core';
@@ -24,7 +24,7 @@ import { waterOutline, refreshOutline, locationOutline, navigateOutline, bookmar
   styleUrls: ['Fonts.page.scss'],
   standalone: true,
   imports: [
-    IonHeader, IonContent, IonButton, IonIcon, IonModal, IonFooter, CommonModule, TranslateModule
+    IonHeader, IonContent, IonButton, IonIcon, IonModal, IonFooter, IonSpinner, CommonModule, TranslateModule
   ],
 })
 export class fontsPage {
@@ -38,11 +38,11 @@ export class fontsPage {
 
   isModalOpen: boolean = false;
   selectedFountain: any = null;
-  isOSMBlocked: boolean = false;
-  isFetchingOSM: boolean = false; // 👈 NUEVO: Evita que se solapen las peticiones
 
-  // Variable para el freno de mano del mapa
+  isOSMBlocked: boolean = false;
+  isFetchingOSM: boolean = false;
   moveTimeout: any;
+  isMapMoving: boolean = false;
 
   GeolocationService = new GeolocationService();
 
@@ -59,9 +59,22 @@ export class fontsPage {
     public translate: TranslateService,
     private cdr: ChangeDetectorRef,
     private Supabase: DatabaseService,
-    private osmService: OsmService
+    private osmService: OsmService,
+    private toastCtrl: ToastController // 🚀 Inyectado para notificaciones
   ) {
     addIcons({ waterOutline, refreshOutline, locationOutline, navigateOutline, bookmarkOutline, bookmark, water, checkmark, chevronForward });
+  }
+
+  // 🚀 Función Helper para los mensajes Toast
+  async showFeedback(message: string, color: 'success' | 'warning' | 'danger' | 'dark' = 'dark') {
+    const toast = await this.toastCtrl.create({
+      message: message,
+      duration: 2500,
+      position: 'bottom',
+      color: color,
+      cssClass: 'custom-map-toast'
+    });
+    await toast.present();
   }
 
   ionViewDidEnter() {
@@ -133,7 +146,7 @@ export class fontsPage {
 
         this.map.addSource('watersources', {
           type: 'geojson',
-          data: { type: 'FeatureCollection', features: this.geojson.features },
+          data: { type: 'FeatureCollection', features: this.geojson?.features || [] },
           cluster: true,
           clusterMaxZoom: 14,
           clusterRadius: 80,
@@ -216,12 +229,27 @@ export class fontsPage {
         this.map.on('mouseenter', 'unclustered-point', () => { this.map.getCanvas().style.cursor = 'pointer'; });
         this.map.on('mouseleave', 'unclustered-point', () => { this.map.getCanvas().style.cursor = ''; });
 
-        // ESCUCHADOR CON FRENO DE MANO (1 SEGUNDO DE ESPERA)
-        this.map.on('moveend', () => {
+        this.map.on('movestart', () => {
+          this.isMapMoving = true;
           clearTimeout(this.moveTimeout);
+        });
+
+        this.map.on('zoomstart', () => {
+          this.isMapMoving = true;
+          clearTimeout(this.moveTimeout);
+        });
+
+        this.map.on('moveend', () => {
+          this.isMapMoving = false;
+          clearTimeout(this.moveTimeout);
+
+          if (this.map.getZoom() < 13) return;
+
           this.moveTimeout = setTimeout(() => {
-            this.checkAndFetchOSM();
-          }, 1000);
+            if (!this.isMapMoving && !this.isFetchingOSM) {
+              this.checkAndFetchOSM();
+            }
+          }, 1500);
         });
 
       });
@@ -230,41 +258,29 @@ export class fontsPage {
     }
   }
 
-  // EL CEREBRO DEFINITIVO
   async checkAndFetchOSM() {
     if (!this.map || !this.geojson) return;
 
-    // 🚨 1. FRENO DOBLE: Si estamos castigados, o si ya está buscando, abortamos.
-    if (this.isOSMBlocked || this.isFetchingOSM) {
-      return;
-    }
+    if (this.isOSMBlocked || this.isFetchingOSM) return;
+    if (this.map.getZoom() < 13) return;
 
-    if (this.map.getZoom() < 14.5) return;
-
-    // Ponemos el candado para que no entren más peticiones si movemos el mapa rápido
     this.isFetchingOSM = true;
 
     try {
       const center = this.map.getCenter();
 
-      // 🚨 2. VOLVEMOS A 2 DECIMALES (Cuadrículas de 1.1km que encajan con tu red de 500m)
       const latZone = center.lat.toFixed(2);
       const lngZone = center.lng.toFixed(2);
       const zoneId = `${latZone}_${lngZone}`;
 
-      // 🚨 3. EL GUARDIA DE SEGURIDAD
       const alreadyScanned = await this.Supabase.isZoneScanned(zoneId);
       if (alreadyScanned) {
-        console.log(`Zona ${zoneId} ya visitada hace poco. Saltando...`);
         return;
       }
 
-      // Si es nueva, la anotamos
       await this.Supabase.markZoneAsScanned(zoneId);
 
-      console.log(`¡Zona ${zoneId} reservada con éxito! Buscando en OSM (Radio 500m)...`);
-
-      const offset = 0.0045; // 500 metros
+      const offset = 0.01;
       const south = center.lat - offset;
       const north = center.lat + offset;
       const west = center.lng - offset;
@@ -273,80 +289,83 @@ export class fontsPage {
       const rawOsmFountains = await this.osmService.fetchFountainsInBounds(south, west, north, east);
 
       if (rawOsmFountains === null) {
-        console.log("OSM falló (Posible Bloqueo 429). Liberando zona y aplicando castigo de 1 minuto.");
         await this.Supabase.unclaimZone(zoneId);
-
         this.isOSMBlocked = true;
+
+        // 🚀 Mensaje de error/bloqueo
+        this.showFeedback('Servidores de mapa ocupados. Pausa temporal.', 'danger');
+
         setTimeout(() => {
           this.isOSMBlocked = false;
-          console.log("✅ Castigo levantado. OSM vuelve a estar disponible.");
-        }, 60000);
+        }, 10000);
         return;
       }
 
       if (rawOsmFountains.length === 0) {
-        console.log("La consulta fue un éxito, pero no hay fuentes en esta zona (Desierto).");
+        // 🚀 Mensaje de zona vacía
+        this.showFeedback('No se encontraron fuentes nuevas en esta zona', 'warning');
         return;
       }
 
-      if (rawOsmFountains.length > 0) {
-        const uniqueFountains = rawOsmFountains.filter((osmFountain: any) => {
-          const isDuplicate = this.geojson.features.some((localFeature: any) => {
-            const localLng = localFeature.geometry.coordinates[0];
-            const localLat = localFeature.geometry.coordinates[1];
+      const uniqueFountains = rawOsmFountains.filter((osmFountain: any) => {
+        const isDuplicate = this.geojson.features.some((localFeature: any) => {
+          const localLng = localFeature.geometry.coordinates[0];
+          const localLat = localFeature.geometry.coordinates[1];
 
-            const diffLat = Math.abs(localLat - osmFountain.location.latitude);
-            const diffLng = Math.abs(localLng - osmFountain.location.longitude);
+          const diffLat = Math.abs(localLat - osmFountain.location.latitude);
+          const diffLng = Math.abs(localLng - osmFountain.location.longitude);
 
-            return diffLat < 0.00002 && diffLng < 0.00002; // Radar a 2 metros
-          });
-          return !isDuplicate;
+          return diffLat < 0.00002 && diffLng < 0.00002;
         });
+        return !isDuplicate;
+      });
 
-        if (uniqueFountains.length > 0) {
-          console.log(`Guardando ${uniqueFountains.length} fuentes únicas nuevas...`);
+      if (uniqueFountains.length > 0) {
+        const insertedFountains = await this.Supabase.insertMultipleForms(uniqueFountains);
 
-          const insertedFountains = await this.Supabase.insertMultipleForms(uniqueFountains);
-
-          if (!insertedFountains) {
-            console.log("Supabase falló al insertar. Liberando zona...");
-            await this.Supabase.unclaimZone(zoneId);
-            return;
-          }
-
-          const newFeatures = insertedFountains.map((element: any) => ({
-            type: 'Feature',
-            geometry: { type: 'Point', coordinates: [element.location.longitude, element.location.latitude] },
-            properties: {
-              id: element.id,
-              name: element.name,
-              available: element.available,
-              description: element.description,
-              ispotable: element.ispotable,
-              photo: element.photo,
-              address: element.address,
-            }
-          }));
-
-          const updatedFeatures = [...this.geojson.features, ...newFeatures];
-
-          this.geojson = {
-            type: 'FeatureCollection',
-            features: updatedFeatures
-          };
-
-          if (this.map.getSource('watersources')) {
-            (this.map.getSource('watersources') as mapboxgl.GeoJSONSource).setData(this.geojson);
-          }
-
-          this.setStorageCache(this.geojson);
-        } else {
-          console.log("Todas las fuentes de OSM ya estaban registradas (El radar funcionó).");
+        if (!insertedFountains) {
+          await this.Supabase.unclaimZone(zoneId);
+          this.showFeedback('Error al guardar las fuentes encontradas', 'danger');
+          return;
         }
+
+        const newFeatures = insertedFountains.map((element: any) => ({
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [element.location.longitude, element.location.latitude] },
+          properties: {
+            id: element.id,
+            name: element.name,
+            available: element.available,
+            description: element.description,
+            ispotable: element.ispotable,
+            photo: element.photo,
+            address: element.address,
+          }
+        }));
+
+        this.geojson = {
+          type: 'FeatureCollection',
+          features: [...this.geojson.features, ...newFeatures]
+        };
+
+        if (this.map.getSource('watersources')) {
+          (this.map.getSource('watersources') as mapboxgl.GeoJSONSource).setData(this.geojson);
+        }
+
+        this.setStorageCache(this.geojson);
+
+        // 🚀 Mensaje de éxito
+        this.showFeedback(`¡${uniqueFountains.length} fuentes nuevas añadidas!`, 'success');
+
+      } else {
+        // 🚀 Mensaje de que ya lo tenías
+        this.showFeedback('Las fuentes de esta zona ya están en tu mapa', 'dark');
       }
+
+    } catch (error) {
+      console.error("Error inesperado al buscar fuentes en OSM:", error);
+      this.showFeedback('Ocurrió un error inesperado al buscar', 'danger');
     } finally {
-      // 🚨 IMPORTANTE: Esto se ejecuta SIEMPRE al final, haya éxito o haya error.
-      // Quita el candado para permitir que la app escanee la siguiente zona.
       this.isFetchingOSM = false;
     }
   }
@@ -434,15 +453,12 @@ export class fontsPage {
     return geojson;
   }
 
-  // RECARGA SEGURA (No borra caché a lo bruto, no cierra sesión)
   async UpdateMap() {
     try {
       console.log("Actualizando mapa manualmente...");
-
       let watersources = await this.Supabase.getWaterSources();
 
       if (Array.isArray(watersources) && watersources.length > 0) {
-
         const freshGeojson = { type: 'FeatureCollection', features: [] as any[] };
 
         watersources.forEach((element) => {
@@ -464,7 +480,6 @@ export class fontsPage {
         }
 
         await this.setStorageCache(this.geojson);
-
         this.UpdatedMap = true;
         console.log("¡Mapa actualizado con éxito!");
       }
