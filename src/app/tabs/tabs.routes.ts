@@ -1,66 +1,69 @@
 import { Routes } from '@angular/router';
 import { TabsPage } from './tabs.page';
+import { authGuard } from '../core/guards/auth.guard';
 
 export const routes: Routes = [
   {
     path: 'tabs',
     component: TabsPage,
     children: [
+      // 🌍 Ruta pública — El mapa es accesible sin login
       {
         path: 'fonts',
         loadComponent: () =>
-          import('../Fonts/Fonts.page').then((m) => m.fontsPage),
+          import('../pages/map/Fonts.page').then((m) => m.fontsPage),
       },
+
+      // 🔒 Rutas protegidas — Requieren autenticación
       {
         path: 'form',
+        canActivate: [authGuard],
         loadComponent: () =>
-          import('../Form/FormUploadImage/form.page').then((m) => m.FormPage),
+          import('../pages/form/FormUploadImage/form.page').then((m) => m.FormPage),
       },
       {
         path: 'configuration-tab',
-        loadComponent: () => import('../ConfigurationPage/configuration-tab/configuration-tab.page').then( m => m.ConfigurationTabPage)
+        canActivate: [authGuard],
+        loadComponent: () => import('../pages/configuration/configuration-tab/configuration-tab.page').then( m => m.ConfigurationTabPage)
       },
       {
         path: 'configuration',
+        canActivate: [authGuard],
         loadComponent: () =>
-          import('../ConfigurationPage/ConfigurationUser/ConfigurationUser.page').then((m) => m.ConfigurationUserPage),
+          import('../pages/configuration/ConfigurationUser/ConfigurationUser.page').then((m) => m.ConfigurationUserPage),
       },
       {
         path: 'lookforms',
+        canActivate: [authGuard],
         loadComponent: () =>
-          import('../ConfigurationPage/configuration-look-forms/configuration-look-forms.page').then((m) => m.ConfigurationLookFormsPage),
+          import('../pages/configuration/configuration-look-forms/configuration-look-forms.page').then((m) => m.ConfigurationLookFormsPage),
       },
       {
         path: 'security',
-        loadComponent: () => import('../ConfigurationPage/ConfigurationSecurity/configuration-security.page').then( m => m.ConfigurationSecurityPage)
+        canActivate: [authGuard],
+        loadComponent: () => import('../pages/configuration/ConfigurationSecurity/configuration-security.page').then( m => m.ConfigurationSecurityPage)
       },
       {
         path: 'donation',
-        loadComponent: () => import('../ConfigurationPage/configuration-donation/configuration-donation.page').then( m => m.ConfigurationDonationPage)
-      },
-      {
-        path: 'lookforms',
-        loadComponent: () => import('../ConfigurationPage/configuration-look-forms/configuration-look-forms.page').then( m => m.ConfigurationLookFormsPage)
+        canActivate: [authGuard],
+        loadComponent: () => import('../pages/configuration/configuration-donation/configuration-donation.page').then( m => m.ConfigurationDonationPage)
       },
       {
         path: 'favorites',
-        loadComponent: () => import('../ConfigurationPage/configuration-fonts-saved/configuration-fonts-saved.page').then( m => m.ConfigurationFontsSavedPage)
-      },
-      // {
-      //   path: 'confirmation',
-      //   loadComponent: () => import('../Form/confirmation-form/confirmation-form.page').then( m => m.ConfirmationFormPage)
-      // },
-      {
-        path: 'register',
-        loadComponent: () => import('../authentication/register/register.page').then( m => m.RegisterPage)
+        canActivate: [authGuard],
+        loadComponent: () => import('../pages/configuration/configuration-fonts-saved/configuration-fonts-saved.page').then( m => m.ConfigurationFontsSavedPage)
       },
 
+      // 🔓 Rutas de autenticación — Accesibles sin login
+      {
+        path: 'register',
+        loadComponent: () => import('../pages/auth/register/register.page').then( m => m.RegisterPage)
+      },
       {
         path: 'login',
-        loadComponent: () => import('../authentication/login/login.page').then( m => m.LoginPage)
+        loadComponent: () => import('../pages/auth/login/login.page').then( m => m.LoginPage)
       },
-      
-      
+
       {
         path: '',
         redirectTo: '/tabs/fonts',

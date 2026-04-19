@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import {
   IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel
 } from '@ionic/angular/standalone';
-import { Preferences } from '@capacitor/preferences';
+import { StorageService } from '../core/services/storage.service';
+import { AuthStateService } from '../core/services/auth-state.service';
 import { TranslateModule } from '@ngx-translate/core';
+import { NavController } from '@ionic/angular';
 
-// Iconos minimalistas para la navegación
 import { addIcons } from 'ionicons';
 import { mapOutline, addOutline, personOutline } from 'ionicons/icons';
 
@@ -22,29 +23,37 @@ import { mapOutline, addOutline, personOutline } from 'ionicons/icons';
 })
 export class TabsPage implements OnInit {
   public environmentInjector = inject(EnvironmentInjector);
-  public isLogin: boolean = false; // Tipado correcto
 
-  constructor() {
-    // Solo cargamos los iconos que realmente usamos
+  /** Expone el estado de login desde AuthStateService */
+  get isLogin(): boolean {
+    return this.authState.isLogin;
+  }
+  set isLogin(val: boolean) {
+    this.authState.isLogin = val;
+  }
+
+  constructor(
+    private storage: StorageService,
+    private authState: AuthStateService,
+    private navCtrl: NavController
+  ) {
     addIcons({ mapOutline, addOutline, personOutline });
   }
 
   async ngOnInit() {
-    this.isLogin = await this.checkLoggedIn();
+    this.authState.isLogin = await this.checkLoggedIn();
   }
 
   async checkLoggedIn(): Promise<boolean> {
-    const token = await this.getStorage('session');
-    // Si hay token devuelve true, si no, false. Mucho más limpio.
+    const token = await this.storage.get('session');
     return !!token;
   }
 
-  async getStorage(key: string) {
-    const ret = await Preferences.get({ key: key });
-    if (ret.value === null) {
-      return null;
-    } else {
-      return JSON.parse(ret.value);
-    }
+  /**
+   * Redirige a login guardando la ruta deseada para volver después del login.
+   */
+  goToLoginWithIntent(intendedRoute: string) {
+    this.authState.intendedRoute = intendedRoute;
+    this.navCtrl.navigateForward('/tabs/login');
   }
 }

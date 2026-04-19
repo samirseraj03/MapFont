@@ -1,0 +1,854 @@
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { environment } from './../../../environments/environment';
+import { AuthenticationService } from '../services/authentication.service';
+import { PostgrestQueryBuilder } from '@supabase/postgrest-js';
+import GeolocationService from '../utils/Geolocation';
+import { Injectable } from '@angular/core';
+
+export interface User {
+  id?: number;
+  location: any;
+  username: string;
+  email: string;
+  name: string;
+  lastname: string;
+  number: number;
+  address: string;
+  photo?: any;
+  password: string;
+  autencationUserID: string;
+  language: string;
+}
+
+export interface WaterSources {
+  id?: number;
+  location: any;
+  name: string;
+  address: string;
+  ispotable: boolean;
+  available: boolean;
+  created_at: any;
+  photo: string;
+  description: string;
+  watersourcetype: string
+  updated_at: Date
+
+}
+
+export interface Forms {
+  id?: number;
+  username: string;
+  watersourcesname: string;
+  created_at: any;
+  location: any;
+  photo: string;
+  address: string;
+  description: string;
+  is_potable: boolean;
+  watersourcetype: string;
+  approved: boolean | null;
+  autencationUserID: string;
+}
+
+export interface UserType {
+  id?: number;
+  admin_role: boolean;
+  user_role: boolean;
+  autencationUserID?: string;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+
+export default class DatabaseService {
+  // ⚠️ TODO: Hacer privado cuando todos los componentes usen los métodos de auth de abajo
+  public supabase: SupabaseClient;
+  private SUPABASE_URL = environment.SUPABASE_URL;
+  private SUPABASE_KEY = environment.SUPABASE_KEY;
+
+  // Nota rápida: Ahora usa DI correctamente gracias a @Injectable en GeolocationService
+  constructor(private geolocationService: GeolocationService) {
+    const supabaseUrl = this.SUPABASE_URL;
+    const supabaseKey = this.SUPABASE_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error(
+        'Las variables de entorno SUPABASE_URL y SUPABASE_KEY deben estar definidas en el archivo .env'
+      );
+    }
+
+    this.supabase = createClient(supabaseUrl, supabaseKey, { auth: { autoRefreshToken: false, persistSession: true } });
+  }
+
+  // ═══════════════════════════════════════════
+  // 🔐 MÉTODOS DE AUTENTICACIÓN (encapsulados)
+  // ═══════════════════════════════════════════
+
+  /**
+   * Obtiene la sesión activa del usuario.
+   * Úsalo en guards y componentes en lugar de acceder a supabase.auth directamente.
+   */
+  async getSession() {
+    return this.supabase.auth.getSession();
+  }
+
+  /**
+   * Inicia sesión con email y contraseña.
+   */
+  async signIn(email: string, password: string) {
+    return this.supabase.auth.signInWithPassword({ email, password });
+  }
+
+  /**
+   * Registra un nuevo usuario.
+   */
+  async signUp(email: string, password: string) {
+    return this.supabase.auth.signUp({ email, password });
+  }
+
+  /**
+   * Cierra la sesión del usuario actual.
+   */
+  async signOut() {
+    return this.supabase.auth.signOut();
+  }
+
+  /**
+   * Actualiza datos del usuario autenticado (ej: contraseña).
+   */
+  async updateAuthUser(data: any) {
+    return this.supabase.auth.updateUser(data);
+  }
+
+  /**
+   * Inicia sesión con Google OAuth.
+   * Supabase redirige al proveedor y luego vuelve a la app.
+   * En web usa redirect, en nativo se puede usar @capacitor/browser.
+   */
+  async signInWithGoogle() {
+    return this.supabase.auth.signInWithOAuth({
+      provider: 'google'
+    });
+  }
+
+  /**
+   * Escucha cambios de autenticación (para capturar el retorno de OAuth).
+   * Devuelve la suscripción para poder cancelarla después.
+   */
+  onAuthStateChange(callback: (event: string, session: any) => void) {
+    return this.supabase.auth.onAuthStateChange(callback);
+  }
+
+  /**
+   * Comprueba si un usuario ya existe en la tabla 'users' por su auth ID.
+   * Útil para auto-registrar usuarios de Google OAuth.
+   */
+  async userExistsInDB(authUserId: string): Promise<boolean> {
+    const { data, error } = await this.supabase
+      .from('users')
+      .select('id')
+      .eq('autencationUserID', authUserId)
+      .limit(1);
+
+    if (error || !data || data.length === 0) return false;
+    return true;
+  }
+
+  // ═══════════════════════════════════════════
+  // 📊 MÉTODOS DE BASE DE DATOS
+  // ═══════════════════════════════════════════
+
+  async insertUser(newUser: User): Promise<any> {
+    try {
+      // Insert location first
+      // Insert the new user
+      const { data: insertedUser, error: userError } = await this.supabase
+        .from('users')
+        .insert(newUser)
+        .select();
+
+      if (userError) {
+        throw userError;
+      }
+      console.log('User inserted:', insertedUser);
+      return insertedUser[0].id;
+    } catch (error) {
+      console.error('Error inserting user:', error);
+    }
+  }
+
+  async updateUser(userId: any, updatedUser: User): Promise<any> {
+    try {
+      const { data: updatedUserData, error: updateError } = await this.supabase
+        .from('users')
+        .update(updatedUser)
+        .eq('autencationUserID', userId)
+        .select();
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      console.log('User updated:', updatedUserData);
+      return updatedUserData;
+    } catch (error) {
+      console.error('Error updating user:', error);
+    }
+  }
+
+  async deleteUser(userId: number): Promise<any> {
+    try {
+      const { data: deletedUserData, error: deleteError } = await this.supabase
+        .from('users')
+        .delete()
+        .eq('id', userId)
+        .select();
+
+      if (deleteError) {
+        throw deleteError;
+      }
+
+      console.log('User deleted:', deletedUserData);
+      return deletedUserData;
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
+  }
+
+  async insertWaterSource(newSource: WaterSources): Promise<any> {
+    try {
+      const { data: insertedSource, error: sourceError } = await this.supabase
+        .from('watersources')
+        .insert(newSource)
+        .select();
+
+      if (sourceError) {
+        throw sourceError;
+      }
+
+      console.log('Water source inserted:', insertedSource);
+      return insertedSource[0].id;
+    } catch (error) {
+      console.error('Error inserting water source:', error);
+    }
+  }
+
+  async updateWaterSource(
+    sourceId: number,
+    updatedSource: WaterSources
+  ): Promise<any> {
+    try {
+      const { data: updatedSourceData, error: updateError } =
+        await this.supabase
+          .from('watersources')
+          .update(updatedSource)
+          .eq('id', sourceId)
+          .select();
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      console.log('Water source updated:', updatedSourceData);
+      return updatedSourceData;
+    } catch (error) {
+      console.error('Error updating water source:', error);
+    }
+  }
+
+  async deleteWaterSource(sourceId: number): Promise<any> {
+    try {
+      const { data: deletedSourceData, error: deleteError } =
+        await this.supabase
+          .from('watersources')
+          .delete()
+          .eq('id', sourceId)
+          .select();
+
+      if (deleteError) {
+        throw deleteError;
+      }
+
+      console.log('Water source deleted:', deletedSourceData);
+      return deletedSourceData;
+    } catch (error) {
+      console.error('Error deleting water source:', error);
+    }
+  }
+
+  async insertForm(newForm: Forms): Promise<any> {
+    try {
+      const { data: insertedForm, error: formError } = await this.supabase
+        .from('forms')
+        .insert(newForm)
+        .select();
+
+      if (formError) {
+        throw formError;
+      }
+
+      console.log('Form inserted:', insertedForm);
+      return insertedForm[0].id;
+    } catch (error) {
+      console.error('Error inserting form:', error);
+    }
+  }
+
+  async updateForm(formId: number, updatedForm: any): Promise<any> {
+    try {
+      const { data: updatedFormData, error: updateError } = await this.supabase
+        .from('forms')
+        .update(updatedForm)
+        .eq('id', formId)
+        .select();
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      return updatedFormData;
+    } catch (error) {
+      console.error('Error updating form:', error);
+      return null;
+
+    }
+  }
+
+  async deleteForm(formId: number): Promise<any> {
+    try {
+      const { data: deletedFormData, error: deleteError } = await this.supabase
+        .from('forms')
+        .delete()
+        .eq('id', formId)
+        .select();
+
+      if (deleteError) {
+        throw deleteError;
+      }
+
+      console.log('Form deleted:', deletedFormData);
+      return deletedFormData;
+    } catch (error) {
+      console.error('Error deleting form:', error);
+    }
+  }
+
+  async insertUserType(newUserType: UserType): Promise<any> {
+    try {
+      const { data: insertedUserType, error: userTypeError } =
+        await this.supabase.from('usertype').insert(newUserType).select();
+
+      if (userTypeError) {
+        throw userTypeError;
+      }
+
+      console.log('User type inserted:', insertedUserType);
+      return insertedUserType[0].id;
+    } catch (error) {
+      console.error('Error inserting user type:', error);
+    }
+  }
+
+  async updateUserType(
+    userTypeId: number,
+    updatedUserType: UserType
+  ): Promise<any> {
+    try {
+      const { data: updatedUserTypeData, error: updateError } =
+        await this.supabase
+          .from('usertype')
+          .update(updatedUserType)
+          .eq('id', userTypeId)
+          .select();
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      console.log('User type updated:', updatedUserTypeData);
+      return updatedUserTypeData;
+    } catch (error) {
+      console.error('Error updating user type:', error);
+    }
+  }
+
+  async deleteUserType(userTypeId: number): Promise<any> {
+    try {
+      const { data: deletedUserTypeData, error: deleteError } =
+        await this.supabase
+          .from('usertype')
+          .delete()
+          .eq('id', userTypeId)
+          .select();
+
+      if (deleteError) {
+        throw deleteError;
+      }
+
+      console.log('User type deleted:', deletedUserTypeData);
+      return deletedUserTypeData;
+    } catch (error) {
+      console.error('Error deleting user type:', error);
+    }
+  }
+
+  async getUsers() {
+    const { data: users, error } = await this.supabase
+      .from('users')
+      .select('*');
+
+    if (error) {
+      throw error;
+    }
+
+    console.log('Users retrieved:', users);
+    return users; // Trust Supabase types
+  }
+
+  async getUser(user_id: any) {
+    const { data: user, error } = await this.supabase
+      .from('users')
+      .select('*')
+      .eq('autencationUserID', user_id);
+
+    if (error) {
+      throw error;
+    }
+    return user; // Trust Supabase types
+  }
+
+  async getUserName(user_id: any) {
+
+    const { data: username, error } = await this.supabase
+      .from('users')
+      .select('username')
+      .eq('autencationUserID', user_id);
+
+    if (error) {
+      throw error;
+    }
+    return username; // Trust Supabase types
+
+  }
+
+  async getWaterSources() {
+    try {
+      const { data: waterSources, error } = await this.supabase
+        .from('watersources')
+        .select('*');
+
+      if (error) {
+        throw error;
+      }
+      return waterSources;
+    } catch (error) {
+      console.error('Error retrieving water sources:', error);
+      return error;
+    }
+  }
+
+
+
+  async getFormsNotAproved(): Promise<any[]> {
+    try {
+      const { data: forms, error } = await this.supabase
+        .from('forms')
+        .select('*')
+        .is('approved', null);
+
+      if (error) {
+        throw error;
+      }
+
+      console.log('Forms retrieved:', forms);
+      // Retornamos 'forms', pero si por alguna razón es null, retornamos un array vacío
+      return forms || [];
+
+    } catch (error) {
+      console.error('Error retrieving forms:', error);
+      // En lugar de devolver el error (unknown), devolvemos un array vacío 
+      // para no romper la interfaz de usuario ni el tipado estricto
+      return [];
+    }
+  }
+
+  async getFormsAproved(): Promise<any[]> {
+    try {
+      const { data: forms, error } = await this.supabase
+        .from('forms')
+        .select('*')
+        .is('approved', true);
+
+      if (error) {
+        throw error;
+      }
+
+      console.log('Forms retrieved:', forms);
+      // Retornamos 'forms', pero si por alguna razón es null, retornamos un array vacío
+      return forms || [];
+
+    } catch (error) {
+      console.error('Error retrieving forms:', error);
+      // En lugar de devolver el error (unknown), devolvemos un array vacío 
+      // para no romper la interfaz de usuario ni el tipado estricto
+      return [];
+    }
+  }
+
+  // funcion para comprabar si es string o no
+  isStringArray(data: unknown): data is string[] {
+    return (
+      Array.isArray(data) && data.every((item) => typeof item === 'string')
+    );
+  }
+  // para comprobar si es base64  o no
+  IsBase64URL(url: string) {
+    console.log('url', url);
+    // Expresión regular para verificar el formato de base64 URL
+    const regex = /^(data:)([a-zA-Z0-9+\/]+)(;base64,)(.*)$/;
+    // Verificar si la cadena coincide con el formato de base64 URL
+    return regex.test(url);
+  }
+
+  // para insertar a la stoarge
+  async InsertToStoarge(file: any) {
+    // comprovamos que es un file y que no sea string
+    if (typeof file === 'object') {
+      // comprobamos si el nombre esta bien escrito
+      let nombre = this.esNombreArchivoValido(file.name);
+      // subimos el archivo al storage
+      const { data, error } = await this.supabase.storage
+        .from('ImageWaterSource')
+        .upload(nombre, file);
+      if (error) {
+        // si hay un duplicado de nombre , solictamos el la subida otr vez y ponemos un caracter para que pueda subir
+        if (error.message == 'The resource already exists') {
+          const { data, error } = await this.supabase.storage
+            .from('ImageWaterSource')
+            .upload(`_mapfont_${new Date().getDate()}_${new Date().getMilliseconds()}_${new Date().getTime()}${await this.geolocationService.getUserID()}` + nombre, file);
+          if (error) {
+            return null;
+          } else {
+            if ('fullPath' in data) return data.fullPath;
+            else return (data as any).path;
+          }
+        } else {
+          // retornamos que no ha sido possible subir el archivo
+          return null;
+        }
+      } else {
+        if ('fullPath' in data) return data.fullPath;
+        else return (data as any).path;
+      }
+      // si es string retoranmos como esta el file
+    } else {
+      return file;
+    }
+  }
+
+  // para obtener de la storage
+  GetStorage(url_image: string) {
+
+    return `https://xcperzkujymdzvhfuqgi.supabase.co/storage/v1/object/public/${url_image.replace(/ /g, "%20")}`;
+  }
+
+  // comporvamos que el nombre no tenga caracteres que impiden el funcionamiento
+  esNombreArchivoValido(nombreArchivo: string) {
+    // Caracteres problemáticos
+    const caracteresProhibidos = [
+      '/',
+      '\\',
+      '?',
+      '%',
+      '*',
+      ':',
+      '|',
+      '"',
+      '<',
+      '>',
+      '-',
+      ' ',
+    ];
+
+    // Reemplazar caracteres problemáticos por guiones bajos
+    let nombreArchivoCorregido = nombreArchivo;
+    for (const caracter of caracteresProhibidos) {
+      nombreArchivoCorregido = nombreArchivo.split(caracter).join('_');
+    }
+
+    // Verificar si el nombre de archivo contiene espacios al principio o al final
+    if (nombreArchivoCorregido.trim() !== nombreArchivoCorregido) {
+      return nombreArchivoCorregido;
+    }
+    return nombreArchivoCorregido;
+  }
+
+  // obtenemos los formularios del usuario
+  async getFormsUser(user_id: any) {
+    try {
+      console.log(user_id);
+      const { data: forms, error } = await this.supabase
+        .from('forms')
+        .select('*')
+        .eq('autencationUserID', user_id);
+
+      if (error) {
+        throw error;
+      }
+
+      console.log('Forms retrieved:', forms);
+      return forms;
+    } catch (error) {
+      console.error('Error retrieving forms:', error);
+      return error;
+    }
+  }
+
+  async getUserTypes() {
+    try {
+      const { data: userTypes, error } = await this.supabase
+        .from('usertype')
+        .select('*');
+
+      if (error) {
+        throw error;
+      }
+
+      console.log('User types retrieved:', userTypes);
+      return userTypes;
+    } catch (error) {
+      console.error('Error retrieving user types:', error);
+      return error;
+    }
+  }
+
+  async getUserType(user_id: string): Promise<any[]> {
+    try {
+      const { data: userType, error } = await this.supabase
+        .from('usertype')
+        .select('*')
+        .eq('autencationUserID', user_id);
+
+      if (error) {
+        throw error;
+      }
+      return userType || [];
+    } catch (error) {
+      console.error('Error retrieving user type:', error);
+      return [];
+    }
+  }
+
+  async deleteSavedFoutain(savedFountain_id: any) {
+
+    const { data: savedFountainsData, error: fountainsError } = await this.supabase
+      .from('savedfountains')
+      .delete()
+      .eq('id', savedFountain_id);
+
+    if (fountainsError) {
+      return null
+    } else {
+      return 'Success'
+    }
+  }
+
+
+  async insertSavedFoutainWithUser(user_id: any, idFountain: any) {
+
+    // prepramos las variables para insertar
+    let SavedFountain = {
+      autencationUserID: user_id,
+      waterSource_id: idFountain,
+      created_at: new Date()
+
+    }
+
+    try {
+      const { data: insertedSavedFountain, error: savedFountainError } = await this.supabase
+        .from('savedfountains')
+        .insert(SavedFountain)
+        .select();
+
+      if (savedFountainError) {
+        throw savedFountainError;
+      }
+      return insertedSavedFountain
+    } catch (error) {
+      console.error('Error al obtener los datos:', error);
+      return error;
+    }
+
+  }
+
+  // buscamos el fontain con el existente user , solo debe devolver un dato
+  async getSavedFoutainWithUser(user_id: any, idFountain: any) {
+
+    try {
+      // Consulta para obtener los datos de public.savedfountains
+      const { data: savedFountainsData, error: fountainsError } =
+        await this.supabase
+          .from('savedfountains')
+          .select('*')
+          .eq('autencationUserID', user_id)
+          .eq('waterSource_id', idFountain);
+
+      if (fountainsError) {
+        throw fountainsError;
+      }
+      return savedFountainsData
+    } catch (error) {
+      console.error('Error al obtener los datos:', error);
+      return error;
+    }
+  }
+
+
+
+
+
+  async getSavedFoutains(user_id: any) {
+    let fountains_id = [];
+    let matchedFountains = [];
+    try {
+      // Consulta para obtener los datos de public.savedfountains
+      const { data: savedFountainsData, error: fountainsError } =
+        await this.supabase
+          .from('savedfountains')
+          .select('*')
+          .eq('autencationUserID', user_id);
+
+      if (fountainsError) {
+        throw fountainsError;
+      } else {
+        for (const fountain of savedFountainsData) {
+          // Extract the ID from the current fountain object
+          fountains_id.push(fountain.waterSource_id);
+        }
+      }
+      // Consulta para obtener los datos de public.watersources
+      const { data: FountainsData, error: FountainsError } = await this.supabase
+        .from('watersources')
+        .select('*')
+        .in('id', fountains_id);
+
+      if (FountainsError) {
+        throw FountainsError;
+      } else {
+        for (const fountain of savedFountainsData) {
+          const matchedWaterSources = FountainsData.filter(
+            (waterSource) => waterSource.id === fountain.waterSource_id
+          );
+
+          // Agregar todas las coincidencias al array matchedFountains
+          for (const matchedWaterSource of matchedWaterSources) {
+            matchedFountains.push({
+              savedFountain: fountain,
+              matchedWaterSource: matchedWaterSource,
+            });
+          }
+        }
+
+        // Resultado
+        console.log(
+          'Fuentes guardadas que coinciden con los datos de watersources:',
+          matchedFountains
+        );
+        return matchedFountains;
+      }
+    } catch (error) {
+      console.error('Error al obtener los datos:', error);
+      return error;
+    }
+  }
+
+  // obtener el ultimo update de watersources
+  async getUpdateDateFountains() {
+    try {
+      const { data: waterSources, error } = await this.supabase
+        .from('watersources')
+        .select('updated_at')
+        .order('updated_at', { ascending: false })
+        .limit(1);
+
+      if (error) {
+        throw error;
+      }
+      return waterSources;
+    } catch (error) {
+      console.error('Error retrieving water sources:', error);
+      return error;
+    }
+
+  }
+
+  // Comprobar zona (Ya no es estrictamente necesario si usas solo el upsert, pero lo dejamos por seguridad)
+  async isZoneScanned(zoneId: string): Promise<boolean> {
+    try {
+      const { data, error } = await this.supabase
+        .from('scraped_zones')
+        .select('zone_id')
+        .eq('zone_id', zoneId)
+        .limit(1);
+
+      if (error) {
+        return false;
+      }
+      return data && data.length > 0;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  // Marca una zona como escaneada de forma segura (Usa Upsert para no duplicar)
+  async markZoneAsScanned(zoneId: string) {
+    try {
+      const { error } = await this.supabase
+        .from('scraped_zones')
+        .upsert([{ zone_id: zoneId }], { onConflict: 'zone_id' });
+
+      if (error) {
+        console.error('Error silencioso al guardar zona:', error);
+      }
+    } catch (error) {
+      console.error('Error guardando zona:', error);
+    }
+  }
+
+  // Inserta de forma múltiple y DEVUELVE LA DATA para que el mapa se pinte
+  async insertMultipleForms(forms: any[]) {
+    if (forms.length === 0) return null;
+
+    try {
+      const { data, error } = await this.supabase
+        .from('watersources')
+        .insert(forms)
+        .select();
+
+      if (error) {
+        console.error('Error insertando en BD (Revisa si faltan columnas):', error);
+        return null;
+      }
+      return data;
+    } catch (error) {
+      console.error('Error masivo:', error);
+      return null;
+    }
+  }
+
+  // EL SALVAVIDAS: Libera la zona si el escaneo falló a la mitad
+  async unclaimZone(zoneId: string) {
+    try {
+      await this.supabase
+        .from('scraped_zones')
+        .delete()
+        .eq('zone_id', zoneId);
+
+      console.log(`Zona ${zoneId} liberada por error en el proceso.`);
+    } catch (error) {
+      console.error('Error al liberar la zona:', error);
+    }
+  }
+
+}

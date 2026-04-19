@@ -1,0 +1,105 @@
+<ion-content [fullscreen]="true" class="custom-bg">
+  <div class="overlay"></div>
+
+  <header class="glass-header">
+    <div class="header-left">
+      <button class="back-btn" (click)="GeolocationService.GoBack(NavCtrl)">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <h1>AquaPath</h1>
+    </div>
+    <div class="step-indicator">
+      <span>{{ 'step_2_of_2' | translate }}</span>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <section class="page-title">
+      <h2>{{ 'complete_information' | translate }}</h2>
+      <p>{{ 'complete_last_steps' | translate }}</p>
+    </section>
+
+    <form #myForm="ngForm" (ngSubmit)="onSubmit()">
+
+      <div class="glass-panel mb-6">
+        <div class="panel-header">
+          <div class="icon-box cyan-box">
+            <ion-icon name="create-outline"></ion-icon>
+          </div>
+          <h3>Detalles Básicos</h3>
+        </div>
+
+        <div class="form-group">
+          <label>{{ 'font_name' | translate }}</label>
+          <ion-input class="custom-input" [placeholder]="'name' | translate" name="watersourcesname"
+            [(ngModel)]="formData.watersourcesname" required>
+          </ion-input>
+        </div>
+
+        <div class="form-group">
+          <label>{{ 'font_description' | translate }}</label>
+          <ion-textarea class="custom-input" [placeholder]="'description' | translate" name="description" rows="4"
+            [(ngModel)]="formData.description" required>
+          </ion-textarea>
+        </div>
+      </div>
+
+      <div class="grid-panels">
+
+        <div class="glass-panel toggle-panel">
+          <div>
+            <div class="icon-box green-box">
+              <ion-icon name="water-outline"></ion-icon>
+            </div>
+            <h3>{{ 'font_potable_question' | translate }}</h3>
+          </div>
+          <div class="toggle-wrapper">
+            <span class="toggle-text">{{ formData.is_potable ? ('yes' | translate) : ('no' | translate) }}</span>
+            <ion-toggle class="custom-toggle green-toggle" name="is_potable" [(ngModel)]="formData.is_potable">
+            </ion-toggle>
+          </div>
+        </div>
+
+        <div class="glass-panel toggle-panel">
+          <div>
+            <div class="icon-box cyan-box">
+              <ion-icon name="calendar-outline"></ion-icon>
+            </div>
+            <h3>{{ 'font_available_question' | translate }}</h3>
+          </div>
+          <div class="toggle-wrapper">
+            <span class="toggle-text">{{ formData.enabled ? ('yes' | translate) : ('no' | translate) }}</span>
+            <ion-toggle class="custom-toggle cyan-toggle" name="enabled" [(ngModel)]="formData.enabled">
+            </ion-toggle>
+          </div>
+        </div>
+
+        <div class="glass-panel select-panel">
+          <div>
+            <div class="icon-box blue-box">
+              <ion-icon name="earth-outline"></ion-icon>
+            </div>
+            <h3>{{ 'is_font_available_to_the_public_or_private' | translate }}</h3>
+          </div>
+          <div class="select-wrapper">
+            <ion-select interface="popover" class="custom-select" name="watersourcetype"
+              [(ngModel)]="formData.watersourcetype" required>
+              <ion-select-option value="public">{{ 'public' | translate }}</ion-select-option>
+              <ion-select-option value="private">{{ 'private' | translate }}</ion-select-option>
+            </ion-select>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="action-section">
+        <button type="submit" class="submit-btn" [disabled]="!myForm.form.valid">
+          {{ 'next_step' | translate }}
+          <ion-icon name="checkmark-done-outline"></ion-icon>
+        </button>
+      </div>
+
+    </form>
+  </main>
+</ion-content>

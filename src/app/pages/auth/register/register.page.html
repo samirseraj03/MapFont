@@ -1,0 +1,79 @@
+<ion-content [fullscreen]="true" class="bg-image">
+  <div class="overlay"></div>
+
+  <main class="main-wrapper">
+
+    <section class="glass-effect auth-card">
+
+      <div class="header-text">
+        <h1>{{ 'register' | translate }}</h1>
+        <p>{{ 'join_community' | translate }}</p>
+      </div>
+
+      <form class="auth-form" (submit)="Register(); $event.preventDefault()">
+
+        <div class="input-group">
+          <ion-icon name="person-outline" class="input-icon"></ion-icon>
+          <ion-input [placeholder]="'username_placeholder' | translate" [(ngModel)]="username" name="username"
+            type="text" required>
+          </ion-input>
+        </div>
+
+        <div class="input-group">
+          <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+          <ion-input [placeholder]="'email_placeholder' | translate" [(ngModel)]="email" name="email" type="email"
+            required>
+          </ion-input>
+        </div>
+
+        <div class="input-group">
+          <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+          <ion-input [placeholder]="'password_placeholder' | translate" [(ngModel)]="password" name="password"
+            type="password" required>
+          </ion-input>
+        </div>
+
+        <div class="toggle-container">
+          <ion-toggle justify="space-between" class="custom-toggle">
+            <span class="toggle-label">{{ 'subscribe_newsletter' | translate }}</span>
+          </ion-toggle>
+        </div>
+
+        <ion-button expand="block" class="submit-btn" type="submit">
+          {{ 'register' | translate }}
+        </ion-button>
+      </form>
+
+      <div class="social-login">
+        <div class="divider">
+          <span>{{ 'or_register_with' | translate }}</span>
+        </div>
+
+        <div class="social-buttons">
+          <button class="social-btn glass-btn full-width-btn" aria-label="Google" (click)="loginWithGoogle()">
+            <ion-icon name="logo-google"></ion-icon>
+            <span style="font-size: 14px; font-weight: 500; margin-left: 8px;">Continuar con Google</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="bottom-links">
+        <span class="text-white-50">{{ 'already_have_account' | translate }}</span>
+        <a (click)="GoLogin()" class="link">{{ 'login' | translate }}</a>
+      </div>
+    </section>
+
+    <div class="bottom-logo">
+      <svg class="custom-logo" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+        stroke-width="1.5" viewBox="0 0 24 24">
+        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+        <path d="M12 12c-1.3 0-2.4-.7-3-1.8"></path>
+        <path d="M12 12c1.3 0 2.4.7 3 1.8"></path>
+        <path d="M12 12v6"></path>
+        <path d="M9 16c1.3 0 2.4.7 3 1.8"></path>
+        <path d="M15 16c-1.3 0-2.4-.7-3-1.8"></path>
+      </svg>
+    </div>
+
+  </main>
+</ion-content>

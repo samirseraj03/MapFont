@@ -13,7 +13,7 @@
       <ion-label>{{ 'add' | translate }}</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button *ngIf="!isLogin" href="/tabs/login" class="center-tab">
+    <ion-tab-button *ngIf="!isLogin" class="center-tab" (click)="goToLoginWithIntent('/tabs/form')">
       <div class="fab-button">
         <ion-icon name="add-outline"></ion-icon>
       </div>
@@ -25,7 +25,7 @@
       <ion-label>{{ 'profile' | translate }}</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button *ngIf="!isLogin" href="/tabs/login">
+    <ion-tab-button *ngIf="!isLogin" (click)="goToLoginWithIntent('/tabs/configuration')">
       <ion-icon name="person-outline"></ion-icon>
       <ion-label>{{ 'profile' | translate }}</ion-label>
     </ion-tab-button>

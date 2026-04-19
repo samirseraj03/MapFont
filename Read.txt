@@ -1,0 +1,13 @@
+
+
+- corregir que no se puede dar siguente a la siguente foto de la fuente
+
+- [x] cambiar el rls y restrenguir el acceso a la edicion de fuentes (Es configuración servidor Supabase)
+
+-  [x] auth de google encontrar solucion. 
+
+-  [x] icono de google para inicio de session y quitar el de apple. 
+
+- [x] quitar pages la admimstracion y dejar solo para admin , tengo en mi base de datos el user type , apartir de esto puede salir o no puede salir
+
+- [x] si el usuario no tiene user type , crear uno por defecto cuando inicia session y poner admin_role falase y user_role true
