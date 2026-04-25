@@ -156,5 +156,21 @@
     "explore": "Explore",
     "add": "Add",
     "profile": "Profile",
-    "photo_of_fountain": "Photo of the fountain"
+    "photo_of_fountain": "Photo of the fountain",
+    "forgot_password": "Forgot your password?",
+    "recover_password_title": "Recover Password",
+    "recover_password_msg": "Enter your email. We will send you a 6-digit PIN.",
+    "email_ph": "Your email",
+    "send_pin": "Send PIN",
+    "verification_code": "Verification Code",
+    "code_sent_to": "A code has been sent to ",
+    "verify": "Verify",
+    "new_password_title": "New Password",
+    "new_password_msg": "Create a secure password for your account.",
+    "save_and_enter": "Save and Enter",
+    "auth_sending_code": "Sending...",
+    "auth_verifying": "Verifying...",
+    "auth_code_error": "Could not send the code to your email.",
+    "auth_invalid_code": "The code entered is incorrect or expired.",
+    "auth_pwd_error": "There was an error saving your password."
 }

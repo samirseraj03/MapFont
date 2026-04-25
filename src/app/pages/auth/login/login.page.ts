@@ -1,7 +1,7 @@
 import { Component, Injectable, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavController } from '@ionic/angular';
+import { NavController, AlertController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 
 import { AuthFacade } from '../../../core/facades/auth.facade';
@@ -46,7 +46,8 @@ export class LoginPage implements OnInit {
     private route: ActivatedRoute,
     private authFacade: AuthFacade,
     private authState: AuthStateService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private alertController: AlertController
   ) {
     addIcons({ mailOutline, lockClosedOutline, logoGoogle });
   }
@@ -95,5 +96,66 @@ export class LoginPage implements OnInit {
   ContinueAsGuest() {
     this.authState.isLogin = false;
     this.NavCtrl.navigateRoot('/tabs/fonts');
+  }
+
+  async forgotPassword() {
+    const alertEmail = await this.alertController.create({
+      header: this.translate.instant('recover_password_title'),
+      message: this.translate.instant('recover_password_msg'),
+      inputs: [{ name: 'email', type: 'email', placeholder: this.translate.instant('email_ph'), value: this.email || '' }],
+      buttons: [
+        { text: this.translate.instant('cancel'), role: 'cancel' },
+        { 
+          text: this.translate.instant('send_pin'), 
+          handler: async (data) => {
+            if (!data.email) return false;
+            const sent = await this.authFacade.requestPasswordRecovery(data.email);
+            if (sent) this.promptForCode(data.email);
+            return true;
+          }
+        }
+      ]
+    });
+    await alertEmail.present();
+  }
+
+  async promptForCode(email: string) {
+    const alertCode = await this.alertController.create({
+      header: this.translate.instant('verification_code'),
+      message: this.translate.instant('code_sent_to') + email,
+      inputs: [{ name: 'token', type: 'text', placeholder: '123456', attributes: { maxlength: 6 } }],
+      buttons: [
+        { text: this.translate.instant('cancel'), role: 'cancel' },
+        {
+          text: this.translate.instant('verify'),
+          handler: async (data) => {
+            if (!data.token) return false;
+            const verified = await this.authFacade.verifyRecoveryCode(email, data.token);
+            if (verified) this.promptForNewPassword();
+            return true;
+          }
+        }
+      ]
+    });
+    await alertCode.present();
+  }
+
+  async promptForNewPassword() {
+    const alertPwd = await this.alertController.create({
+      header: this.translate.instant('new_password_title'),
+      message: this.translate.instant('new_password_msg'),
+      inputs: [{ name: 'password', type: 'password', placeholder: this.translate.instant('new_password_title') }],
+      buttons: [
+        {
+          text: this.translate.instant('save_and_enter'),
+          handler: async (data) => {
+            if (!data.password || data.password.length < 6) return false;
+            await this.authFacade.updateRecoveredPassword(data.password);
+            return true;
+          }
+        }
+      ]
+    });
+    await alertPwd.present();
   }
 }

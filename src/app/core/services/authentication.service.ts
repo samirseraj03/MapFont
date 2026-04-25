@@ -41,6 +41,28 @@ export class AuthenticationService {
     }
   }
 
+  async requestOTP(email: string) {
+    try {
+      const { data, error } = await this.supabase.auth.resetPasswordForEmail(email);
+      if (error) throw error;
+      return true;
+    } catch (error) {
+      console.error('Error solicitando OTP:', error);
+      throw error;
+    }
+  }
+
+  async verifyOTP(email: string, token: string) {
+    try {
+      const { data, error } = await this.supabase.auth.verifyOtp({ email, token, type: 'recovery' });
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error verificando OTP:', error);
+      throw error;
+    }
+  }
+
   async signOut() {
     try {
       await this.supabase.auth.signOut();

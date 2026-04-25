@@ -6,6 +6,9 @@
 
 -  [x] icono de google para inicio de session 
 
+- [x] mirar como se puede restablecer la contraseña si no se recuerda. 
+
+
 - [ ] buscar idioma dl movil y ponerlo en la app y tambien si inicia session , ver que idioma tiene y ponerlo en la app
     y registrarlo en la base de datos. , por defecto ahora solo tiene es 
 
@@ -15,7 +18,6 @@
 
    hacer que nose puede cambiar el email cuando ya se registra. solo enseñarlo.
 
-   mirar como se puede restablecer la contraseña si no se recuerda. 
 
 
    cambiar el envoirment de SupabaseService

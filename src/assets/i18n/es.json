@@ -156,5 +156,21 @@
     "explore": "Explorar",
     "add": "Añadir",
     "profile": "Perfil",
-    "photo_of_fountain": "Foto de la fuente"
+    "photo_of_fountain": "Foto de la fuente",
+    "forgot_password": "¿Olvidaste tu contraseña?",
+    "recover_password_title": "Recuperar Contraseña",
+    "recover_password_msg": "Introduce tu correo. Te enviaremos un PIN de 6 dígitos.",
+    "email_ph": "Tu correo",
+    "send_pin": "Enviar PIN",
+    "verification_code": "Código de Verificación",
+    "code_sent_to": "Se ha enviado un código a ",
+    "verify": "Verificar",
+    "new_password_title": "Nueva Contraseña",
+    "new_password_msg": "Crea una contraseña segura para tu cuenta.",
+    "save_and_enter": "Guardar y Entrar",
+    "auth_sending_code": "Enviando...",
+    "auth_verifying": "Verificando...",
+    "auth_code_error": "No se pudo enviar el código al correo.",
+    "auth_invalid_code": "El código ingresado es incorrecto o ha caducado.",
+    "auth_pwd_error": "Hubo un error guardando tu contraseña."
 }

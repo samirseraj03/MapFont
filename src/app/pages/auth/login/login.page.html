@@ -26,6 +26,12 @@
           </ion-input>
         </div>
 
+        <div style="text-align: right; margin-bottom: 8px;">
+          <a class="link" style="cursor: pointer; font-size: 14px;" (click)="forgotPassword()">
+            {{ 'forgot_password' | translate }}
+          </a>
+        </div>
+
         <ion-button expand="block" class="submit-btn" type="submit">
           {{ 'sign_in' | translate }}
         </ion-button>

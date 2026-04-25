@@ -172,6 +172,69 @@ export class AuthFacade {
     return false;
   }
 
+  async requestPasswordRecovery(email: string): Promise<boolean> {
+    let loading = await this.loadingController.create({ message: this.translate.instant('loading') || 'Enviando...' });
+    await loading.present();
+
+    try {
+      await this.authService.requestOTP(email);
+      return true;
+    } catch (error) {
+      this.showError("No se pudo enviar el código al correo.");
+      return false;
+    } finally {
+      loading.dismiss();
+    }
+  }
+
+  async verifyRecoveryCode(email: string, token: string): Promise<boolean> {
+    let loading = await this.loadingController.create({ message: this.translate.instant('loading') || 'Verificando...' });
+    await loading.present();
+
+    try {
+      const response = await this.authService.verifyOTP(email, token);
+      if (response && response.user) {
+        const { user, session } = response;
+        await this.services.setStorage('session', session);
+        await this.services.setStorage('user', user);
+        this.authState.isLogin = true;
+        return true;
+      }
+      return false;
+    } catch (error) {
+      this.showError("El código ingresado es incorrecto o ha caducado.");
+      return false;
+    } finally {
+      loading.dismiss();
+    }
+  }
+
+  async updateRecoveredPassword(newPassword: string): Promise<boolean> {
+    let loading = await this.loadingController.create({ message: this.translate.instant('loading') || 'Actualizando...' });
+    await loading.present();
+
+    try {
+      const response = await this.authService.updateUser({ password: newPassword });
+      if (response === 'Success') {
+        const userId = await this.getCurrentUserId();
+        if (userId) {
+           await this.userRepository.updateUser(userId, { password: newPassword } as any);
+        }
+        
+        const route = this.authState.intendedRoute || '/tabs/fonts';
+        this.authState.intendedRoute = null;
+        this.navCtrl.navigateRoot(route);
+        return true;
+      }
+      return false;
+    } catch {
+      this.showError("Hubo un error guardando tu contraseña.");
+      return false;
+    } finally {
+      loading.dismiss();
+    }
+  }
+
   async logout() {
     try {
       await this.authService.signOut();
