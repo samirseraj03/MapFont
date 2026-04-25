@@ -2,13 +2,15 @@ import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from './../../../environments/environment';
 
+import { StorageService } from '../services/storage.service';
+
 @Injectable({
   providedIn: 'root'
 })
 export class SupabaseClientService {
   public supabase: SupabaseClient;
 
-  constructor() {
+  constructor(private storageService: StorageService) {
     const supabaseUrl = environment.SUPABASE_URL;
     const supabaseKey = environment.SUPABASE_KEY;
 
@@ -18,8 +20,18 @@ export class SupabaseClientService {
       );
     }
 
+    const customStorage = {
+      getItem: (key: string) => this.storageService.get(key),
+      setItem: (key: string, value: string) => this.storageService.set(key, value),
+      removeItem: (key: string) => this.storageService.remove(key),
+    };
+
     this.supabase = createClient(supabaseUrl, supabaseKey, {
-      auth: { autoRefreshToken: false, persistSession: true }
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        storage: customStorage as any
+      }
     });
   }
 }

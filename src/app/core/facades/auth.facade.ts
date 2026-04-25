@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Capacitor } from '@capacitor/core';
 import { NavController, LoadingController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthenticationService } from '../services/authentication.service';
@@ -42,6 +43,9 @@ export class AuthFacade {
 
           const existingUsers = await this.userRepository.getUser(user.id);
           if (!existingUsers || existingUsers.length === 0) {
+            if (user.app_metadata?.provider === 'email') {
+              return;
+            }
             await this.userRepository.insertUserType({ admin_role: false, user_role: true, autencationUserID: user.id });
             await this.userRepository.insertUser({
               email: user.email || '',
@@ -53,9 +57,17 @@ export class AuthFacade {
               address: '',
               password: '',
               autencationUserID: user.id,
-              language: 'es'
+              language: this.translate.currentLang || this.translate.getDefaultLang() || 'es'
             });
           } else {
+            const userProfile = existingUsers[0];
+            if (userProfile.language) {
+               this.translate.use(userProfile.language);
+            } else {
+               const currentLang = this.translate.currentLang || this.translate.getDefaultLang() || 'es';
+               await this.userRepository.updateUser(user.id, { language: currentLang } as any);
+            }
+
             const userTypeRecords = await this.userRepository.getUserType(user.id);
             if (!userTypeRecords || userTypeRecords.length === 0) {
                await this.userRepository.insertUserType({ admin_role: false, user_role: true, autencationUserID: user.id});
@@ -92,6 +104,17 @@ export class AuthFacade {
         }
 
         try {
+          const existingUsers = await this.userRepository.getUser(user.id);
+          if (existingUsers && existingUsers.length > 0) {
+            const userProfile = existingUsers[0];
+            if (userProfile.language) {
+               this.translate.use(userProfile.language);
+            } else {
+               const currentLang = this.translate.currentLang || this.translate.getDefaultLang() || 'es';
+               await this.userRepository.updateUser(user.id, { language: currentLang } as any);
+            }
+          }
+
           const userTypeRecords = await this.userRepository.getUserType(user.id);
           if (!userTypeRecords || userTypeRecords.length === 0) {
             await this.userRepository.insertUserType({ admin_role: false, user_role: true, autencationUserID: user.id });
@@ -115,7 +138,12 @@ export class AuthFacade {
 
   async loginWithGoogle() {
     try {
-      const { data, error } = await this.authService.signInWithGoogle();
+      const isWeb = Capacitor.getPlatform() === 'web';
+      const redirectTo = isWeb 
+        ? 'https://map-font.vercel.app' 
+        : 'https://ionic.mapfont';
+
+      const { data, error } = await this.authService.signInWithGoogle(redirectTo);
       if (error) {
         this.showError(this.translate.instant('wrong_credentials'));
       }
@@ -151,7 +179,7 @@ export class AuthFacade {
           address: '',
           password: password,
           autencationUserID: response.user.id,
-          language: "es"
+          language: this.translate.currentLang || this.translate.getDefaultLang() || 'es'
         });
 
         await this.services.setStorage('session', response.session);

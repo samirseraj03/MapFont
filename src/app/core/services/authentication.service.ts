@@ -82,9 +82,12 @@ export class AuthenticationService {
     }
   }
 
-  async signInWithGoogle() {
+  async signInWithGoogle(redirectTo?: string) {
     return this.supabase.auth.signInWithOAuth({
-      provider: 'google'
+      provider: 'google',
+      options: {
+        redirectTo: redirectTo
+      }
     });
   }
 

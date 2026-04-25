@@ -9,14 +9,14 @@
 - [x] mirar como se puede restablecer la contraseña si no se recuerda. 
 
 
-- [ ] buscar idioma dl movil y ponerlo en la app y tambien si inicia session , ver que idioma tiene y ponerlo en la app
+- [x] buscar idioma dl movil y ponerlo en la app y tambien si inicia session , ver que idioma tiene y ponerlo en la app
     y registrarlo en la base de datos. , por defecto ahora solo tiene es 
 
    mejorar la visualizacion cunado quiera cambiar la foto , quitar que se guarde con el boton o simplificar elboton de guardar.
 
-   mirar porque registra mal los campos del usuario.
+- [x] mirar porque registra mal los campos del usuario.
 
-   hacer que nose puede cambiar el email cuando ya se registra. solo enseñarlo.
+- [x] hacer que nose puede cambiar el email cuando ya se registra. solo enseñarlo.
 
 
 
