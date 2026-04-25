@@ -2,12 +2,27 @@
 
 - corregir que no se puede dar siguente a la siguente foto de la fuente
 
-- [x] cambiar el rls y restrenguir el acceso a la edicion de fuentes (Es configuración servidor Supabase)
-
 -  [x] auth de google encontrar solucion. 
 
--  [x] icono de google para inicio de session y quitar el de apple. 
+-  [x] icono de google para inicio de session 
 
-- [x] quitar pages la admimstracion y dejar solo para admin , tengo en mi base de datos el user type , apartir de esto puede salir o no puede salir
+- [ ] buscar idioma dl movil y ponerlo en la app y tambien si inicia session , ver que idioma tiene y ponerlo en la app
+    y registrarlo en la base de datos. , por defecto ahora solo tiene es 
 
-- [x] si el usuario no tiene user type , crear uno por defecto cuando inicia session y poner admin_role falase y user_role true
+   mejorar la visualizacion cunado quiera cambiar la foto , quitar que se guarde con el boton o simplificar elboton de guardar.
+
+   mirar porque registra mal los campos del usuario.
+
+   hacer que nose puede cambiar el email cuando ya se registra. solo enseñarlo.
+
+   mirar como se puede restablecer la contraseña si no se recuerda. 
+
+
+   cambiar el envoirment de SupabaseService
+
+   buscar mas cosas para mejorar la segurdidad
+
+   poner el cron en la tabla de cron.
+
+   
+

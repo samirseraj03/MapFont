@@ -1,64 +1,37 @@
-# Services Documentation
+# Documentación de Facades & Repositories
 
-## 1. DatabaseService (`src/app/Types/SupabaseService.ts`)
-
-This service is the core communication layer with Supabase. It manages data consistency and API calls.
-
-### Core Architecture
-*   **Client**: Initializes `SupabaseClient` with environment keys.
-*   **Auth Options**: Configured with `autoRefreshToken: false` and `persistSession: true`.
-
-### Key Methods
-
-#### User Management
-*   `insertUser(newUser: User)`: Adds a new user profile after signup.
-*   `updateUser(userId, updatedUser)`: Modifies user profile data.
-*   `getUser(auth_id)`: Fetches user profile by their Authentication ID.
-
-#### Water Sources (Fuentes)
-*   `getWaterSources()`: Retrieves all public water sources.
-*   `insertWaterSource(newSource)`: (Admin/System) Adds a verified source.
-*   `getSavedFoutains(user_id)`: Recovers the list of fountains saved/favorited by a user.
-    *   *Logic*: Fetches `savedfountains` table > extracts IDs > matches with `watersources` table.
-
-#### Forms (Submissions)
-*   `insertForm(newForm)`: Submits a new water source for review.
-    *   *Flow*: User submits > Stored in `forms` table > Admin approves > Moved to `watersources`.
-*   `getFormsUser(user_id)`: Gets submissions made by a specific user.
-
-#### Storage (Images)
-*   `InsertToStoarge(file)`: Uploads an image to the `ImageWaterSource` bucket.
-    *   *Sanitization*: Uses `esNombreArchivoValido` to clean filenames (replaces `/`, `:`, spaces, etc.).
-    *   *Collision Handling*: If file exists, appends timestamp and coordinates to ensure uniqueness.
-*   `GetStorage(url_image)`: Returns the public URL for a stored image.
+En MapFont, la capa de datos es estrictamente bidireccional mediante abstracción separada.
 
 ---
 
-## 2. GeolocationService (`src/app/Globals/Geolocation.ts`)
+## 🤵 Capa de Fachadas (Camareros)
+Se encargan de ejecutar las validaciones complejas de negocio requeridas por los Componentes UI, aislando de toda configuración u obtención nativa de LocalStorage a la Vista final.
 
-Wrapper around `@capacitor/geolocation` to handle cross-platform differences.
+### 1. `AuthFacade` & `SecurityFacade`
+*   Gobierna el flujo de inicio de sesión, el cierre temporal o expirado. 
+*   **Encargado Principal**: Retorna la sesión de usuario de forma segura con `getCurrentUserId()` absorbiendo el chequeo constante de Capable Storage, reduciendo inyecciones espagueti.
 
-### Key Features
-*   **Hybrid Support**: Handles both Web (`navigator.geolocation`) and Native (`Capacitor.isNativePlatform()`).
-*   **Permission Handling**:
-    *   `checkLocationPermission()`: Checks status.
-    *   `requestLocationPermission()`: Prompts user if status is 'prompt'.
+### 2. `WaterSourceFacade`
+*   Unifica la obtención de manantiales y fuentes en el Mapa.
+*   **Zonas Exploradas**: Internamente revisa a través de la API `getLastUpdateDate()` si MapFont requiere re-descargar los GeoJSON cacheados de las fuentes locales y Supabase para equilibrar el consumo.
 
-### Methods
-*   `getGeolocation()`: Main entry point.
-    1.  Checks platform.
-    2.  Checks permissions.
-    3.  Returns coordinates (`coords.latitude`, `coords.longitude`) and updates internal state.
-*   `generateGoogleMapsLink(lat, lng)`: Utility to create external map links.
+### 3. `FormFacade` & `UserFacade`
+*   Procesos subyacentes como validación de donaciones, configuraciones o administración de formularios aprobados/pendientes listos para publicar al mapa nativo.
 
 ---
 
-## 3. Services (`src/app/services.service.ts`)
+## 🔪 Capa de Repositorios (Chefs)
+Interacciones planas con `SupabaseClientService`. Son ajenos al Componente o Fachadas abstractas.
 
-General utility and state management service.
+### 1. `WaterSourceRepository`
+*   **CRUD Puro**: Interactúa con la tabla `watersources` y `savedfountains`.
+*   Extrae unicamente arrays brutos de información para su parseo en capas superiores.
 
-### Features
-*   **Local Storage**: Wrapper around `@capacitor/preferences` for persistent data (e.g., `setStorage`, `getStorage`).
-*   **Update Checking**: `CheckLatestUpdateFontains()`
-    *   Compares local data version (`dateGeoJson`) with server version.
-    *   Returns `true` if update is needed, saving bandwidth by not re-fetching static data unnecessarily.
+### 2. `UserRepository`
+*   Modificación de contraseñas u obtención exclusiva de metadatos del usuario adjunto (foto, alias, email) en la tabla relacional de negocio interna.
+
+### 3. `FormRepository`
+*   Encargado del almacenamiento en estado "revisión" de nuevas fuentes remitidas por usuarios para ser revisadas administrativamente en `forms`.
+
+### 4. `StorageRepository`
+*   Almacenamiento exclusivo físico de avatares fotográficos y fotos de las fuentes en localizaciones de Storage Bucket y mitigación de conflictos.

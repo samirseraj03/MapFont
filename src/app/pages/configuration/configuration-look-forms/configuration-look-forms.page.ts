@@ -10,7 +10,7 @@ import {
 
 // Lógica y Servicios
 import GeolocationService from '../../../core/utils/Geolocation';
-import DatabaseService from '../../../core/data/SupabaseService';
+import { FormFacade } from '../../../core/facades/form.facade';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 // Iconos necesarios para el nuevo diseño de tarjetas
@@ -21,6 +21,16 @@ import {
   checkmarkCircle, closeCircle, time, documentOutline
 } from 'ionicons/icons';
 
+/**
+ * @description
+ * Lista las fuentes sometidas y los estatus de contribución (Formularios pendientes/aprobados). Actúa como cliente del FormFacade que absorbe ambos listados.
+ *
+ * @architecture
+ * PATRÓN CLIENTE-CAMARERO-CHEF (Vista -> Fachada -> Repositorio)
+ * - [CÓMO FUNCIONA]: Esta página actúa únicamente como CLIENTE visual. Su responsabilidad exclusiva es renderizar componentes HTML y capturar las interacciones con el usuario, delegando absolutamente la manipulación de base de datos a su respectivo "Camarero" (Fachada).
+ * - [✔️ QUÉ SE DEBE HACER]: Inyectar la Fachada designada, suscribirse/llamar a los métodos de dicha Fachada y controlar flujos de navegación (NavCtrl).
+ * - [❌ QUÉ ESTÁ PROHIBIDO HACER]: Inyectar capas arquitectónicas de Acceso a Datos nativo (como `UserRepository` o `SupabaseClientService`). Usar servicios de Background para consultar IDs de base de datos eludiendo a la Fachada competente.
+ */
 @Component({
   selector: 'app-configuration-look-forms',
   templateUrl: './configuration-look-forms.page.html',
@@ -41,7 +51,7 @@ export class ConfigurationLookFormsPage implements OnInit {
   constructor(
     public NavCtrl: NavController,
     private Transalte: TranslateService,
-    private Supabase: DatabaseService,
+    private formFacade: FormFacade,
     public GeolocationService: GeolocationService
   ) {
     // Registramos todos los iconos utilizados
@@ -53,12 +63,12 @@ export class ConfigurationLookFormsPage implements OnInit {
   }
 
   async ngOnInit() {
-    // Obtenemos la ID y el nombre de usuario
-    this.user_data = await this.GeolocationService.getUserID();
-    this.username = await this.Supabase.getUserName(this.user_data);
+    // Obtenemos la ID 
+    this.user_data = await this.formFacade.getCurrentUserId();
+    this.username = [{username: "Autor"}]; 
 
     // Obtenemos los formularios de la base de datos
-    this.data = (await this.Supabase.getFormsUser(this.user_data)) as any[];
+    this.data = (await this.formFacade.loadUserForms()) as any[];
 
     // Asignamos a la variable que se muestra en el HTML
     this.results = [...this.data];

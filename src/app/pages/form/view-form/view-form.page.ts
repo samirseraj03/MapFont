@@ -16,7 +16,7 @@ import {
 import * as mapboxgl from 'mapbox-gl';
 import { environment } from 'src/environments/environment';
 import GeolocationService from '../../../core/utils/Geolocation';
-import DatabaseService from '../../../core/data/SupabaseService';
+import { WaterSourceFacade } from '../../../core/facades/water-source.facade';
 
 import { addIcons } from 'ionicons';
 import {
@@ -26,6 +26,16 @@ import {
 
 import { TranslateModule } from '@ngx-translate/core';
 
+/**
+ * @description
+ * Componente modal o vista estática individual. Funciona como detalle ampliado de una fuente para lectura de todos sus metadatos sin capacidades de escritura transaccional directa.
+ *
+ * @architecture
+ * PATRÓN CLIENTE-CAMARERO-CHEF (Vista -> Fachada -> Repositorio)
+ * - [CÓMO FUNCIONA]: Esta página actúa únicamente como CLIENTE visual. Su responsabilidad exclusiva es renderizar componentes HTML y capturar las interacciones con el usuario, delegando absolutamente la manipulación de base de datos a su respectivo "Camarero" (Fachada).
+ * - [✔️ QUÉ SE DEBE HACER]: Inyectar la Fachada designada, suscribirse/llamar a los métodos de dicha Fachada y controlar flujos de navegación (NavCtrl).
+ * - [❌ QUÉ ESTÁ PROHIBIDO HACER]: Inyectar capas arquitectónicas de Acceso a Datos nativo (como `UserRepository` o `SupabaseClientService`). Usar servicios de Background para consultar IDs de base de datos eludiendo a la Fachada competente.
+ */
 @Component({
   selector: 'app-view-form',
   templateUrl: './view-form.page.html',
@@ -50,7 +60,7 @@ export class ViewFormPage implements OnInit {
     private ChangeDetectorRef: ChangeDetectorRef,
     private actionSheetCtrl: ActionSheetController,
     public GeolocationService: GeolocationService,
-    private Supabase: DatabaseService
+    private waterSourceFacade: WaterSourceFacade
   ) {
     addIcons({
       arrowBackOutline, personOutline, calendarOutline, locationOutline,
@@ -66,7 +76,7 @@ export class ViewFormPage implements OnInit {
     this.username = params['username'] || '';
 
     if (this.data && this.data.photo) {
-      this.img_ref_view_form = this.Supabase.GetStorage(this.data.photo);
+      this.img_ref_view_form = this.waterSourceFacade.getPhotoUrl(this.data.photo);
     }
 
     this.ChangeDetectorRef.detectChanges();
@@ -126,7 +136,7 @@ export class ViewFormPage implements OnInit {
   async SaveFountain() {
     if (!this.id_form) return;
 
-    const userId = await this.GeolocationService.getUserID();
+    const userId = await this.waterSourceFacade.getCurrentUserId();
 
     if (!userId) {
       // Redirigir al login si no hay usuario
@@ -134,10 +144,10 @@ export class ViewFormPage implements OnInit {
       return;
     }
 
-    const savedData = await this.Supabase.getSavedFoutainWithUser(userId, this.id_form) as any[];
+    const savedData = await this.waterSourceFacade.getSavedFountainWithUser(this.id_form) as any[];
 
     if (savedData.length === 0) {
-      await this.Supabase.insertSavedFoutainWithUser(userId, this.id_form);
+      await this.waterSourceFacade.toggleSavedFountain(this.id_form, false, null);
       await Dialog.alert({ title: '¡Guardado!', message: 'La fuente se ha añadido a tus favoritos.' });
     } else {
       await Dialog.alert({ title: 'Aviso', message: 'Ya tienes esta fuente en tus favoritos.' });

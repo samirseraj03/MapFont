@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavController, LoadingController } from '@ionic/angular';
 
 // Standalone Components
 import {
@@ -9,17 +8,26 @@ import {
 } from "@ionic/angular/standalone";
 
 import { Dialog } from '@capacitor/dialog';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateModule } from '@ngx-translate/core';
+import { NavController } from '@ionic/angular';
 
-// Servicios Propios
-import GeolocationService from '../../../core/utils/Geolocation';
-import DatabaseService from '../../../core/data/SupabaseService';
-import { AuthenticationService } from '../../../core/services/authentication.service'; // Usamos este en lugar de LoginPage
+// Fachada (Nuestra nueva puerta lógica)
+import { SecurityFacade } from '../../../core/facades/security.facade';
 
 // Iconos
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, lockClosedOutline, shieldCheckmarkOutline, keyOutline, saveOutline, checkmarkDoneOutline } from 'ionicons/icons';
 
+/**
+ * @description
+ * Vista de configuración de seguridad y contraseña. Actúa como cliente requiriendo autenticaciones para cambiar credenciales, orquestada por SecurityFacade.
+ *
+ * @architecture
+ * PATRÓN CLIENTE-CAMARERO-CHEF (Vista -> Fachada -> Repositorio)
+ * - [CÓMO FUNCIONA]: Esta página actúa únicamente como CLIENTE visual. Su responsabilidad exclusiva es renderizar componentes HTML y capturar las interacciones con el usuario, delegando absolutamente la manipulación de base de datos a su respectivo "Camarero" (Fachada).
+ * - [✔️ QUÉ SE DEBE HACER]: Inyectar la Fachada designada, suscribirse/llamar a los métodos de dicha Fachada y controlar flujos de navegación (NavCtrl).
+ * - [❌ QUÉ ESTÁ PROHIBIDO HACER]: Inyectar capas arquitectónicas de Acceso a Datos nativo (como `UserRepository` o `SupabaseClientService`). Usar servicios de Background para consultar IDs de base de datos eludiendo a la Fachada competente.
+ */
 @Component({
   selector: 'app-configuration-security',
   templateUrl: './configuration-security.page.html',
@@ -34,15 +42,10 @@ export class ConfigurationSecurityPage implements OnInit {
   OldPassword: any;
   NewPassword: any;
   NewConfirmPassword: any;
-  loading: any;
 
   constructor(
-    public NavCtrl: NavController,
-    private loadingController: LoadingController,
-    private authService: AuthenticationService, // <-- Inyectamos directamente el servicio
-    private TranslateService: TranslateService,
-    private Supabase: DatabaseService,
-    public GeolocationService: GeolocationService
+    private securityFacade: SecurityFacade,
+    public NavCtrl: NavController
   ) {
     addIcons({ arrowBackOutline, lockClosedOutline, shieldCheckmarkOutline, keyOutline, saveOutline, checkmarkDoneOutline });
   }
@@ -50,65 +53,15 @@ export class ConfigurationSecurityPage implements OnInit {
   ngOnInit() { }
 
   async Update() {
-    this.loadingController.create({ message: this.TranslateService.instant('loading') || 'Cargando...' }).then(loading => {
-      this.loading = loading;
-      this.loading.present();
-    });
-
-    // 1. Comprobamos que las contraseñas nuevas coinciden
+    // La página SÓLO comprueba lógica de presentación rápida (si los campos coinciden visualmente)
     if (this.NewPassword === this.NewConfirmPassword) {
-      try {
-        let email = await this.GeolocationService.getUserEmail();
-
-        // 2. Iniciamos sesión con la antigua para verificar (Reemplaza a this.LoginService.UpdatePassword)
-        const response = await this.authService.signIn(email, this.OldPassword);
-
-        if (response && response.user) {
-
-          // 3. Si la vieja es correcta, actualizamos a la nueva
-          const error = await this.authService.updateUser({
-            password: this.NewPassword,
-          });
-
-          if (!error) {
-            await this.ToDataBase();
-            this.Success();
-          } else {
-            throw new Error("No se pudo actualizar la contraseña");
-          }
-        } else {
-          throw new Error("Credenciales inválidas");
-        }
-      } catch (error) {
-        await Dialog.alert({
-          title: 'Atención',
-          message: 'Tu contraseña actual es incorrecta o hubo un problema de red.'
-        });
-      } finally {
-        if (this.loading) this.loading.dismiss();
-      }
+      // Y delega el 100% de la lógica asíncrona y compleja al "camarero" (La Fachada)
+      await this.securityFacade.updatePassword(this.OldPassword, this.NewPassword);
     } else {
-      if (this.loading) this.loading.dismiss();
       await Dialog.alert({
         title: 'Atención',
         message: 'Las contraseñas nuevas no coinciden.'
       });
     }
-  }
-
-  async Success() {
-    this.NavCtrl.navigateForward('/Success', {
-      state: {
-        PageSucces: 'security',
-      },
-    });
-  }
-
-  async ToDataBase() {
-    let password = { password: this.NewPassword } as any;
-    await this.Supabase.updateUser(
-      await this.GeolocationService.getUserID(),
-      password
-    );
   }
 }

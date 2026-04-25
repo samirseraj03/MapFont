@@ -131,25 +131,6 @@ export default class GeolocationService {
     return dateString;
   }
 
-  async getUserID() {
-    let user_id = await this.getStorage('user')
-    if (user_id) {
-      return user_id.id
-    }
-    else { return null }
-
-  }
-
-  async getUserEmail() {
-    let user_email = await this.getStorage('user')
-    if (user_email) {
-      return user_email.email
-    }
-    else { return null }
-
-  }
-
-
   async getStorage(key: string) {
     return await this.storage.get(key);
   }

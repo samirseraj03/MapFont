@@ -11,13 +11,23 @@ import { TranslateService, TranslateModule } from '@ngx-translate/core';
 import * as mapboxgl from 'mapbox-gl';
 import { environment } from './../../../environments/environment';
 import GeolocationService from '../../core/utils/Geolocation';
-import DatabaseService from '../../core/data/SupabaseService';
+import { WaterSourceFacade } from '../../core/facades/water-source.facade';
 import { Services } from '../../core/services/services.service';
 import { OsmService } from '../../core/services/osm.service';
 
 import { addIcons } from 'ionicons';
 import { waterOutline, refreshOutline, locationOutline, navigateOutline, bookmarkOutline, bookmark, water, checkmark, chevronForward } from 'ionicons/icons';
 
+/**
+ * @description
+ * Vista central cartográfica core de la aplicación. Renderiza MapBox y clusteriza masivamente pines cartográficos de manantiales descargados a través de WaterSourceFacade.
+ *
+ * @architecture
+ * PATRÓN CLIENTE-CAMARERO-CHEF (Vista -> Fachada -> Repositorio)
+ * - [CÓMO FUNCIONA]: Esta página actúa únicamente como CLIENTE visual. Su responsabilidad exclusiva es renderizar componentes HTML y capturar las interacciones con el usuario, delegando absolutamente la manipulación de base de datos a su respectivo "Camarero" (Fachada).
+ * - [✔️ QUÉ SE DEBE HACER]: Inyectar la Fachada designada, suscribirse/llamar a los métodos de dicha Fachada y controlar flujos de navegación (NavCtrl).
+ * - [❌ QUÉ ESTÁ PROHIBIDO HACER]: Inyectar capas arquitectónicas de Acceso a Datos nativo (como `UserRepository` o `SupabaseClientService`). Usar servicios de Background para consultar IDs de base de datos eludiendo a la Fachada competente.
+ */
 @Component({
   selector: 'app-fonts',
   templateUrl: 'Fonts.page.html',
@@ -56,7 +66,7 @@ export class fontsPage {
     public actionSheetCtrl: ActionSheetController,
     public translate: TranslateService,
     private cdr: ChangeDetectorRef,
-    private Supabase: DatabaseService,
+    private waterSourceFacade: WaterSourceFacade,
     private osmService: OsmService,
     private toastCtrl: ToastController,
     public GeolocationService: GeolocationService,
@@ -82,7 +92,7 @@ export class fontsPage {
   }
 
   async insertMap() {
-    this.UpdatedMap = await this.Service.CheckLatestUpdateFontains();
+    this.UpdatedMap = await this.waterSourceFacade.checkLatestUpdateFountains();
 
     if (this.map) {
       const container = this.map.getContainer();
@@ -209,7 +219,7 @@ export class fontsPage {
             ...props,
             lng: feature.geometry.coordinates[0],
             lat: feature.geometry.coordinates[1],
-            photo_url: props.photo ? this.Supabase.GetStorage(props.photo) : 'assets/icon/agua-potable.png'
+            photo_url: props.photo ? this.waterSourceFacade.getPhotoUrl(props.photo) : 'assets/icon/agua-potable.png'
           };
 
           this.isSaved = false;
@@ -217,15 +227,12 @@ export class fontsPage {
           this.isModalOpen = true;
           this.cdr.detectChanges();
 
-          const userId = await this.GeolocationService.getUserID();
-          if (userId) {
-            const data = await this.Supabase.getSavedFoutainWithUser(userId, props.id) as any[];
-            if (data && data.length > 0) {
-              this.isSaved = true;
-              this.savedRecordId = data[0].id;
-            }
-            this.cdr.detectChanges();
+          const data = await this.waterSourceFacade.getSavedFountainWithUser(props.id) as any[];
+          if (data && data.length > 0) {
+            this.isSaved = true;
+            this.savedRecordId = data[0].id;
           }
+          this.cdr.detectChanges();
         });
 
         this.map.on('mouseenter', 'clusters', () => { this.map.getCanvas().style.cursor = 'pointer'; });
@@ -277,12 +284,12 @@ export class fontsPage {
       const lngZone = center.lng.toFixed(2);
       const zoneId = `${latZone}_${lngZone}`;
 
-      const alreadyScanned = await this.Supabase.isZoneScanned(zoneId);
+      const alreadyScanned = await this.waterSourceFacade.isZoneScanned(zoneId);
       if (alreadyScanned) {
         return;
       }
 
-      await this.Supabase.markZoneAsScanned(zoneId);
+      await this.waterSourceFacade.markZoneAsScanned(zoneId);
 
       const offset = 0.01;
       const south = center.lat - offset;
@@ -293,7 +300,7 @@ export class fontsPage {
       const rawOsmFountains = await this.osmService.fetchFountainsInBounds(south, west, north, east);
 
       if (rawOsmFountains === null) {
-        await this.Supabase.unclaimZone(zoneId);
+        await this.waterSourceFacade.unclaimZone(zoneId);
         this.isOSMBlocked = true;
 
         this.showFeedback('Servidores de mapa ocupados. Pausa temporal.', 'danger');
@@ -323,10 +330,10 @@ export class fontsPage {
       });
 
       if (uniqueFountains.length > 0) {
-        const insertedFountains = await this.Supabase.insertMultipleForms(uniqueFountains);
+        const insertedFountains = await this.waterSourceFacade.insertMultipleForms(uniqueFountains);
 
         if (!insertedFountains) {
-          await this.Supabase.unclaimZone(zoneId);
+          await this.waterSourceFacade.unclaimZone(zoneId);
           this.showFeedback('Error al guardar las fuentes encontradas', 'danger');
           return;
         }
@@ -396,7 +403,7 @@ export class fontsPage {
     if (!this.selectedFountain) return;
     (document.activeElement as HTMLElement)?.blur();
 
-    const userId = await this.GeolocationService.getUserID();
+    const userId = await this.waterSourceFacade.getCurrentUserId();
 
     if (!userId) {
       this.navCtrl.navigateForward('/tabs/login');
@@ -404,30 +411,13 @@ export class fontsPage {
       return;
     }
 
-    if (this.isSaved && this.savedRecordId) {
-      try {
-        await this.Supabase.deleteSavedFoutain(this.savedRecordId);
-        this.isSaved = false;
-        this.savedRecordId = null;
-      } catch (error) {
-        console.error("Error al eliminar", error);
-      }
-    } else {
-      try {
-        const result: any = await this.Supabase.insertSavedFoutainWithUser(userId, this.selectedFountain.id);
-        this.isSaved = true;
-
-        if (result && result.id) {
-          this.savedRecordId = result.id;
-        } else {
-          const data = await this.Supabase.getSavedFoutainWithUser(userId, this.selectedFountain.id) as any[];
-          if (data && data.length > 0) {
-            this.savedRecordId = data[0].id;
-          }
-        }
-      } catch (error) {
-        console.error("Error al guardar", error);
-      }
+    try {
+      const parsedId = this.savedRecordId ? parseInt(this.savedRecordId) : null;
+      const result = await this.waterSourceFacade.toggleSavedFountain(this.selectedFountain.id, this.isSaved, parsedId);
+      this.isSaved = result.isSaved;
+      this.savedRecordId = result.savedRecordId;
+    } catch (error) {
+      console.error("Error al guardar/eliminar fuente:", error);
     }
     this.cdr.detectChanges();
   }
@@ -435,7 +425,7 @@ export class fontsPage {
   async UpdateMap() {
     try {
       console.log("Actualizando/Descargando mapa desde Supabase...");
-      let watersources = await this.Supabase.getWaterSources();
+      let watersources = await this.waterSourceFacade.loadAllWaterSources();
 
       if (Array.isArray(watersources) && watersources.length > 0) {
         const freshGeojson = { type: 'FeatureCollection', features: [] as any[] };

@@ -1,40 +1,23 @@
-# Components & Pages Documentation
+# Project Components & Pages
 
-## 1. Submission Form (The Wizard)
-The process of adding a new water source is split into three distinct pages to improve user experience.
+Tras seguir los principios SOLID, todas las Vistas/Componentes de la aplicación delegan la orquestación a sus respectivos Facades evitando tocar los repositorios nativamente.
 
-### Step 1: Upload Image (`FormUploadImage`)
-*   **Path**: `src/app/Form/FormUploadImage`
-*   **Purpose**: Capture the visual evidence of the water source.
-*   **Key Logic**:
-    *   **Camera Integration**: Uses `Capacitor Camera.getPhoto()`.
-    *   **File Handling**: Converts the raw camera blob (`webPath`) into a JavaScript `File` object using `fetch`. This is critical for the generic file upload service to work.
-    *   **Navigation**: Passes the file object to the next page via generic service state (`this.Service.img_ref`) or route params.
+## 1. El Embud de Formularios (Form Wizard)
+Aproximación por 3 Pasos aislados donde se inyecta centralmente la fachada de UI y lógica.
 
-### Step 2: Select Location (`FormSelectLocation`)
-*   **Path**: `src/app/Form/FormSelectLocation`
-*   **Purpose**: Pinpoint exact coordinates.
-*   **Tech**: Mapbox GL JS.
-*   **Features**:
-    *   **Current Location**: Auto-centers on user's GPS (via `GeolocationService`).
-    *   **Search**: Uses Mapbox Geocoding API (`api.mapbox.com/geocoding/v5`) to search addresses.
-    *   **Pinning**: User can tap to move the marker. Returns `[mylongitude, mylatitude]`.
+### `FormUploadImage`
+*   **Rol**: Captura la fotografía de acceso, delega la subida asíncrona al `FormFacade` e inyecta retornos temporales en variables de paso.
 
-### Step 3: Information (`FormInsertInformation`)
-*   **Path**: `src/app/Form/FormInsertInformation`
-*   **Purpose**: Metadata entry.
-*   **Data Points**: Name, Description, Potable (boolean), Type (Tap, Fountain, Natural).
-*   **Submission**:
-    1.  Uploads image to Supabase Storage.
-    2.  Constructs `Forms` object.
-    3.  Inserts row into `forms` table.
-    4.  Redirects to Success page.
+### `FormSelectLocation`
+*   **Rol**: Renderización GPS. A través del mapa embebido retorna `[mylongitude, mylatitude]`. Solamente interactúa con `GeolocationService` desde las entrañas.
 
-## 2. Authentication (`authentication`)
-*   **Login**: Standard email/password flow.
-*   **Register**: Creates new user in Supabase Auth and a corresponding row in the public `users` table with profile info.
+### `FormInsertInformation`
+*   **Rol**: Pantalla Final enviadora del Objeto. Notifica a su Fachada de inyección el objeto con las 3 variables sin encargarse de notificaciones directas ni de DB pura.
 
-## 3. Map / Main View (`Tabs`)
-*(Inferred from project type)*
-*   Displays the map of existing `watersources`.
-*   Likely uses `CheckLatestUpdateFontains()` to determine if it needs to re-download the dataset.
+## 2. Mapa Principal (Map & Listados)
+### `Fonts.page.ts`
+*   Cargador cartográfico. Solamente consume un solo objeto fundamental `WaterSourceFacade` quien le entrega empaquetadas en bandeja de plata todas las lecturas cartográficas listísimas para ser pintadas de forma visual sin enjuiciar tiempos de espera ni Storage interno o revisiones.
+
+## Reglas Inquebrantables de los Componentes Generales
+- Las vistas inician de `load*` (e.g. `this.facade.loadSavedData()`).
+- Estrictamente desacopladas para ser escalables con pruebas unitarias de su lógica HTML sin mockear bases de datos enteras.

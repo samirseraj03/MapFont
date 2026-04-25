@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StorageService } from './storage.service';
-import DatabaseService from '../data/SupabaseService';
+import { WaterSourceRepository } from '../repositories/water-source.repository';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +8,7 @@ import DatabaseService from '../data/SupabaseService';
 export class Services {
 
   constructor(
-    private Supabase: DatabaseService,
+    private waterSourceRepository: WaterSourceRepository,
     private storage: StorageService
   ) { }
 
@@ -42,7 +42,7 @@ export class Services {
     let LocaldateGeoJson: any = await this.getStorage('dateGeoJson');
 
     // Obtenemos la fecha del servidor
-    let SupabseUpdateFountains: any = await this.Supabase.getUpdateDateFountains();
+    let SupabseUpdateFountains: any = await this.waterSourceRepository.getUpdateDateFountains();
 
     // Verificamos que tengamos datos válidos del servidor
     if (!Array.isArray(SupabseUpdateFountains) || SupabseUpdateFountains.length === 0) {

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import axios, { AxiosResponse } from 'axios';
 import { environment } from './../../../environments/environment';
-import { WaterSources } from '../data/SupabaseService';
+import { WaterSources } from '../models/database.models';
 
 @Injectable({
     providedIn: 'root'

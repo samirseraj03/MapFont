@@ -18,6 +18,16 @@ import { IonContent, IonIcon } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, searchOutline, locateOutline, locationOutline, arrowForwardOutline } from 'ionicons/icons';
 
+/**
+ * @description
+ * Paso 2 del Wizard. Renderiza el mapa base intermedio y permite seleccionar latitud/longitud precisas para el nuevo manantial de manera local por Capacitor.
+ *
+ * @architecture
+ * PATRÓN CLIENTE-CAMARERO-CHEF (Vista -> Fachada -> Repositorio)
+ * - [CÓMO FUNCIONA]: Esta página actúa únicamente como CLIENTE visual. Su responsabilidad exclusiva es renderizar componentes HTML y capturar las interacciones con el usuario, delegando absolutamente la manipulación de base de datos a su respectivo "Camarero" (Fachada).
+ * - [✔️ QUÉ SE DEBE HACER]: Inyectar la Fachada designada, suscribirse/llamar a los métodos de dicha Fachada y controlar flujos de navegación (NavCtrl).
+ * - [❌ QUÉ ESTÁ PROHIBIDO HACER]: Inyectar capas arquitectónicas de Acceso a Datos nativo (como `UserRepository` o `SupabaseClientService`). Usar servicios de Background para consultar IDs de base de datos eludiendo a la Fachada competente.
+ */
 @Component({
   selector: 'app-form-select-location',
   templateUrl: './formselectlocation.page.html',

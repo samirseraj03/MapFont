@@ -12,12 +12,22 @@ import { Dialog } from '@capacitor/dialog';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
 import { Capacitor } from '@capacitor/core';
 import { Services } from '../../../core/services/services.service';
-import DatabaseService from '../../../core/data/SupabaseService'; // <-- IMPORTANTE INYECTAR ESTO
+import { StorageRepository } from '../../../core/repositories/storage.repository';
 
 // Iconos necesarios
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, cameraOutline, cloudUploadOutline, trashOutline, arrowForwardOutline } from 'ionicons/icons';
 
+/**
+ * @description
+ * Paso 1 del Wizard. Captura fotografía in-situ del manantial usando Camera Native Plugin de capacitor.
+ *
+ * @architecture
+ * PATRÓN CLIENTE-CAMARERO-CHEF (Vista -> Fachada -> Repositorio)
+ * - [CÓMO FUNCIONA]: Esta página actúa únicamente como CLIENTE visual. Su responsabilidad exclusiva es renderizar componentes HTML y capturar las interacciones con el usuario, delegando absolutamente la manipulación de base de datos a su respectivo "Camarero" (Fachada).
+ * - [✔️ QUÉ SE DEBE HACER]: Inyectar la Fachada designada, suscribirse/llamar a los métodos de dicha Fachada y controlar flujos de navegación (NavCtrl).
+ * - [❌ QUÉ ESTÁ PROHIBIDO HACER]: Inyectar capas arquitectónicas de Acceso a Datos nativo (como `UserRepository` o `SupabaseClientService`). Usar servicios de Background para consultar IDs de base de datos eludiendo a la Fachada competente.
+ */
 @Component({
   selector: 'app-form',
   templateUrl: 'form.page.html',
@@ -39,7 +49,7 @@ export class FormPage {
     private loadingController: LoadingController,
     public Service: Services,
     public translate: TranslateService,
-    private Supabase: DatabaseService,
+    private storageRepository: StorageRepository,
     private cdr: ChangeDetectorRef,
     public GeolocationService: GeolocationService
   ) {
@@ -189,7 +199,7 @@ export class FormPage {
       await new Promise(resolve => setTimeout(resolve, 500));
 
       // 4. Subimos a Supabase
-      const imagePath = await this.Supabase.InsertToStoarge(this.image_push);
+      const imagePath = await this.storageRepository.insertToStorage(this.image_push);
 
       if (imagePath) {
         // 5. CERRAMOS el loader ANTES de navegar

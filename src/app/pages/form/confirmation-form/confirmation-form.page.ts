@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavController, AlertController, LoadingController } from '@ionic/angular';
+import { NavController, AlertController, LoadingController, ActionSheetController } from '@ionic/angular';
 import { Browser } from '@capacitor/browser';
 
 // Standalone Components limpios
@@ -11,10 +11,10 @@ import {
 
 import { Dialog } from '@capacitor/dialog';
 
-// Servicios
 import GeolocationService from '../../../core/utils/Geolocation';
-import DatabaseService from '../../../core/data/SupabaseService';
-import { WaterSources } from '../../../core/data/SupabaseService';
+import { FormFacade } from '../../../core/facades/form.facade';
+import { WaterSourceFacade } from '../../../core/facades/water-source.facade';
+import { WaterSources } from '../../../core/models/database.models';
 
 // Iconos
 import { addIcons } from 'ionicons';
@@ -25,6 +25,16 @@ import {
 
 import { TranslateModule } from '@ngx-translate/core';
 
+/**
+ * @description
+ * Pantalla especializada para el administrador. Renderiza listados pendientes y permite aprobar/denegar fuentes mediante FormFacade y WaterSourceFacade combinados.
+ *
+ * @architecture
+ * PATRÓN CLIENTE-CAMARERO-CHEF (Vista -> Fachada -> Repositorio)
+ * - [CÓMO FUNCIONA]: Esta página actúa únicamente como CLIENTE visual. Su responsabilidad exclusiva es renderizar componentes HTML y capturar las interacciones con el usuario, delegando absolutamente la manipulación de base de datos a su respectivo "Camarero" (Fachada).
+ * - [✔️ QUÉ SE DEBE HACER]: Inyectar la Fachada designada, suscribirse/llamar a los métodos de dicha Fachada y controlar flujos de navegación (NavCtrl).
+ * - [❌ QUÉ ESTÁ PROHIBIDO HACER]: Inyectar capas arquitectónicas de Acceso a Datos nativo (como `UserRepository` o `SupabaseClientService`). Usar servicios de Background para consultar IDs de base de datos eludiendo a la Fachada competente.
+ */
 @Component({
   selector: 'app-confirmation-form',
   templateUrl: './confirmation-form.page.html',
@@ -43,9 +53,11 @@ export class ConfirmationFormPage implements OnInit {
 
   constructor(
     public NavCtrl: NavController,
+    public actionSheetCtrl: ActionSheetController, 
     public alertController: AlertController,
     private loadingController: LoadingController,
-    private Supabase: DatabaseService,
+    private formFacade: FormFacade,
+    private waterSourceFacade: WaterSourceFacade,
     public GeolocationService: GeolocationService
   ) {
     // Registramos iconos
@@ -64,14 +76,11 @@ export class ConfirmationFormPage implements OnInit {
   }
 
   async getFormsNotAproved() {
-    // Supabase devuelve el array, nosotros solo lo guardamos en la variable local
-    this.resultsNotAproved = await this.Supabase.getFormsNotAproved();
+    this.resultsNotAproved = await this.formFacade.loadPendingForms();
   }
 
-
   async getFormsAproved() {
-    // Supabase devuelve el array, nosotros solo lo guardamos en la variable local
-    this.resultsAproved = await this.Supabase.getFormsAproved();
+    this.resultsAproved = await this.formFacade.loadApprovedForms();
   }
 
 
@@ -127,13 +136,11 @@ export class ConfirmationFormPage implements OnInit {
       updated_at: result.updated_at
     };
 
-    let ApprovedUpdated = { approved: true };
-
     try {
-      let insert = await this.Supabase.insertWaterSource(waterSource);
+      let insert = await this.waterSourceFacade.insertNewWaterSource(waterSource);
 
       if (insert) {
-        let query = await this.Supabase.updateForm(result.id, ApprovedUpdated);
+        let query = await this.formFacade.updateFormStatus(result.id, true);
 
         if (query && query.length > 0) {
           // 1. Lo quitamos de la lista de PENDIENTES
@@ -172,8 +179,7 @@ export class ConfirmationFormPage implements OnInit {
     });
 
     try {
-      let ApprovedUpdated = { approved: false };
-      let query = await this.Supabase.updateForm(result.id, ApprovedUpdated);
+      let query = await this.formFacade.updateFormStatus(result.id, false);
 
       if (query && query.length > 0) {
         // Removemos de la lista local

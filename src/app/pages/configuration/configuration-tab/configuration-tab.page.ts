@@ -11,6 +11,16 @@ import { LoginPage } from '../../auth/login/login.page';
 import { IonMenu, IonButton, IonCardContent, IonHeader, IonToolbar, IonButtons, IonCardTitle, IonRow, IonCol, IonItem, IonTitle, IonContent, IonCardHeader, IonInput, IonRouterOutlet, IonList } from '@ionic/angular/standalone';
 import { TranslateModule } from '@ngx-translate/core';
 
+/**
+ * @description
+ * Menú principal de listados de ajustes, links a externalidades de configuración y control primario para invocar el logout del sistema.
+ *
+ * @architecture
+ * PATRÓN CLIENTE-CAMARERO-CHEF (Vista -> Fachada -> Repositorio)
+ * - [CÓMO FUNCIONA]: Esta página actúa únicamente como CLIENTE visual. Su responsabilidad exclusiva es renderizar componentes HTML y capturar las interacciones con el usuario, delegando absolutamente la manipulación de base de datos a su respectivo "Camarero" (Fachada).
+ * - [✔️ QUÉ SE DEBE HACER]: Inyectar la Fachada designada, suscribirse/llamar a los métodos de dicha Fachada y controlar flujos de navegación (NavCtrl).
+ * - [❌ QUÉ ESTÁ PROHIBIDO HACER]: Inyectar capas arquitectónicas de Acceso a Datos nativo (como `UserRepository` o `SupabaseClientService`). Usar servicios de Background para consultar IDs de base de datos eludiendo a la Fachada competente.
+ */
 @Component({
   selector: 'app-configuration-tab',
   templateUrl: './configuration-tab.page.html',

@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import DatabaseService from '../data/SupabaseService';
+import { AuthenticationService } from '../services/authentication.service';
 
 /**
  * Guard funcional que protege las rutas que requieren autenticación.
@@ -13,11 +13,11 @@ import DatabaseService from '../data/SupabaseService';
  *   { path: 'form', canActivate: [authGuard], loadComponent: () => ... }
  */
 export const authGuard: CanActivateFn = async () => {
-  const db = inject(DatabaseService);
+  const authService = inject(AuthenticationService);
   const router = inject(Router);
 
   try {
-    const { data: { session } } = await db.getSession();
+    const { data: { session } } = await authService.getSession();
 
     if (session) {
       return true; // ✅ Usuario autenticado, acceso permitido

@@ -11,7 +11,7 @@ import {
 
 // Lógica y Servicios
 import GeolocationService from '../../../core/utils/Geolocation';
-import DatabaseService from '../../../core/data/SupabaseService';
+import { WaterSourceFacade } from '../../../core/facades/water-source.facade';
 import { TranslateModule } from '@ngx-translate/core';
 
 // Iconos
@@ -21,6 +21,16 @@ import {
   water, locationOutline, calendarOutline, navigateOutline, heartDislikeOutline
 } from 'ionicons/icons';
 
+/**
+ * @description
+ * Lista paginada o vista enumerativa de las fuentes de agua favoritas guardadas por el usuario autenticado, consultadas uniformemente a WaterSourceFacade.
+ *
+ * @architecture
+ * PATRÓN CLIENTE-CAMARERO-CHEF (Vista -> Fachada -> Repositorio)
+ * - [CÓMO FUNCIONA]: Esta página actúa únicamente como CLIENTE visual. Su responsabilidad exclusiva es renderizar componentes HTML y capturar las interacciones con el usuario, delegando absolutamente la manipulación de base de datos a su respectivo "Camarero" (Fachada).
+ * - [✔️ QUÉ SE DEBE HACER]: Inyectar la Fachada designada, suscribirse/llamar a los métodos de dicha Fachada y controlar flujos de navegación (NavCtrl).
+ * - [❌ QUÉ ESTÁ PROHIBIDO HACER]: Inyectar capas arquitectónicas de Acceso a Datos nativo (como `UserRepository` o `SupabaseClientService`). Usar servicios de Background para consultar IDs de base de datos eludiendo a la Fachada competente.
+ */
 @Component({
   selector: 'app-configuration-fonts-saved',
   templateUrl: './configuration-fonts-saved.page.html',
@@ -37,7 +47,7 @@ export class ConfigurationFontsSavedPage {
 
   constructor(
     public NavCtrl: NavController,
-    private Supabase: DatabaseService,
+    private waterSourceFacade: WaterSourceFacade,
     public GeolocationService: GeolocationService
   ) {
     // Registramos todos los iconos
@@ -49,8 +59,7 @@ export class ConfigurationFontsSavedPage {
 
 
   async ionViewWillEnter() {
-    let userid = await this.GeolocationService.getUserID();
-    this.data = (await this.Supabase.getSavedFoutains(userid)) as any[];
+    this.data = (await this.waterSourceFacade.loadSavedFountains()) as any[];
     this.results = [...this.data];
   }
 
@@ -79,9 +88,8 @@ export class ConfigurationFontsSavedPage {
 
   // 3. Eliminar de Favoritos
   async OnSelectDislike(result: any) {
-    let query = await this.Supabase.deleteSavedFoutain(result.savedFountain.id);
-
-    if (query === 'Success') {
+    try {
+      await this.waterSourceFacade.toggleSavedFountain(result.matchedWaterSource.id, true, result.savedFountain.id);
       const indexToRemove = this.data.findIndex(
         (savedFountain) => savedFountain.savedFountain.id === result.savedFountain.id
       );
@@ -90,7 +98,7 @@ export class ConfigurationFontsSavedPage {
         this.data.splice(indexToRemove, 1);
         this.results = [...this.data]; // Actualiza la vista automáticamente
       }
-    }
+    } catch(e) {}
   }
 
   // 4. Buscador
