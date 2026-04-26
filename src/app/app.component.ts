@@ -2,8 +2,10 @@ import { Component, NgZone } from '@angular/core';
 import { IonApp, IonRouterOutlet, IonIcon, IonButton, IonButtons } from '@ionic/angular/standalone';
 import { NavController } from "@ionic/angular";
 import { TranslateService } from '@ngx-translate/core';
-import { App, URLOpenListenerEvent } from '@capacitor/app';
+import { App as CapacitorApp, URLOpenListenerEvent } from '@capacitor/app';
 import { SupabaseClientService } from './core/data/supabase.client';
+import { Capacitor } from '@capacitor/core';
+import { StatusBar } from '@capacitor/status-bar';
 
 @Component({
   selector: 'app-root',
@@ -28,8 +30,12 @@ export class AppComponent {
     this.transalte.setDefaultLang(defaultLang);
     this.transalte.use(defaultLang);
 
+    if (Capacitor.isNativePlatform()) {
+      StatusBar.hide().catch(err => console.log('Error hiding status bar:', err));
+    }
+
     // Manejo de Deep Links para Supabase Auth (Móvil)
-    App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
+    CapacitorApp.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
       this.ngZone.run(async () => {
         const url = new URL(event.url);
         // Supabase maneja los tokens en el hash (#access_token=...)
@@ -43,3 +49,4 @@ export class AppComponent {
     });
   }
 }
+

@@ -1,0 +1,238 @@
+/* Fondo y Overlay consistentes con MapFont */
+.custom-bg {
+    --background: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCgqBwm-JT9yyf0EAw5Ii1l5RVfJPIgjvmgwZIzxlK7-b6bKrzgKYaVr-jwoYJoPKTbrYt8-Nxspu_NMU5d6YhbRRtaeWSgmHtsRhaOiHYzdxLPEGwne7O2ok3F7ukQAxBOzEbS-2CzgKtX0-6X3t7YuwryxpU_vjBK_UivpfhBczD0fgT3elfSqVVwcJAJRbONJp1cyhvxn9wap_MtGzl7Lrmcar5_2PGBk7bRUKMAZqDFSUfMwbYgswzN3_vD7Ta79GEtusm_pOk') no-repeat center center / cover;
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(18, 20, 22, 0.6) 0%, rgba(18, 20, 22, 0.95) 100%);
+    z-index: 0;
+}
+
+/* Cabecera */
+.glass-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 70px;
+    z-index: 50;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    box-shadow: 0 10px 25px -5px rgba(8, 145, 178, 0.1);
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .back-btn {
+            background: rgba(128, 233, 247, 0.1);
+            color: #80e9f7;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+
+            &:active {
+                transform: scale(0.9);
+                background: #22d3ee;
+                color: #0f172a;
+            }
+        }
+
+        h1 {
+            color: #22d3ee;
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin: 0;
+        }
+    }
+
+    .header-right .title-icon {
+        color: #22d3ee;
+        font-size: 1.6rem;
+        opacity: 0.8;
+    }
+}
+
+.main-content {
+    position: relative;
+    z-index: 10;
+    padding: 90px 24px 100px 24px;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Panel Genérico de Cristal */
+.glass-panel {
+    background: rgba(26, 28, 30, 0.5);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(135, 147, 149, 0.15);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+/* Hero Section */
+.hero-section {
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+
+    .paypal-glow {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(0, 112, 186, 0.3) 0%, transparent 70%);
+        filter: blur(20px);
+        animation: pulseDon 3s ease-in-out infinite;
+    }
+
+    @keyframes pulseDon {
+        0%, 100% { opacity: 0.3; transform: translateX(-50%) scale(1); }
+        50% { opacity: 0.5; transform: translateX(-50%) scale(1.1); }
+    }
+
+    .paypal-logo-wrap {
+        position: relative;
+        z-index: 2;
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 20px auto;
+        border-radius: 50%;
+        background: rgba(0, 112, 186, 0.1);
+        border: 2px solid rgba(0, 112, 186, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+
+        img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+    }
+
+    h2 {
+        color: #80e9f7;
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin: 0 0 8px 0;
+    }
+
+    p {
+        color: #bdc9ca;
+        font-size: 1rem;
+        margin: 0;
+        line-height: 1.5;
+    }
+}
+
+/* QR Section */
+.qr-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+
+    .qr-frame {
+        position: relative;
+
+        &::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 36px;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.2), rgba(161, 212, 148, 0.2));
+            filter: blur(10px);
+        }
+
+        .qr-white-bg {
+            position: relative;
+            z-index: 2;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            img {
+                width: 200px;
+                height: 200px;
+                object-fit: contain;
+            }
+        }
+    }
+
+    .qr-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(128, 233, 247, 0.08);
+        padding: 12px 20px;
+        border-radius: 12px;
+        border: 1px solid rgba(128, 233, 247, 0.15);
+
+        ion-icon {
+            color: #80e9f7;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        p {
+            color: #bdc9ca;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+    }
+}
+
+/* Description Section */
+.description-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+
+    .desc-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: rgba(34, 211, 238, 0.1);
+        color: #22d3ee;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    p {
+        color: #94a3b8;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin: 0;
+    }
+}

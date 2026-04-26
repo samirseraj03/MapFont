@@ -14,7 +14,7 @@ import { TranslateService, TranslateModule } from '@ngx-translate/core';
 // Imports limpios de Ionic Standalone
 import { IonContent, IonIcon } from "@ionic/angular/standalone";
 
-// Iconos necesarios para el diseño AquaPath
+// Iconos necesarios para el diseño MapFont
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, searchOutline, locateOutline, locationOutline, arrowForwardOutline } from 'ionicons/icons';
 

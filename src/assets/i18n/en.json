@@ -172,5 +172,14 @@
     "auth_verifying": "Verifying...",
     "auth_code_error": "Could not send the code to your email.",
     "auth_invalid_code": "The code entered is incorrect or expired.",
-    "auth_pwd_error": "There was an error saving your password."
+    "auth_pwd_error": "There was an error saving your password.",
+    "change_photo": "Change Photo",
+    "change_profile_photo": "Tap to change your profile photo",
+    "donation_title": "Donations",
+    "donation_subtitle": "Your support keeps MapFont running",
+    "donation_description": "MapFont is a free, non-profit project. Every donation helps us keep the servers active and continue improving the app.",
+    "scan_qr_paypal": "Scan the QR with PayPal or your banking app",
+    "support_mapfont": "Support MapFont!",
+    "your_contributions": "Your contributions to the MapFont community",
+    "uploading_photo": "Uploading image..."
 }

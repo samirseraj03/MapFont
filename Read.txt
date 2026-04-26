@@ -1,6 +1,6 @@
 
 
-- corregir que no se puede dar siguente a la siguente foto de la fuente
+- [x] corregir que no se puede dar siguente a la siguente foto de la fuente
 
 -  [x] auth de google encontrar solucion. 
 
@@ -12,7 +12,6 @@
 - [x] buscar idioma dl movil y ponerlo en la app y tambien si inicia session , ver que idioma tiene y ponerlo en la app
     y registrarlo en la base de datos. , por defecto ahora solo tiene es 
 
-   mejorar la visualizacion cunado quiera cambiar la foto , quitar que se guarde con el boton o simplificar elboton de guardar.
 
 - [x] mirar porque registra mal los campos del usuario.
 
@@ -20,9 +19,15 @@
 
 
 
-   cambiar el envoirment de SupabaseService
+   [x] cambiar el envoirment de SupabaseService
+
+
+      mejorar la visualizacion cunado quiera cambiar la foto , quitar que se guarde con el boton o simplificar elboton de guardar.
+ademas no se cambia en la segunda vez o nose guarda bien. , hay un error en la variable image_push
 
    buscar mas cosas para mejorar la segurdidad
+
+   mejorar los textos y quitar aquapath
 
    poner el cron en la tabla de cron.
 

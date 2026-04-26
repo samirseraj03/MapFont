@@ -20,7 +20,7 @@ import {
   waterOutline, saveOutline, cameraOutline, personOutline,
   atOutline, languageOutline, documentTextOutline, bookmarkOutline,
   lockClosedOutline, heartOutline, trashOutline, logOutOutline,
-  qrCodeOutline, closeOutline, expandOutline, mailOutline
+  qrCodeOutline, closeOutline, expandOutline, mailOutline, scanOutline
 } from 'ionicons/icons';
 
 /**
@@ -66,7 +66,7 @@ export class ConfigurationUserPage {
       waterOutline, saveOutline, cameraOutline, personOutline,
       atOutline, languageOutline, documentTextOutline, bookmarkOutline,
       lockClosedOutline, heartOutline, trashOutline, logOutOutline,
-      qrCodeOutline, closeOutline, expandOutline, mailOutline
+      qrCodeOutline, closeOutline, expandOutline, mailOutline, scanOutline
     });
   }
 
@@ -107,7 +107,10 @@ export class ConfigurationUserPage {
 
   SelectInput() {
     const fileInput = document.getElementById('fileItemConfig') as HTMLInputElement;
-    if (fileInput) fileInput.click();
+    if (fileInput) {
+      fileInput.value = ''; // Reset para que el evento change siempre se dispare
+      fileInput.click();
+    }
   }
 
   async handleFileInput(event: any) {
@@ -116,7 +119,8 @@ export class ConfigurationUserPage {
       const imgReader = new FileReader();
       imgReader.onload = () => {
         this.img_ref_config = imgReader.result as string;
-        this.image_ref_upload_config = event.target.files[0];
+        this.image_ref_upload_config = selectedFile;
+        this.cdr.detectChanges(); // Forzar actualización visual
         this.closeAvatarModal();
       };
       imgReader.readAsDataURL(selectedFile);
@@ -132,6 +136,10 @@ export class ConfigurationUserPage {
     this.img_ref_config = null;
     this.image_ref_upload_config = null;
     this.formData.photo = null;
+    // Reset del input para permitir re-selección
+    const fileInput = document.getElementById('fileItemConfig') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+    this.cdr.detectChanges();
     this.closeAvatarModal();
   }
 

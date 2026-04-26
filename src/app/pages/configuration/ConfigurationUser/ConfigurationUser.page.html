@@ -39,31 +39,48 @@
 
     <ion-modal #avatarModal trigger="open-avatar-modal" class="glass-modal">
       <ng-template>
-        <div class="modal-wrapper">
+        <div class="modal-wrapper avatar-modal-redesign">
+
+          <!-- Close button -->
           <div class="modal-header">
             <button class="close-modal-btn" (click)="closeAvatarModal()">
               <ion-icon name="close-outline"></ion-icon>
             </button>
           </div>
 
+          <!-- Avatar preview -->
           <div class="modal-body">
-            <div class="large-image-container">
-              <img *ngIf="img_ref_config" [src]="img_ref_config" />
-              <img *ngIf="!img_ref_config" src="https://ionicframework.com/docs/img/demos/card-media.png" />
+            <div class="avatar-showcase">
+              <div class="avatar-glow-ring"></div>
+              <div class="avatar-preview-large">
+                <img *ngIf="img_ref_config" [src]="img_ref_config" alt="Avatar" />
+                <img *ngIf="!img_ref_config" src="https://ionicframework.com/docs/img/demos/card-media.png" alt="Placeholder" />
+              </div>
             </div>
 
-            <div class="modal-actions">
-              <button class="action-btn cyan-btn" (click)="SelectInput()">
-                <ion-icon name="camera-outline"></ion-icon>
-                Cambiar Foto
+            <div class="avatar-user-label">
+              <h2>{{ formData.name || ('name' | translate) }}</h2>
+              <p>{{ 'change_profile_photo' | translate }}</p>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="avatar-actions">
+              <button class="action-btn primary-action" (click)="SelectInput()">
+                <div class="btn-icon-wrap">
+                  <ion-icon name="camera-outline"></ion-icon>
+                </div>
+                <span>{{ 'change_photo' | translate }}</span>
               </button>
 
-              <button class="action-btn red-btn" *ngIf="img_ref_config" (click)="Delete()">
-                <ion-icon name="trash-outline"></ion-icon>
-                Eliminar Foto
+              <button class="action-btn danger-action" *ngIf="img_ref_config" (click)="Delete()">
+                <div class="btn-icon-wrap danger">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </div>
+                <span>{{ 'delete_photo' | translate }}</span>
               </button>
             </div>
           </div>
+
         </div>
       </ng-template>
     </ion-modal>
@@ -169,7 +186,9 @@
 
     <ion-modal #qrModal trigger="open-qr-modal" class="glass-modal">
       <ng-template>
-        <div class="modal-wrapper">
+        <div class="modal-wrapper donation-modal-redesign">
+
+          <!-- Close -->
           <div class="modal-header">
             <button class="close-modal-btn" (click)="closeQrModal()">
               <ion-icon name="close-outline"></ion-icon>
@@ -178,18 +197,35 @@
 
           <div class="modal-body">
 
-            <div class="qr-large-container">
+            <!-- PayPal Hero -->
+            <div class="donation-hero">
+              <div class="paypal-glow"></div>
+              <div class="paypal-logo-circle">
+                <img src="https://freepngimg.com/thumb/paypal/2-2-paypal-logo-transparent-png.png" alt="PayPal" />
+              </div>
+              <h2>{{ 'support_mapfont' | translate }}</h2>
+              <p class="hero-subtitle">{{ 'donation_subtitle' | translate }}</p>
+            </div>
+
+            <!-- QR Code -->
+            <div class="donation-qr-frame">
+              <div class="qr-glow-border"></div>
               <div class="qr-white-bg">
-                <img src="assets/icon/qrcode.png" alt="Donate QR Code" />
+                <img src="assets/icon/qrcode.png" alt="QR PayPal" />
               </div>
             </div>
 
-            <div class="qr-text-info">
-              <h2>¡Apoya a AquaPath!</h2>
-              <p>Escanea este código desde tu app bancaria o PayPal para ayudarnos a mantener los servidores vivos.</p>
+            <!-- Scan instruction -->
+            <div class="scan-badge">
+              <ion-icon name="scan-outline"></ion-icon>
+              <span>{{ 'scan_qr_paypal' | translate }}</span>
             </div>
 
+            <!-- Description -->
+            <p class="donation-description">{{ 'donation_description' | translate }}</p>
+
           </div>
+
         </div>
       </ng-template>
     </ion-modal>

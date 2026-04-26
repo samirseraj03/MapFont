@@ -172,5 +172,14 @@
     "auth_verifying": "Verificando...",
     "auth_code_error": "No se pudo enviar el código al correo.",
     "auth_invalid_code": "El código ingresado es incorrecto o ha caducado.",
-    "auth_pwd_error": "Hubo un error guardando tu contraseña."
+    "auth_pwd_error": "Hubo un error guardando tu contraseña.",
+    "change_photo": "Cambiar Foto",
+    "change_profile_photo": "Toca para cambiar tu foto de perfil",
+    "donation_title": "Donaciones",
+    "donation_subtitle": "Tu apoyo mantiene MapFont funcionando",
+    "donation_description": "MapFont es un proyecto gratuito y sin ánimo de lucro. Cada donación nos ayuda a mantener los servidores activos y seguir mejorando la app.",
+    "scan_qr_paypal": "Escanea el QR con PayPal o tu app bancaria",
+    "support_mapfont": "¡Apoya a MapFont!",
+    "your_contributions": "Tus aportaciones a la comunidad de MapFont",
+    "uploading_photo": "Subiendo imagen..."
 }
