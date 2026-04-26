@@ -17,12 +17,15 @@ export class AuthenticationService {
   }
 
   async signIn(email: string, password: string) {
+    console.log('[AuthService] signIn start for', email);
     try {
+       console.log('[AuthService] calling supabase.auth.signInWithPassword');
        const { data, error } = await this.supabase.auth.signInWithPassword({ email, password });
+       console.log('[AuthService] supabase.auth.signInWithPassword finished. Error?', !!error);
        if (error) throw error;
        return data;
     } catch (error) {
-       console.error('Error al iniciar sesión:', error);
+       console.error('[AuthService] Error al iniciar sesión:', error);
        throw error;
     }
   }
