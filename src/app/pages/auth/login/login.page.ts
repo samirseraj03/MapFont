@@ -68,10 +68,13 @@ export class LoginPage implements OnInit {
   }
 
   async login() {
+    console.log('[LoginPage] login triggered. Email:', this.email, 'Password:', this.password);
     if (!this.email || this.email.trim() === '') {
+      console.log('Early return: email is empty');
       return; 
     }
     if (!this.password || this.password.trim() === '') {
+      console.log('Early return: password is empty');
       return;
     }
     await this.authFacade.login(this.email, this.password);

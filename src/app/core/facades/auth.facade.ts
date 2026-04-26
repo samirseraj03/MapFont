@@ -86,6 +86,7 @@ export class AuthFacade {
   }
 
   async login(email: string, password: string): Promise<boolean> {
+    console.log('[AuthFacade] login called with', email, password);
     let loading = await this.loadingController.create({ message: this.translate.instant('loading') });
     await loading.present();
 
