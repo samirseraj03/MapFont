@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { LoadingController, NavController } from '@ionic/angular';
+import { LoadingController, NavController } from '@ionic/angular/standalone';
 import { UserRepository } from '../repositories/user.repository';
 import { StorageRepository } from '../repositories/storage.repository';
 import GeolocationService from '../utils/Geolocation';
@@ -18,7 +18,7 @@ export class UserFacade {
     private translateService: TranslateService,
     private loadingController: LoadingController,
     private navCtrl: NavController
-  ) {}
+  ) { }
 
   /**
    * Obtiene y combina la información base del perfil, el rol administrativo y la foto validada en Cloud Storage.
@@ -41,7 +41,7 @@ export class UserFacade {
       } else if (profile.role === 'admin' || profile.type === 'admin') {
         isAdmin = true;
       }
-    } catch(e) {}
+    } catch (e) { }
 
     let photoUrl = profile.photo ? this.storageRepository.getStorageUrl(profile.photo) : null;
 
@@ -61,9 +61,9 @@ export class UserFacade {
         formData.photo = await this.storageRepository.insertToStorage(imageFile);
       }
       await this.userRepository.updateUser(userId, formData);
-      
+
       this.translateService.use(formData.language || 'es');
-      
+
       this.navCtrl.navigateForward('/Success', {
         state: { PageSucces: 'configuration' },
       });

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
-import { NavController, LoadingController, ToastController } from '@ionic/angular';
+import { NavController, LoadingController, ToastController } from '@ionic/angular/standalone';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthenticationService } from '../services/authentication.service';
 import { AuthStateService } from '../services/auth-state.service';
@@ -86,16 +86,13 @@ export class AuthFacade {
   }
 
   async login(email: string, password: string): Promise<boolean> {
-    console.log('[AuthFacade] login called with', email);
-    let loading = await this.loadingController.create({ message: this.translate.instant('loading') });
-    console.log('[AuthFacade] loading created');
-    await loading.present();
-    console.log('[AuthFacade] loading presented');
-
+    let loading: any;
     try {
-      console.log('[AuthFacade] calling authService.signIn');
+      loading = await this.loadingController.create({ message: this.translate.instant('loading') || 'Cargando...' });
+      await loading.present();
+
       const response = await this.authService.signIn(email, password);
-      console.log('[AuthFacade] authService.signIn returned', !!response);
+      
       if (response && response.user) {
         const { user, session } = response;
         
@@ -109,7 +106,6 @@ export class AuthFacade {
         }
 
         try {
-          console.log('[AuthFacade] querying user profile');
           const existingUsers = await this.userRepository.getUser(user.id);
           if (existingUsers && existingUsers.length > 0) {
             const userProfile = existingUsers[0];
@@ -121,16 +117,13 @@ export class AuthFacade {
             }
           }
 
-          console.log('[AuthFacade] querying usertype');
           const userTypeRecords = await this.userRepository.getUserType(user.id);
           if (!userTypeRecords || userTypeRecords.length === 0) {
             await this.userRepository.insertUserType({ admin_role: false, user_role: true, autencationUserID: user.id });
           }
         } catch(e) {
-            console.error('[AuthFacade] Error fetching user profile / type:', e);
         }
 
-        console.log('[AuthFacade] routing away');
         const route = this.authState.intendedRoute || '/tabs/fonts';
         this.authState.intendedRoute = null;
         this.navCtrl.navigateRoot(route);
@@ -139,12 +132,10 @@ export class AuthFacade {
         throw new Error("Wrong credentials");
       }
     } catch (error) {
-      console.error('[AuthFacade] catch block:', error);
       this.showError(this.translate.instant('wrong_credentials'));
       return false;
     } finally {
-      console.log('[AuthFacade] dismissing loading');
-      loading.dismiss();
+      if (loading) loading.dismiss();
     }
   }
 

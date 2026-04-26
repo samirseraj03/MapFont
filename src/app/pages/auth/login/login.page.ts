@@ -1,7 +1,7 @@
 import { Component, Injectable, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavController, AlertController } from '@ionic/angular';
+import { NavController, AlertController } from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
 
 import { AuthFacade } from '../../../core/facades/auth.facade';
@@ -68,13 +68,10 @@ export class LoginPage implements OnInit {
   }
 
   async login() {
-    console.log('[LoginPage] login triggered. Email:', this.email, 'Password:', this.password);
     if (!this.email || this.email.trim() === '') {
-      console.log('Early return: email is empty');
       return; 
     }
     if (!this.password || this.password.trim() === '') {
-      console.log('Early return: password is empty');
       return;
     }
     await this.authFacade.login(this.email, this.password);

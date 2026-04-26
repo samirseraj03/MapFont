@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NavController, ActionSheetController, LoadingController } from '@ionic/angular';
+import { NavController, ActionSheetController, LoadingController } from '@ionic/angular/standalone';
 
 // Ionic Standalone & Modulos
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
@@ -147,7 +147,7 @@ export class FormPage {
       if (image.webPath) {
         const response = await fetch(image.webPath);
         const blob = await response.blob();
-        
+
         // Formamos un obj File de manera segura o simplemente pasamos el Blob a Supabase
         // Supabase acepta ambos (File | Blob) para su API de upload.
         // Pero en móviles, pasar el Blob directo suele evitar el TypeError del constructor `File`.

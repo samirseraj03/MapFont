@@ -1,8 +1,6 @@
 import {
-  LoadingController,
-  AlertController,
   NavController,
-} from '@ionic/angular';
+} from '@ionic/angular/standalone';
 import { Geolocation } from '@capacitor/geolocation';
 import { StorageService } from '../services/storage.service';
 import { Capacitor } from '@capacitor/core';

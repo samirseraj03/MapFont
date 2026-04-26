@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavController, AlertController, LoadingController, ActionSheetController } from '@ionic/angular';
+import { NavController, AlertController, LoadingController, ActionSheetController } from '@ionic/angular/standalone';
 import { Browser } from '@capacitor/browser';
 
 // Standalone Components limpios
@@ -53,7 +53,7 @@ export class ConfirmationFormPage implements OnInit {
 
   constructor(
     public NavCtrl: NavController,
-    public actionSheetCtrl: ActionSheetController, 
+    public actionSheetCtrl: ActionSheetController,
     public alertController: AlertController,
     private loadingController: LoadingController,
     private formFacade: FormFacade,

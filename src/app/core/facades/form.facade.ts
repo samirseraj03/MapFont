@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { FormRepository } from '../repositories/form.repository';
 import { StorageRepository } from '../repositories/storage.repository';
 import { AuthFacade } from './auth.facade';
-import { LoadingController, NavController } from '@ionic/angular';
+import { LoadingController, NavController } from '@ionic/angular/standalone';
 import { TranslateService } from '@ngx-translate/core';
 import { UserRepository } from '../repositories/user.repository';
 
@@ -18,7 +18,7 @@ export class FormFacade {
     private loadingController: LoadingController,
     private translateService: TranslateService,
     private navCtrl: NavController
-  ) {}
+  ) { }
 
   async submitNewForm(formData: any, imagePath: string, location: any, address: string) {
     let loading = await this.loadingController.create({ message: this.translateService.instant('loading') });
