@@ -30,7 +30,8 @@ export class SupabaseClientService {
       auth: {
         autoRefreshToken: true,
         persistSession: true,
-        storage: customStorage as any
+        storage: customStorage as any,
+        lock: (name: string, acquireTimeout: number, fn: () => Promise<any>) => fn()
       }
     });
   }
