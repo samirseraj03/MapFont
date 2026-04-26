@@ -181,5 +181,7 @@
     "scan_qr_paypal": "Scan the QR with PayPal or your banking app",
     "support_mapfont": "Support MapFont!",
     "your_contributions": "Your contributions to the MapFont community",
-    "uploading_photo": "Uploading image..."
+    "uploading_photo": "Uploading image...",
+    "discovery_tip_title": "Explore your area",
+    "discovery_tip_description": "Scroll around the map to automatically discover fountains that aren't registered in your area yet."
 }

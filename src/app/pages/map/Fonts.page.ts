@@ -1,7 +1,8 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  IonHeader, IonContent, IonButton, IonIcon, IonModal, IonFooter, IonSpinner
+  IonHeader, IonContent, IonButton, IonIcon, IonModal, IonFooter, IonSpinner,
+  IonFab, IonFabButton // ✔️ AÑADIDOS PARA EL BOTÓN FLOTANTE
 } from '@ionic/angular/standalone';
 import { NavController, ActionSheetController, ToastController } from '@ionic/angular';
 import { Browser } from '@capacitor/browser';
@@ -16,7 +17,8 @@ import { Services } from '../../core/services/services.service';
 import { OsmService } from '../../core/services/osm.service';
 
 import { addIcons } from 'ionicons';
-import { waterOutline, refreshOutline, locationOutline, navigateOutline, bookmarkOutline, bookmark, water, checkmark, chevronForward } from 'ionicons/icons';
+// ✔️ AÑADIDO locateOutline AL FINAL
+import { waterOutline, refreshOutline, locationOutline, navigateOutline, bookmarkOutline, bookmark, water, checkmark, chevronForward, locateOutline, informationCircleOutline, closeOutline } from 'ionicons/icons';
 
 /**
  * @description
@@ -34,7 +36,8 @@ import { waterOutline, refreshOutline, locationOutline, navigateOutline, bookmar
   styleUrls: ['Fonts.page.scss'],
   standalone: true,
   imports: [
-    IonHeader, IonContent, IonButton, IonIcon, IonModal, IonFooter, IonSpinner, CommonModule, TranslateModule
+    IonHeader, IonContent, IonButton, IonIcon, IonModal, IonFooter, IonSpinner, CommonModule, TranslateModule,
+    IonFab, IonFabButton // ✔️ AÑADIDOS AL ARREGLO DE IMPORTS
   ],
 })
 export class fontsPage {
@@ -54,6 +57,8 @@ export class fontsPage {
   moveTimeout: any;
   isMapMoving: boolean = false;
 
+  showDiscoveryTip: boolean = true;
+
   geolocate = new mapboxgl.GeolocateControl({
     positionOptions: { enableHighAccuracy: true },
     trackUserLocation: true,
@@ -72,7 +77,8 @@ export class fontsPage {
     public GeolocationService: GeolocationService,
     private storage: StorageService
   ) {
-    addIcons({ waterOutline, refreshOutline, locationOutline, navigateOutline, bookmarkOutline, bookmark, water, checkmark, chevronForward });
+    // ✔️ AÑADIDO locateOutline AQUÍ TAMBIÉN
+    addIcons({ waterOutline, refreshOutline, locationOutline, navigateOutline, bookmarkOutline, bookmark, water, checkmark, chevronForward, locateOutline, informationCircleOutline, closeOutline });
   }
 
   // 🚀 Función Helper para los mensajes Toast
@@ -88,8 +94,20 @@ export class fontsPage {
   }
 
   ionViewDidEnter() {
+    this.loadDiscoveryTipState();
     this.insertMap();
   }
+
+  // 🔍 Cargar estado del tip desde storage
+  async loadDiscoveryTipState() {
+    const dismissed = await this.storage.get('discovery_tip_dismissed');
+    if (dismissed) {
+      this.showDiscoveryTip = false;
+    }
+  }
+
+
+
 
   async insertMap() {
     this.UpdatedMap = await this.waterSourceFacade.checkLatestUpdateFountains();
@@ -140,6 +158,14 @@ export class fontsPage {
     });
 
     this.map.addControl(this.geolocate);
+  }
+
+  // 📍 NUEVA FUNCIÓN PARA EL BOTÓN FLOTANTE
+  localizarUsuario() {
+    if (this.geolocate) {
+      // Activa el control nativo de Mapbox de forma invisible
+      this.geolocate.trigger();
+    }
   }
 
   async getWatersourcesToMap() {
@@ -455,6 +481,17 @@ export class fontsPage {
     } catch (error) {
       console.error("Error al actualizar el mapa", error);
     }
+  }
+
+  // Función para cerrar el tip
+  dismissTip() {
+    this.showDiscoveryTip = false;
+    this.storage.set('discovery_tip_dismissed', true);
+  }
+
+  // Función para volver a mostrar el tip
+  showTipAgain() {
+    this.showDiscoveryTip = true;
   }
 
   async getStorageCache() {

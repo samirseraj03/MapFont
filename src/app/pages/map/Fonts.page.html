@@ -2,6 +2,33 @@
 
   <div id="Mapa-de-box"></div>
 
+  <!-- 🔍 Banner flotante: Tip de descubrimiento OSM -->
+  <div class="discovery-tip" *ngIf="showDiscoveryTip">
+    <ion-icon name="information-circle-outline" class="tip-icon"></ion-icon>
+    
+    <div class="tip-text">
+      <strong>{{ 'discovery_tip_title' | translate }}</strong>
+      <p>{{ 'discovery_tip_description' | translate }}</p>
+    </div>
+
+    <button class="close-tip-btn" (click)="dismissTip()">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </div>
+
+  <!-- ℹ️ Botón para volver a ver el tip de descubrimiento -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" style="margin-bottom: 144px; margin-right: 16px;" *ngIf="!showDiscoveryTip">
+    <ion-fab-button (click)="showTipAgain()" class="info-fab-btn">
+      <ion-icon name="information-circle-outline" style="color: #22d3ee;"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" style="margin-bottom: 80px; margin-right: 16px;">
+    <ion-fab-button (click)="localizarUsuario()" color="light">
+      <ion-icon name="locate-outline" style="color: #22d3ee;"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
   <header class="glass-header">
     <div class="header-left">
       <ion-icon name="water-outline" class="brand-icon"></ion-icon>
@@ -83,6 +110,8 @@
           </div>
 
         </div>
+
+
       </ion-content>
 
     </ng-template>

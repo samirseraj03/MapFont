@@ -13,6 +13,11 @@
   display: none !important;
 }
 
+/* Oculta el botón nativo de geolocalización de Mapbox */
+::ng-deep .mapboxgl-ctrl-geolocate {
+  display: none !important;
+}
+
 /* Cabecera Flotante */
 .glass-header {
   position: absolute;
@@ -370,5 +375,110 @@ ion-modal.glass-bottom-sheet {
         border: 1px solid rgba(108, 214, 227, 0.3);
       }
     }
+  }
+}
+
+/* ==========================================
+   BOTÓN FAB DE INFO (ℹ️)
+   ========================================== */
+
+.info-fab-btn {
+  --background: rgba(15, 23, 42, 0.85);
+  --background-activated: rgba(34, 211, 238, 0.2);
+  --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 10px rgba(34, 211, 238, 0.15);
+  border: 1px solid rgba(34, 211, 238, 0.25);
+  border-radius: 50%;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ==========================================
+   BANNER FLOTANTE DE DESCUBRIMIENTO (TIP)
+   ========================================== */
+
+.discovery-tip {
+  position: absolute;
+  top: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92%;
+  max-width: 400px;
+  z-index: 999;
+  
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  
+  /* Estilo Glassmorphism a juego con la app */
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(34, 211, 238, 0.25);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  
+  /* Animación de entrada */
+  animation: slideDownFade 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+
+  .tip-icon {
+    font-size: 2.2rem;
+    color: #22d3ee;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.4));
+  }
+
+  .tip-text {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    strong {
+      color: #eafcff;
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+
+    p {
+      margin: 0;
+      color: #94a3b8;
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+  }
+
+  .close-tip-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    color: #bdc9ca;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+
+    &:active {
+      transform: scale(0.85);
+      background: rgba(128, 233, 247, 0.15);
+      color: #80e9f7;
+    }
+  }
+}
+
+@keyframes slideDownFade {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -30px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
   }
 }

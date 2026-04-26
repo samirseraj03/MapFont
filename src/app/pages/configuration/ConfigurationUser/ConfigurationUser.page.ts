@@ -20,7 +20,7 @@ import {
   waterOutline, saveOutline, cameraOutline, personOutline,
   atOutline, languageOutline, documentTextOutline, bookmarkOutline,
   lockClosedOutline, heartOutline, trashOutline, logOutOutline,
-  qrCodeOutline, closeOutline, expandOutline, mailOutline, scanOutline
+  qrCodeOutline, closeOutline, expandOutline, mailOutline, scanOutline, personCircleOutline
 } from 'ionicons/icons';
 
 /**
@@ -55,6 +55,9 @@ export class ConfigurationUserPage {
   image_ref_upload_config: any;
   isAdmin: boolean = false;
 
+  originalData: any = {};
+  originalPhoto: any = null;
+
   constructor(
     public NavCtrl: NavController,
     private cdr: ChangeDetectorRef,
@@ -66,7 +69,7 @@ export class ConfigurationUserPage {
       waterOutline, saveOutline, cameraOutline, personOutline,
       atOutline, languageOutline, documentTextOutline, bookmarkOutline,
       lockClosedOutline, heartOutline, trashOutline, logOutOutline,
-      qrCodeOutline, closeOutline, expandOutline, mailOutline, scanOutline
+      qrCodeOutline, closeOutline, expandOutline, mailOutline, scanOutline, personCircleOutline
     });
   }
 
@@ -74,6 +77,8 @@ export class ConfigurationUserPage {
     this.isAdmin = false;
     this.formData = {};
     this.img_ref_config = null;
+    this.originalData = {}; // Resetear
+    this.originalPhoto = null; // Resetear
 
     const result = await this.userFacade.loadUserProfile();
     if (result) {
@@ -83,7 +88,12 @@ export class ConfigurationUserPage {
         language: result.profile.language,
         username: result.profile.username,
       };
+
+      // Hacemos una copia exacta de los datos originales
+      this.originalData = { ...this.formData };
+
       this.img_ref_config = result.photoUrl;
+      this.originalPhoto = result.photoUrl; // Guardamos la foto original
       this.isAdmin = result.isAdmin;
     }
     this.cdr.detectChanges();
@@ -101,8 +111,16 @@ export class ConfigurationUserPage {
     }
   }
 
+
   async Update() {
     await this.userFacade.updateUserProfile(this.formData, this.image_ref_upload_config);
+
+    // Una vez guardado con éxito, los datos actuales pasan a ser los nuevos "originales"
+    this.originalData = { ...this.formData };
+    this.originalPhoto = this.img_ref_config;
+    this.image_ref_upload_config = null; // Vaciamos el archivo pendiente de subir
+
+    this.cdr.detectChanges();
   }
 
   SelectInput() {
@@ -141,6 +159,25 @@ export class ConfigurationUserPage {
     if (fileInput) fileInput.value = '';
     this.cdr.detectChanges();
     this.closeAvatarModal();
+  }
+
+
+  // 1. Detecta SOLO si la foto ha cambiado
+  get hasPhotoChanges(): boolean {
+    return !!this.image_ref_upload_config ||
+      (this.img_ref_config === null && this.originalPhoto !== null);
+  }
+
+  // 2. Detecta SOLO si los textos han cambiado
+  get hasDataChanges(): boolean {
+    // Verificamos que originalData no sea null antes de comparar
+    if (!this.originalData) return false;
+
+    return (
+      this.formData.name !== this.originalData.name ||
+      this.formData.username !== this.originalData.username ||
+      this.formData.language !== this.originalData.language
+    );
   }
 
   async navigateTo(event: any) {

@@ -1,35 +1,36 @@
 
 
-- [x] corregir que no se puede dar siguente a la siguente foto de la fuente
+- corregir que no se puede dar siguente a la siguente foto de la fuente
 
 -  [x] auth de google encontrar solucion. 
 
 -  [x] icono de google para inicio de session 
-
+   
 - [x] mirar como se puede restablecer la contraseña si no se recuerda. 
 
 
 - [x] buscar idioma dl movil y ponerlo en la app y tambien si inicia session , ver que idioma tiene y ponerlo en la app
     y registrarlo en la base de datos. , por defecto ahora solo tiene es 
 
+   mejorar la visualizacion cunado quiera cambiar la foto , quitar que se guarde con el boton o simplificar elboton de guardar.
 
 - [x] mirar porque registra mal los campos del usuario.
 
 - [x] hacer que nose puede cambiar el email cuando ya se registra. solo enseñarlo.
 
+  - [x] poner el cron en la tabla de cron.
 
 
-   [x] cambiar el envoirment de SupabaseService
+- [x ] cuando inicio session cuando exporto la aplicaion o la utilizo en verccel dejan de funcionar las funciones 
+      ver que pasa con la seguridad de supabase. viene de alli , en localhost funciona perfectamente. en vercel o en aplicacion movil , dime si neceistas ver los RLS de las tablas 
+      para intentar entender que pasa.
 
 
-      mejorar la visualizacion cunado quiera cambiar la foto , quitar que se guarde con el boton o simplificar elboton de guardar.
-ademas no se cambia en la segunda vez o nose guarda bien. , hay un error en la variable image_push
+   [x ] cambiar el envoirment de SupabaseService
 
    buscar mas cosas para mejorar la segurdidad
 
-   mejorar los textos y quitar aquapath
 
-   poner el cron en la tabla de cron.
 
    
 

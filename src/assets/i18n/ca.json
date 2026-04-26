@@ -181,5 +181,7 @@
     "auth_verifying": "Verificant...",
     "auth_code_error": "No s'ha pogut enviar el codi al correu.",
     "auth_invalid_code": "El codi introduït és incorrecte o ha caducat.",
-    "auth_pwd_error": "Hi ha hagut un error desant la teva contrasenya."
+    "auth_pwd_error": "Hi ha hagut un error desant la teva contrasenya.",
+    "discovery_tip_title": "Explora la teva zona",
+    "discovery_tip_description": "Desplaça't pel mapa per descobrir automàticament fonts que encara no estan registrades a la teva zona."
 }

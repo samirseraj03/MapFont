@@ -181,5 +181,7 @@
     "scan_qr_paypal": "Escanea el QR con PayPal o tu app bancaria",
     "support_mapfont": "¡Apoya a MapFont!",
     "your_contributions": "Tus aportaciones a la comunidad de MapFont",
-    "uploading_photo": "Subiendo imagen..."
+    "uploading_photo": "Subiendo imagen...",
+    "discovery_tip_title": "Explora tu zona",
+    "discovery_tip_description": "Desplázate por el mapa para descubrir automáticamente fuentes que aún no están registradas en tu zona."
 }

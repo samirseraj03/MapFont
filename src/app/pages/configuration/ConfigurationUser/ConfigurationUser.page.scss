@@ -5,6 +5,9 @@
 }
 
 
+
+
+
 /* Fondo */
 .custom-bg {
     --background: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCgqBwm-JT9yyf0EAw5Ii1l5RVfJPIgjvmgwZIzxlK7-b6bKrzgKYaVr-jwoYJoPKTbrYt8-Nxspu_NMU5d6YhbRRtaeWSgmHtsRhaOiHYzdxLPEGwne7O2ok3F7ukQAxBOzEbS-2CzgKtX0-6X3t7YuwryxpU_vjBK_UivpfhBczD0fgT3elfSqVVwcJAJRbONJp1cyhvxn9wap_MtGzl7Lrmcar5_2PGBk7bRUKMAZqDFSUfMwbYgswzN3_vD7Ta79GEtusm_pOk') no-repeat center center / cover;
@@ -397,6 +400,569 @@
 }
 
 
+/* global.scss */
+
+ion-modal.donation-sheet-modal {
+    --height: auto;
+    --min-height: 560px;
+    --max-height: 92vh;
+    --border-radius: 28px 28px 0 0;
+    --background: rgba(8, 15, 27, 0.72);
+    --backdrop-opacity: 0.5;
+    --box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+
+/* Fondo real del modal */
+ion-modal.donation-sheet-modal::part(content) {
+    background:
+        linear-gradient(180deg, rgba(15, 23, 42, 0.96) 0%, rgba(8, 15, 27, 0.98) 100%);
+    border-top-left-radius: 28px;
+    border-top-right-radius: 28px;
+    border: 1px solid rgba(128, 233, 247, 0.14);
+    overflow: hidden;
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+}
+
+ion-modal.donation-sheet-modal::part(handle) {
+    width: 54px;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(128, 233, 247, 0.5);
+    margin-top: 10px;
+}
+
+.donation-modal-shell {
+    padding: 18px 18px calc(26px + env(safe-area-inset-bottom));
+}
+
+.donation-modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    text-align: center;
+    animation: modalContentIn 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.modal-top-actions {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -4px;
+    margin-bottom: 2px;
+}
+
+.close-modal-btn {
+    width: 44px;
+    height: 44px;
+    border: none;
+    outline: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    cursor: pointer;
+    transition:
+        transform 0.22s ease,
+        background 0.22s ease,
+        box-shadow 0.22s ease;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.close-modal-btn:hover {
+    background: rgba(128, 233, 247, 0.14);
+    color: #80e9f7;
+    transform: translateY(-1px);
+}
+
+.close-modal-btn:active {
+    transform: scale(0.94);
+}
+
+.donation-hero {
+    position: relative;
+    width: 100%;
+    padding-top: 8px;
+}
+
+.paypal-glow {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(34, 211, 238, 0.22) 0%, transparent 72%);
+    filter: blur(18px);
+    animation: paypalPulse 3.2s ease-in-out infinite;
+}
+
+.paypal-logo-circle {
+    position: relative;
+    z-index: 1;
+    width: 84px;
+    height: 84px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+    border: 1px solid rgba(128, 233, 247, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 18px 40px rgba(0, 0, 0, 0.28);
+}
+
+.paypal-logo-circle img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.donation-hero h2 {
+    margin: 0 0 6px;
+    color: #eafcff;
+    font-size: 1.45rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.hero-subtitle {
+    margin: 0;
+    color: #9fb2c7;
+    font-size: 0.92rem;
+    line-height: 1.45;
+}
+
+.donation-qr-frame {
+    position: relative;
+    margin-top: 4px;
+}
+
+.qr-glow-border {
+    position: absolute;
+    inset: -10px;
+    border-radius: 34px;
+    background: linear-gradient(135deg, rgba(34, 211, 238, 0.22), rgba(161, 212, 148, 0.18));
+    filter: blur(14px);
+    opacity: 0.9;
+}
+
+.qr-white-bg {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(180deg, #ffffff 0%, #eff7fb 100%);
+    border-radius: 28px;
+    padding: 18px;
+    box-shadow:
+        0 24px 50px rgba(0, 0, 0, 0.32),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.qr-white-bg img {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    display: block;
+}
+
+.scan-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: rgba(128, 233, 247, 0.08);
+    border: 1px solid rgba(128, 233, 247, 0.14);
+    color: #c8d6e5;
+}
+
+.scan-badge ion-icon {
+    color: #80e9f7;
+    font-size: 1.2rem;
+}
+
+.donation-description {
+    margin: 2px 0 0;
+    max-width: 320px;
+    color: #94a3b8;
+    font-size: 0.94rem;
+    line-height: 1.65;
+}
+
+.donate-action-btn {
+    margin-top: 4px;
+    width: 100%;
+    max-width: 320px;
+    height: 52px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #22d3ee, #62cdda);
+    color: #082032;
+    font-weight: 800;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 16px 30px rgba(34, 211, 238, 0.28);
+    cursor: pointer;
+    transition:
+        transform 0.24s ease,
+        box-shadow 0.24s ease,
+        filter 0.24s ease;
+}
+
+.donate-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 22px 38px rgba(34, 211, 238, 0.32);
+    filter: brightness(1.03);
+}
+
+.donate-action-btn:active {
+    transform: scale(0.97);
+}
+
+@keyframes paypalPulse {
+
+    0%,
+    100% {
+        opacity: 0.35;
+        transform: translateX(-50%) scale(1);
+    }
+
+    50% {
+        opacity: 0.65;
+        transform: translateX(-50%) scale(1.08);
+    }
+}
+
+@keyframes modalContentIn {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.985);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+/* ==========================================
+   MODAL DE AVATAR (PANTALLA COMPLETA)
+   ========================================== */
+
+/* Hacemos que el modal de Ionic en sí sea transparente para ver el blur */
+ion-modal.avatar-fullscreen-modal {
+    --background: transparent;
+    --backdrop-opacity: 0.7;
+}
+
+ion-modal.avatar-fullscreen-modal::part(content) {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+}
+
+.avatar-page-modal {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+/* Luces de fondo del modal */
+.avatar-page-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 20%, rgba(34, 211, 238, 0.15), transparent 60%);
+    z-index: 0;
+}
+
+.avatar-page-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 30%, rgba(8, 15, 27, 0.95) 100%);
+    z-index: 1;
+}
+
+.avatar-page-shell {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: env(safe-area-inset-top, 20px) 24px env(safe-area-inset-bottom, 20px) 24px;
+}
+
+/* Cabecera del modal */
+.avatar-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0 30px 0;
+
+    .avatar-header-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .avatar-header-icon {
+            background: rgba(128, 233, 247, 0.1);
+            color: #80e9f7;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            border: 1px solid rgba(128, 233, 247, 0.2);
+        }
+
+        .avatar-header-text {
+            h3 {
+                margin: 0;
+                color: #e2e2e5;
+                font-size: 1.15rem;
+                font-weight: 800;
+            }
+
+            p {
+                margin: 4px 0 0;
+                color: #94a3b8;
+                font-size: 0.85rem;
+            }
+        }
+    }
+
+    .modal-close-btn {
+        background: rgba(255, 255, 255, 0.08);
+        color: #e2e8f0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+
+        &:active,
+        &:hover {
+            background: rgba(128, 233, 247, 0.15);
+            color: #80e9f7;
+            border-color: rgba(128, 233, 247, 0.4);
+            transform: scale(0.95);
+        }
+    }
+}
+
+/* Contenido scrolleable (si la pantalla es pequeña) o centrado */
+.avatar-page-scroll {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 40px;
+    overflow-y: auto;
+    padding-bottom: 20px;
+}
+
+/* Avatar Grande Central */
+.avatar-main-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+
+    .avatar-showcase {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .avatar-glow-ring {
+            position: absolute;
+            width: 270px;
+            height: 270px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #22d3ee, #a1d494, #80e9f7, #62cdda, #22d3ee);
+            filter: blur(25px);
+            opacity: 0.35;
+            animation: spinGlow 6s linear infinite;
+        }
+
+        .avatar-preview-large {
+            width: 230px;
+            height: 230px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid rgba(128, 233, 247, 0.5);
+            position: relative;
+            z-index: 2;
+            background: #1a1c1e;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), inset 0 0 30px rgba(128, 233, 247, 0.1);
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+    }
+
+    .avatar-user-label {
+        text-align: center;
+
+        h2 {
+            color: #e2e2e5;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.5px;
+        }
+
+        p {
+            color: #80e9f7;
+            font-size: 0.9rem;
+            margin: 0;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+    }
+}
+
+/* Panel de Botones */
+.avatar-actions-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
+
+    .action-btn {
+        width: 100%;
+        padding: 18px 20px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        background: rgba(26, 28, 30, 0.5);
+        backdrop-filter: blur(12px);
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: left;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+
+        &:active {
+            transform: scale(0.97);
+        }
+
+        .btn-icon-wrap {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            flex-shrink: 0;
+        }
+
+        .btn-text {
+            display: flex;
+            flex-direction: column;
+
+            span {
+                font-size: 1.1rem;
+                font-weight: 700;
+                margin-bottom: 4px;
+            }
+
+            small {
+                font-size: 0.85rem;
+                opacity: 0.8;
+            }
+        }
+
+        /* Estilo botón "Cambiar Foto" */
+        &.primary-action {
+            border-color: rgba(128, 233, 247, 0.15);
+
+            .btn-icon-wrap {
+                background: rgba(34, 211, 238, 0.15);
+                color: #22d3ee;
+            }
+
+            .btn-text span {
+                color: #e2e2e5;
+            }
+
+            .btn-text small {
+                color: #94a3b8;
+            }
+
+            &:hover,
+            &:active {
+                background: rgba(128, 233, 247, 0.08);
+                border-color: rgba(128, 233, 247, 0.4);
+            }
+        }
+
+        /* Estilo botón "Eliminar Foto" */
+        &.danger-action {
+            border-color: rgba(255, 180, 171, 0.1);
+
+            .btn-icon-wrap {
+                background: rgba(147, 0, 10, 0.2);
+                color: #ffb4ab;
+            }
+
+            .btn-text span {
+                color: #ffb4ab;
+            }
+
+            .btn-text small {
+                color: #94a3b8;
+            }
+
+            &:hover,
+            &:active {
+                background: rgba(147, 0, 10, 0.15);
+                border-color: rgba(255, 180, 171, 0.3);
+            }
+        }
+    }
+}
+
+/* Animación de la luz detrás del avatar */
+@keyframes spinGlow {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
 /* Botones de Acción Inferiores */
 .danger-actions {
     display: flex;
@@ -541,8 +1107,13 @@
         }
 
         @keyframes glowSpin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .avatar-user-label {
@@ -648,8 +1219,17 @@
             }
 
             @keyframes paypalPulse {
-                0%, 100% { opacity: 0.3; transform: translateX(-50%) scale(1); }
-                50% { opacity: 0.55; transform: translateX(-50%) scale(1.15); }
+
+                0%,
+                100% {
+                    opacity: 0.3;
+                    transform: translateX(-50%) scale(1);
+                }
+
+                50% {
+                    opacity: 0.55;
+                    transform: translateX(-50%) scale(1.15);
+                }
             }
 
             .paypal-logo-circle {
@@ -750,5 +1330,64 @@
             margin: 0;
             max-width: 320px;
         }
+    }
+}
+
+
+/* ==========================================
+   BOTONES DE GUARDADO CONTEXTUALES
+   ========================================== */
+
+.contextual-save-btn {
+    background: linear-gradient(135deg, #22d3ee, #62cdda);
+    color: #082032;
+    border: none;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 10px 20px rgba(34, 211, 238, 0.25);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:active {
+        transform: scale(0.95);
+        box-shadow: 0 5px 10px rgba(34, 211, 238, 0.2);
+    }
+
+    ion-icon {
+        font-size: 1.2rem;
+    }
+
+    /* Estilo específico para el botón debajo de la foto */
+    &.photo-btn {
+        margin-top: 12px;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        animation: fadeInSlideUp 0.3s ease-out forwards;
+    }
+
+    /* Estilo específico para el botón debajo del formulario */
+    &.data-btn {
+        width: 100%;
+        margin-top: 24px;
+        padding: 14px;
+        border-radius: 14px;
+        font-size: 1.05rem;
+        animation: fadeInSlideUp 0.3s ease-out forwards;
+    }
+}
+
+@keyframes fadeInSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }

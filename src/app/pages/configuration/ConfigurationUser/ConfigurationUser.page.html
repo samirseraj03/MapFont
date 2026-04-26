@@ -10,9 +10,6 @@
       <h1>{{ 'profile' | translate }}</h1>
     </div>
     <div class="header-right">
-      <button class="save-btn" (click)="Update()">
-        <ion-icon name="save-outline"></ion-icon>
-      </button>
     </div>
   </header>
 
@@ -34,53 +31,90 @@
       <div class="user-info">
         <h2>{{ formData.name || ('name' | translate) }}</h2>
         <p>{{ formData.email || 'Cargando email...' }}</p>
+
+        <button class="contextual-save-btn photo-btn" *ngIf="hasPhotoChanges" (click)="Update()">
+          <ion-icon name="save-outline"></ion-icon>
+          Guardar Foto
+        </button>
       </div>
     </section>
 
-    <ion-modal #avatarModal trigger="open-avatar-modal" class="glass-modal">
+    <ion-modal #avatarModal trigger="open-avatar-modal" class="avatar-fullscreen-modal">
       <ng-template>
-        <div class="modal-wrapper avatar-modal-redesign">
+        <div class="avatar-page-modal">
 
-          <!-- Close button -->
-          <div class="modal-header">
-            <button class="close-modal-btn" (click)="closeAvatarModal()">
-              <ion-icon name="close-outline"></ion-icon>
-            </button>
-          </div>
+          <!-- Fondo -->
+          <div class="avatar-page-bg"></div>
+          <div class="avatar-page-overlay"></div>
 
-          <!-- Avatar preview -->
-          <div class="modal-body">
-            <div class="avatar-showcase">
-              <div class="avatar-glow-ring"></div>
-              <div class="avatar-preview-large">
-                <img *ngIf="img_ref_config" [src]="img_ref_config" alt="Avatar" />
-                <img *ngIf="!img_ref_config" src="https://ionicframework.com/docs/img/demos/card-media.png" alt="Placeholder" />
+          <!-- Contenido -->
+          <div class="avatar-page-shell">
+
+            <!-- Header -->
+            <div class="avatar-page-header">
+              <div class="avatar-header-left">
+                <div class="avatar-header-icon">
+                  <ion-icon name="person-circle-outline"></ion-icon>
+                </div>
+
+                <div class="avatar-header-text">
+                  <h3>{{ 'change_profile_photo' | translate }}</h3>
+                  <p>{{ formData.name || ('name' | translate) }}</p>
+                </div>
               </div>
-            </div>
 
-            <div class="avatar-user-label">
-              <h2>{{ formData.name || ('name' | translate) }}</h2>
-              <p>{{ 'change_profile_photo' | translate }}</p>
-            </div>
-
-            <!-- Action buttons -->
-            <div class="avatar-actions">
-              <button class="action-btn primary-action" (click)="SelectInput()">
-                <div class="btn-icon-wrap">
-                  <ion-icon name="camera-outline"></ion-icon>
-                </div>
-                <span>{{ 'change_photo' | translate }}</span>
-              </button>
-
-              <button class="action-btn danger-action" *ngIf="img_ref_config" (click)="Delete()">
-                <div class="btn-icon-wrap danger">
-                  <ion-icon name="trash-outline"></ion-icon>
-                </div>
-                <span>{{ 'delete_photo' | translate }}</span>
+              <button class="modal-close-btn" (click)="closeAvatarModal()" aria-label="Cerrar modal">
+                <ion-icon name="close-outline"></ion-icon>
               </button>
             </div>
+
+            <!-- Scroll -->
+            <div class="avatar-page-scroll">
+
+              <!-- Hero -->
+              <div class="avatar-main-card">
+                <div class="avatar-showcase">
+                  <div class="avatar-glow-ring"></div>
+
+                  <div class="avatar-preview-large">
+                    <img *ngIf="img_ref_config" [src]="img_ref_config" alt="Avatar" />
+                    <img *ngIf="!img_ref_config" src="https://ionicframework.com/docs/img/demos/card-media.png"
+                      alt="Placeholder" />
+                  </div>
+                </div>
+
+                <div class="avatar-user-label">
+                  <h2>{{ formData.name || ('name' | translate) }}</h2>
+                  <p>{{ 'change_profile_photo' | translate }}</p>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="avatar-actions-panel">
+                <button class="action-btn primary-action" (click)="SelectInput()">
+                  <div class="btn-icon-wrap">
+                    <ion-icon name="camera-outline"></ion-icon>
+                  </div>
+                  <div class="btn-text">
+                    <span>{{ 'change_photo' | translate }}</span>
+                    <small>{{ 'change_profile_photo' | translate }}</small>
+                  </div>
+                </button>
+
+                <button class="action-btn danger-action" *ngIf="img_ref_config" (click)="Delete()">
+                  <div class="btn-icon-wrap danger">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </div>
+                  <div class="btn-text">
+                    <span>{{ 'delete_photo' | translate }}</span>
+                    <small>{{ 'change_profile_photo' | translate }}</small>
+                  </div>
+                </button>
+              </div>
+
+            </div>
+
           </div>
-
         </div>
       </ng-template>
     </ion-modal>
@@ -125,6 +159,14 @@
                 <ion-select-option value="en">{{ 'english' | translate }}</ion-select-option>
               </ion-select>
             </div>
+          </div>
+
+          <!-- Botón de guardar dentro del formulario -->
+          <div class="form-action" *ngIf="hasDataChanges">
+            <button class="contextual-save-btn data-btn" (click)="Update()">
+              <ion-icon name="save-outline"></ion-icon>
+              Guardar Cambios
+            </button>
           </div>
         </form>
       </div>
@@ -184,30 +226,33 @@
 
     </section>
 
-    <ion-modal #qrModal trigger="open-qr-modal" class="glass-modal">
+    <ion-modal #qrModal trigger="open-qr-modal" class="donation-sheet-modal" [initialBreakpoint]="0.72"
+      [breakpoints]="[0, 0.72, 0.92]" [backdropBreakpoint]="0.35" [handle]="true" handleBehavior="cycle"
+      [expandToScroll]="false">
       <ng-template>
-        <div class="modal-wrapper donation-modal-redesign">
+        <div class="donation-modal-shell">
 
-          <!-- Close -->
-          <div class="modal-header">
-            <button class="close-modal-btn" (click)="closeQrModal()">
-              <ion-icon name="close-outline"></ion-icon>
-            </button>
-          </div>
-
-          <div class="modal-body">
-
-            <!-- PayPal Hero -->
+          <div class="donation-modal-content">
+            <!-- Hero -->
             <div class="donation-hero">
               <div class="paypal-glow"></div>
+
               <div class="paypal-logo-circle">
                 <img src="https://freepngimg.com/thumb/paypal/2-2-paypal-logo-transparent-png.png" alt="PayPal" />
               </div>
+
               <h2>{{ 'support_mapfont' | translate }}</h2>
               <p class="hero-subtitle">{{ 'donation_subtitle' | translate }}</p>
             </div>
 
-            <!-- QR Code -->
+            <!-- Botón cerrar: más abajo -->
+            <div class="modal-top-actions">
+              <button class="close-modal-btn" (click)="closeQrModal()" aria-label="Cerrar modal">
+                <ion-icon name="close-outline"></ion-icon>
+              </button>
+            </div>
+
+            <!-- QR -->
             <div class="donation-qr-frame">
               <div class="qr-glow-border"></div>
               <div class="qr-white-bg">
@@ -215,17 +260,23 @@
               </div>
             </div>
 
-            <!-- Scan instruction -->
+            <!-- Badge -->
             <div class="scan-badge">
               <ion-icon name="scan-outline"></ion-icon>
               <span>{{ 'scan_qr_paypal' | translate }}</span>
             </div>
 
             <!-- Description -->
-            <p class="donation-description">{{ 'donation_description' | translate }}</p>
+            <p class="donation-description">
+              {{ 'donation_description' | translate }}
+            </p>
 
+            <!-- CTA opcional -->
+            <button class="donate-action-btn">
+              <ion-icon name="heart-outline"></ion-icon>
+              <span>{{ 'support_mapfont' | translate }}</span>
+            </button>
           </div>
-
         </div>
       </ng-template>
     </ion-modal>
