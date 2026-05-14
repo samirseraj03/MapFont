@@ -6,6 +6,7 @@ import { App as CapacitorApp, URLOpenListenerEvent } from '@capacitor/app';
 import { SupabaseClientService } from './core/data/supabase.client';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar } from '@capacitor/status-bar';
+import { AuthFacade } from './core/facades/auth.facade';
 
 @Component({
   selector: 'app-root',
@@ -18,12 +19,16 @@ export class AppComponent {
     public NavCtrl: NavController,
     private transalte: TranslateService,
     private ngZone: NgZone,
-    private supabaseService: SupabaseClientService
+    private supabaseService: SupabaseClientService,
+    private authFacade: AuthFacade
   ) {
     this.initializeApp();
   }
 
   private initializeApp() {
+    // Inicializar el listener de OAuth para manejar login/registro con Google
+    this.authFacade.initOAuthListener();
+
     this.transalte.addLangs(['es', 'ca', 'en']);
     const browserLang = this.transalte.getBrowserLang();
     const defaultLang = browserLang?.match(/es|ca|en/) ? browserLang : 'es';
