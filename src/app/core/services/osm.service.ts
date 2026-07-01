@@ -10,6 +10,7 @@ export class OsmService {
 
     // Lista de servidores Overpass
     private overpassEndpoints = [
+        'https://map-font.vercel.app/api/osm',               // 0. Proxy de Vercel (Evita bloqueos de Vercel/OSM inyectando User-Agent)
         'https://overpass.openstreetmap.fr/api/interpreter', // 2. Respaldo (Francia - Muy estable y rápido)
 
 
