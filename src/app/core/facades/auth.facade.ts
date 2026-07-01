@@ -146,9 +146,10 @@ export class AuthFacade {
         console.log('[AuthFacade] Estado isLogin establecido a true.');
 
         // Garantizar que el perfil exista en nuestra tabla (para CUALQUIER provider)
-        console.log('[AuthFacade] Llamando a ensureUserProfile...');
-        await this.ensureUserProfile(user);
-        console.log('[AuthFacade] ensureUserProfile completado.');
+        console.log('[AuthFacade] Llamando a ensureUserProfile en segundo plano...');
+        this.ensureUserProfile(user).catch(e => {
+          console.error('[AuthFacade] Error en ensureUserProfile:', e);
+        });
 
         // Solo navegar si hay una ruta pendiente (ej. login con Google).
         // Si no hay intendedRoute, el usuario ya está en /tabs/fonts por defecto
@@ -188,11 +189,10 @@ export class AuthFacade {
         }
 
         // Garantizar que el perfil exista (por si se perdió o nunca se creó)
-        try {
-          await this.ensureUserProfile(user);
-        } catch(e) {
+        // Se ejecuta en segundo plano para no bloquear la navegación
+        this.ensureUserProfile(user).catch(e => {
           console.error('[AuthFacade] Error asegurando perfil en login:', e);
-        }
+        });
 
         const route = this.authState.intendedRoute || '/tabs/fonts';
         this.authState.intendedRoute = null;
