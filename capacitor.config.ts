@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'ionic.mapfont',
+  appId: 'com.mapfont',
   appName: 'mapfont',
   webDir: 'www/browser',
   server: {

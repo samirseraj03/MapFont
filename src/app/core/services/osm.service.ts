@@ -28,6 +28,8 @@ export class OsmService {
                 `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${environment.accessToken}`
             );
 
+            console.log("Response from Mapbox: ", response);
+
             if (response.data && response.data.features && response.data.features.length > 0) {
                 return response.data.features[0].place_name;
             }
@@ -39,6 +41,10 @@ export class OsmService {
     }
 
     async fetchFountainsInBounds(south: number, west: number, north: number, east: number): Promise<WaterSources[] | null> {
+
+
+
+        console.log("Response from Mapbox: ");
 
         const overpassQuery = `
           [out:json][timeout:25];

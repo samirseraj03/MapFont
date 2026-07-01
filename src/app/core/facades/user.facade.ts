@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { LoadingController, NavController } from '@ionic/angular/standalone';
+import { NavController } from '@ionic/angular/standalone';
+import { LoadingService } from '../services/loading.service';
 import { UserRepository } from '../repositories/user.repository';
 import { StorageRepository } from '../repositories/storage.repository';
 import GeolocationService from '../utils/Geolocation';
@@ -16,7 +17,7 @@ export class UserFacade {
     private geolocationService: GeolocationService,
     private authFacade: AuthFacade,
     private translateService: TranslateService,
-    private loadingController: LoadingController,
+    private loadingService: LoadingService,
     private navCtrl: NavController
   ) { }
 
@@ -52,8 +53,7 @@ export class UserFacade {
    * Actualiza el perfíl del usuario enviando la foto al Storage si corresponde.
    */
   async updateUserProfile(formData: any, imageFile: any) {
-    let loading = await this.loadingController.create({ message: this.translateService.instant('loading') });
-    await loading.present();
+    await this.loadingService.show(this.translateService.instant('loading'));
 
     try {
       const userId = await this.authFacade.getCurrentUserId();
@@ -71,7 +71,7 @@ export class UserFacade {
     } catch (e) {
       return false;
     } finally {
-      loading.dismiss();
+      await this.loadingService.hide();
     }
   }
 }

@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NavController, ActionSheetController, LoadingController } from '@ionic/angular/standalone';
+import { NavController, ActionSheetController } from '@ionic/angular/standalone';
+import { LoadingService } from '../../../core/services/loading.service';
 
 // Ionic Standalone & Modulos
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
@@ -46,7 +47,7 @@ export class FormPage {
   constructor(
     public NavCtrl: NavController,
     private actionSheetController: ActionSheetController,
-    private loadingController: LoadingController,
+    private loadingService: LoadingService,
     public Service: Services,
     public translate: TranslateService,
     private storageRepository: StorageRepository,
@@ -182,17 +183,9 @@ export class FormPage {
       return;
     }
 
-    // 1. Creamos una variable segura para el loader
-    let loadingElement: HTMLIonLoadingElement | null = null;
-
     try {
       // 2. Creamos y mostramos el loader
-      loadingElement = await this.loadingController.create({
-        message: this.translate.instant('uploading_photo') || 'Subiendo imagen...',
-        spinner: 'circles',
-        backdropDismiss: false // Evita que el usuario lo cierre tocando fuera
-      });
-      await loadingElement.present();
+      await this.loadingService.show(this.translate.instant('uploading_photo') || 'Subiendo imagen...');
 
       // 3. TRUCO VISUAL: Obligamos a la app a esperar medio segundo (500ms).
       // Esto asegura que la animación del loader termine y el usuario vea que está cargando.
@@ -203,10 +196,7 @@ export class FormPage {
 
       if (imagePath) {
         // 5. CERRAMOS el loader ANTES de navegar
-        if (loadingElement) {
-          await loadingElement.dismiss();
-          loadingElement = null; // Lo vaciamos por seguridad
-        }
+        await this.loadingService.hide();
 
         // 6. Navegamos pasando el nombre
         this.NavCtrl.navigateForward('/location', {
@@ -222,9 +212,7 @@ export class FormPage {
       console.error("Error subiendo foto:", error);
 
       // Si hay error, también debemos cerrar el loader
-      if (loadingElement) {
-        await loadingElement.dismiss();
-      }
+      await this.loadingService.hide();
 
       await Dialog.alert({
         title: 'Error',

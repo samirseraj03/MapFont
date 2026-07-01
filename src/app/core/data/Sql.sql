@@ -1,5 +1,5 @@
--- Supabase AI is experimental and may produce incorrect answers
--- Always verify the output before executing
+-- Schema actualizado de MapFont (refleja la estructura real en Supabase)
+-- Las columnas autencationUserID enlazan cada tabla con auth.users(id)
 
 create table
   Users (
@@ -8,12 +8,15 @@ create table
     username text,
     email text,
     name text,
-    lastNname text,
+    lastname text,
     number numeric,
     address text,
     photo text,
-    created_at timestamp with time zone,
-    password text
+    password text,
+    "autencationUserID" uuid not null,
+    language text default 'es',
+    created_at timestamp with time zone default now(),
+    constraint users_autencationUserID_unique unique ("autencationUserID")
   );
 
 create table
@@ -22,33 +25,36 @@ create table
     location jsonb,
     name text,
     address text,
-    isPotable boolean,
+    "isPotable" boolean,
     available boolean,
-    created_at timestamp with time zone,
+    created_at timestamp with time zone default now(),
     photo text,
-    description text
+    description text,
+    watersourcetype text,
+    updated_at timestamp with time zone default now()
   );
 
 create table
   Forms (
     id bigint primary key generated always as identity,
     username text,
-    WaterSourcesName text,
-    created_at timestamp with time zone,
+    "WaterSourcesName" text,
+    created_at timestamp with time zone default now(),
     location jsonb,
     photo text,
     address text,
     description text,
     is_potable boolean,
-    WaterSourceType text,
-    approved boolean
+    "WaterSourceType" text,
+    approved boolean,
+    "autencationUserID" uuid not null
   );
-
-
 
 create table
   UserType (
     id bigint primary key generated always as identity,
-    admin_role boolean,
-    user_role boolean
+    admin_role boolean default false,
+    user_role boolean default true,
+    "autencationUserID" uuid not null,
+    constraint usertype_autencationUserID_unique unique ("autencationUserID")
   );

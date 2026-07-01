@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavController, AlertController, LoadingController, ActionSheetController } from '@ionic/angular/standalone';
+import { NavController, AlertController, ActionSheetController } from '@ionic/angular/standalone';
+import { LoadingService } from '../../../core/services/loading.service';
 import { Browser } from '@capacitor/browser';
 
 // Standalone Components limpios
@@ -55,7 +56,7 @@ export class ConfirmationFormPage implements OnInit {
     public NavCtrl: NavController,
     public actionSheetCtrl: ActionSheetController,
     public alertController: AlertController,
-    private loadingController: LoadingController,
+    private loadingService: LoadingService,
     private formFacade: FormFacade,
     private waterSourceFacade: WaterSourceFacade,
     public GeolocationService: GeolocationService
@@ -115,10 +116,7 @@ export class ConfirmationFormPage implements OnInit {
 
   // Aprobar
   async OnConfirm(result: any) {
-    this.loadingController.create({ message: 'Aprobando fuente...' }).then(loading => {
-      this.loading = loading;
-      this.loading.present();
-    });
+    await this.loadingService.show('Aprobando fuente...');
 
     const waterSource: WaterSources = {
       location: {
@@ -167,16 +165,13 @@ export class ConfirmationFormPage implements OnInit {
         message: 'Hubo un error de conexión, no se ha podido aprobar la fuente.'
       });
     } finally {
-      if (this.loading) this.loading.dismiss();
+      await this.loadingService.hide();
     }
   }
 
   // Rechazar
   async OnReject(result: any) {
-    this.loadingController.create({ message: 'Rechazando fuente...' }).then(loading => {
-      this.loading = loading;
-      this.loading.present();
-    });
+    await this.loadingService.show('Rechazando fuente...');
 
     try {
       let query = await this.formFacade.updateFormStatus(result.id, false);
@@ -191,7 +186,7 @@ export class ConfirmationFormPage implements OnInit {
         message: 'No se pudo actualizar el estado a rechazado.'
       });
     } finally {
-      if (this.loading) this.loading.dismiss();
+      await this.loadingService.hide();
     }
   }
 }

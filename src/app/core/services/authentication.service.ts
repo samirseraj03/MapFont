@@ -98,4 +98,8 @@ export class AuthenticationService {
   async getSession() {
     return this.supabase.auth.getSession();
   }
+
+  async getUser() {
+    return this.supabase.auth.getUser();
+  }
 }

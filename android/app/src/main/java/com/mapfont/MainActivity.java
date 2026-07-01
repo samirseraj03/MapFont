@@ -1,4 +1,4 @@
-package ionic.mapfont;
+package com.mapfont;
 
 import com.getcapacitor.BridgeActivity;
 

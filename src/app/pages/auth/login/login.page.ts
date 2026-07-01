@@ -63,8 +63,6 @@ export class LoginPage implements OnInit {
         this.email = "";
       }
     });
-
-    this.authFacade.initOAuthListener();
   }
 
   async login() {

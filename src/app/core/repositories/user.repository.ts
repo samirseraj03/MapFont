@@ -87,4 +87,29 @@ export class UserRepository {
     if (error) { throw error; }
     return data || [];
   }
+
+  /**
+   * Inserta o actualiza un usuario en la tabla 'users' usando autencationUserID como clave de conflicto.
+   * Evita duplicados cuando el evento SIGNED_IN se dispara múltiples veces.
+   */
+  async upsertUser(newUser: User): Promise<any> {
+    const { data, error } = await this.supabase
+      .from('users')
+      .upsert(newUser, { onConflict: 'autencationUserID' })
+      .select();
+    if (error) { throw error; }
+    return data && data.length > 0 ? data[0].id : null;
+  }
+
+  /**
+   * Inserta o actualiza un registro en 'usertype' usando autencationUserID como clave de conflicto.
+   */
+  async upsertUserType(newUserType: UserType): Promise<any> {
+    const { data, error } = await this.supabase
+      .from('usertype')
+      .upsert(newUserType, { onConflict: 'autencationUserID' })
+      .select();
+    if (error) { throw error; }
+    return data && data.length > 0 ? data[0].id : null;
+  }
 }

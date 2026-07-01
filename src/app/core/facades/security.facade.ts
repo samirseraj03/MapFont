@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { LoadingController, NavController } from '@ionic/angular/standalone';
+import { NavController } from '@ionic/angular/standalone';
+import { LoadingService } from '../services/loading.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Dialog } from '@capacitor/dialog';
 
@@ -15,7 +16,7 @@ import { AuthFacade } from './auth.facade';
 export class SecurityFacade {
 
   constructor(
-    private loadingController: LoadingController,
+    private loadingService: LoadingService,
     private authService: AuthenticationService,
     private translateService: TranslateService,
     private userRepository: UserRepository,
@@ -28,11 +29,9 @@ export class SecurityFacade {
    * Encapsula toda la lógica de cambio de contraseña, loading, validación contra db y redirección.
    */
   async updatePassword(oldPassword: string, newPassword: string): Promise<boolean> {
-    let loading: any;
     try {
       const loadingMsg = this.translateService.instant('loading') || 'Cargando...';
-      loading = await this.loadingController.create({ message: loadingMsg });
-      await loading.present();
+      await this.loadingService.show(loadingMsg);
 
       const email = await this.authFacade.getCurrentUserEmail();
 
@@ -70,9 +69,7 @@ export class SecurityFacade {
       });
       return false;
     } finally {
-      if (loading) {
-        await loading.dismiss();
-      }
+      await this.loadingService.hide();
     }
   }
 }

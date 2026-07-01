@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { FormRepository } from '../repositories/form.repository';
 import { StorageRepository } from '../repositories/storage.repository';
 import { AuthFacade } from './auth.facade';
-import { LoadingController, NavController } from '@ionic/angular/standalone';
+import { NavController } from '@ionic/angular/standalone';
+import { LoadingService } from '../services/loading.service';
 import { TranslateService } from '@ngx-translate/core';
 import { UserRepository } from '../repositories/user.repository';
 
@@ -15,14 +16,13 @@ export class FormFacade {
     private storageRepository: StorageRepository,
     private userRepository: UserRepository,
     private authFacade: AuthFacade,
-    private loadingController: LoadingController,
+    private loadingService: LoadingService,
     private translateService: TranslateService,
     private navCtrl: NavController
   ) { }
 
   async submitNewForm(formData: any, imagePath: string, location: any, address: string) {
-    let loading = await this.loadingController.create({ message: this.translateService.instant('loading') });
-    await loading.present();
+    await this.loadingService.show(this.translateService.instant('loading'));
 
     try {
       const userId = await this.authFacade.getCurrentUserId();
@@ -58,7 +58,7 @@ export class FormFacade {
       console.error(e);
       return false;
     } finally {
-      loading.dismiss();
+      await this.loadingService.hide();
     }
   }
 

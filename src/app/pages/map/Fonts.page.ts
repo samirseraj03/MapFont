@@ -94,13 +94,16 @@ export class fontsPage {
   }
 
   ionViewDidEnter() {
+    console.log('[FontsPage] ionViewDidEnter ejecutado.');
     this.loadDiscoveryTipState();
     this.insertMap();
   }
 
   // 🔍 Cargar estado del tip desde storage
   async loadDiscoveryTipState() {
+    console.log('[FontsPage] loadDiscoveryTipState iniciado...');
     const dismissed = await this.storage.get('discovery_tip_dismissed');
+    console.log('[FontsPage] loadDiscoveryTipState: dismissed =', dismissed);
     if (dismissed) {
       this.showDiscoveryTip = false;
     }
@@ -110,54 +113,81 @@ export class fontsPage {
 
 
   async insertMap() {
-    this.UpdatedMap = await this.waterSourceFacade.checkLatestUpdateFountains();
+    console.log('[FontsPage] insertMap iniciado...');
+    try {
+      console.log('[FontsPage] Comprobando última actualización de fuentes...');
+      this.UpdatedMap = await this.waterSourceFacade.checkLatestUpdateFountains();
+      console.log('[FontsPage] UpdatedMap =', this.UpdatedMap);
 
-    if (this.map) {
-      const container = this.map.getContainer();
-      if (container && document.body.contains(container)) {
-        this.map.resize();
+      if (this.map) {
+        console.log('[FontsPage] El mapa ya existe. Comprobando contenedor en el DOM...');
+        const container = this.map.getContainer();
+        if (container && document.body.contains(container)) {
+          console.log('[FontsPage] Contenedor del mapa existe en el DOM. Redimensionando...');
+          this.map.resize();
 
-        if (!this.UpdatedMap) {
-          await this.UpdateMap();
+          if (!this.UpdatedMap) {
+            console.log('[FontsPage] El mapa no está actualizado. Ejecutando UpdateMap...');
+            await this.UpdateMap();
+          }
+          console.log('[FontsPage] insertMap: Mapa reutilizado con éxito.');
+          return;
+        } else {
+          console.log('[FontsPage] Contenedor del mapa NO existe en el DOM o ha sido removido. Eliminando mapa viejo...');
+          this.map.remove();
+          this.map = null;
         }
-        return;
-      } else {
-        this.map.remove();
-        this.map = null;
       }
+
+      console.log('[FontsPage] Llamando a getWatersourcesToMap...');
+      await this.getWatersourcesToMap();
+      console.log('[FontsPage] getWatersourcesToMap finalizado.');
+
+      console.log('[FontsPage] Solicitando geolocalización...');
+      this.GeolocationService.getGeolocation().then(() => {
+        console.log('[FontsPage] Geolocalización exitosa. Coordenadas:', this.GeolocationService.longitude, this.GeolocationService.latitude);
+        if (this.map && this.GeolocationService.longitude) {
+          console.log('[FontsPage] Volando a coordenadas del usuario e iniciando geolocalización activa...');
+          this.map.flyTo({
+            center: [this.GeolocationService.longitude, this.GeolocationService.latitude],
+            zoom: 15.15,
+            essential: true
+          });
+          this.geolocate.trigger();
+        } else {
+          console.log('[FontsPage] Geolocalización obtenida pero el mapa no existe o falta la longitud.');
+        }
+      }).catch(err => {
+        console.warn("[FontsPage] Error de GPS, usando coordenadas por defecto", err);
+      });
+    } catch (e) {
+      console.error('[FontsPage] Error crítico en insertMap:', e);
     }
-
-    await this.getWatersourcesToMap();
-
-    this.GeolocationService.getGeolocation().then(() => {
-      if (this.map && this.GeolocationService.longitude) {
-        this.map.flyTo({
-          center: [this.GeolocationService.longitude, this.GeolocationService.latitude],
-          zoom: 15.15,
-          essential: true
-        });
-        this.geolocate.trigger();
-      }
-    }).catch(err => {
-      console.log("Error de GPS, usando coordenadas por defecto", err);
-    });
   }
 
   getMap() {
+    console.log('[FontsPage] getMap ejecutado. this.map ya existe?', !!this.map);
     if (this.map) return;
 
     const startLng = this.GeolocationService.longitude || -3.703790;
     const startLat = this.GeolocationService.latitude || 40.416775;
+    console.log('[FontsPage] Inicializando Mapbox con centro:', [startLng, startLat]);
 
-    this.map = new mapboxgl.Map({
-      accessToken: environment.accessToken,
-      container: 'Mapa-de-box',
-      style: 'mapbox://styles/mapbox/dark-v11',
-      center: [startLng, startLat],
-      zoom: 15.15,
-    });
+    try {
+      this.map = new mapboxgl.Map({
+        accessToken: environment.accessToken,
+        container: 'Mapa-de-box',
+        style: 'mapbox://styles/mapbox/dark-v11',
+        center: [startLng, startLat],
+        zoom: 15.15,
+      });
+      console.log('[FontsPage] Mapbox instanciado con éxito.');
 
-    this.map.addControl(this.geolocate);
+      this.map.addControl(this.geolocate);
+      console.log('[FontsPage] Geolocate control añadido al mapa.');
+    } catch (err) {
+      console.error('[FontsPage] Error al instanciar Mapbox:', err);
+    }
   }
 
   // 📍 NUEVA FUNCIÓN PARA EL BOTÓN FLOTANTE
@@ -169,21 +199,37 @@ export class fontsPage {
   }
 
   async getWatersourcesToMap() {
+    console.log('[FontsPage] getWatersourcesToMap iniciado...');
     try {
+      console.log('[FontsPage] Leyendo cache de geojson...');
       this.geojson = await this.getStorageCache();
+      console.log('[FontsPage] Cache geojson leído. ¿Tiene features?:', !!this.geojson, this.geojson?.features?.length);
 
       // Si no existe el caché o si hay actualización en BD, descargamos datos frescos
       if (!this.geojson || !this.UpdatedMap) {
+        console.log('[FontsPage] Geojson vacío o mapa desactualizado. Forzando UpdateMap...');
         await this.UpdateMap();
       }
 
+      console.log('[FontsPage] Llamando a getMap...');
       this.getMap();
 
+      if (!this.map) {
+        console.error('[FontsPage] No se pudo instanciar el mapa en getMap.');
+        return;
+      }
+
+      console.log('[FontsPage] Registrando listener de load del mapa...');
       this.map.on('load', () => {
+        console.log('[FontsPage] Evento "load" del mapa disparado.');
         setTimeout(() => {
-          if (this.map) this.map.resize();
+          if (this.map) {
+            console.log('[FontsPage] Redimensionando mapa tras timeout...');
+            this.map.resize();
+          }
         }, 300);
 
+        console.log('[FontsPage] Añadiendo source "watersources" con features:', this.geojson?.features?.length);
         this.map.addSource('watersources', {
           type: 'geojson',
           data: { type: 'FeatureCollection', features: this.geojson?.features || [] },
@@ -192,6 +238,7 @@ export class fontsPage {
           clusterRadius: 80,
         });
 
+        console.log('[FontsPage] Añadiendo capas del mapa...');
         this.map.addLayer({
           id: 'clusters',
           type: 'circle',
@@ -227,6 +274,7 @@ export class fontsPage {
             'circle-stroke-color': '#fff',
           },
         });
+        console.log('[FontsPage] Capas añadidas con éxito.');
 
         this.map.on('click', 'clusters', (e: any) => {
           const features = this.map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
@@ -291,7 +339,7 @@ export class fontsPage {
 
       });
     } catch (error) {
-      console.log(error);
+      console.error('[FontsPage] Error en getWatersourcesToMap:', error);
     }
   }
 
